@@ -5,3 +5,12 @@ feito pelo grupo de integrantes:
  - 2310822 - Eduardo Eugênio de Souza
  - 2310540 - Pedro Carneiro Nogueira
  - 2311203 - Pedro Nogueira Barella
+
+## Diagrama de Classes para o trabalho
+
+```mermaid
+graph TD;
+    Board --> Space;
+    Space --> Start;
+    Space --> Building;
+```
