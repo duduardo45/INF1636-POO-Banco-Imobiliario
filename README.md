@@ -21,7 +21,7 @@ graph
     Building --> Hotel;
     Money;
     Bank;
-    Board --> Space;
+    Board ---> Space;
     Space --> Start;
     Space --> Property;
     Space --> Prison;
@@ -44,4 +44,17 @@ erDiagram
     Car }o..|| Space : "is in"
     Space ||--|| Property : is
     Player ||--o{ Property : owns
+```
+## Ações possíveis
+- Rodada de dados
+```mermaid
+flowchart LR;
+    Player-- Rolls --> Dice -- Advances --> Car;
+```
+- Avanço do Carro
+```mermaid
+flowchart LR;
+    Car -- Lands --> Space -- Triggers --> Event;
+    Event --> Automatic;
+    Event --> Choices;
 ```
