@@ -1,6 +1,6 @@
-package game.model.core.spaces;
+package model.core.entities.spaces;
 
-public class Space {
+public abstract class Space {
     private Space next;
     abstract public void event();
 }

@@ -1,5 +1,5 @@
-package game.model.core.spaces;
+package model.core.entities.spaces;
 
-public class Prison extends Space {
+public abstract class Prison extends Space {
     
 }

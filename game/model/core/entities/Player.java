@@ -1,8 +1,9 @@
-package game.model.core.entities;
+package model.core.entities;
 
 import java.util.List;
 
-import game.model.core.entities.cards.LuckCard;
+import model.core.entities.cards.LuckCard;
+import model.core.entities.spaces.Property;
 
 public class Player {
     private Car my_car;

@@ -1,7 +1,7 @@
-package game.model.core.entities.spaces;
+package model.core.entities.spaces;
 
-import game.model.core.spaces.Space;
+import model.core.entities.spaces.Space;
 
-public class GoToPrison extends Space{
+public class GoToPrison extends Space {
     
 }

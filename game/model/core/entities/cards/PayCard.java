@@ -1,5 +1,11 @@
-package game.model.core.entities.cards;
+package model.core.entities.cards;
 
 public class PayCard extends LuckCard {
-    private const int value;
+    private final int value;
+    
+    public PayCard(int value, String story) {
+        super(LuckType.MISFORTUNE, story);
+        this.value = value;
+    }
+
 }

@@ -1,4 +1,4 @@
-package game.model.core.spaces;
+package model.core.entities.spaces;
 
 public class Start {
     

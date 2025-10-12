@@ -1,4 +1,4 @@
-package game.model.core.entities.cards;
+package model.core.entities.cards;
 
 public class GoToPrisonCard {
     

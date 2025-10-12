@@ -1,11 +1,16 @@
-package game.model.core.entities.cards;
+package model.core.entities.cards;
 
-private enum LuckType {
-    Lucky,
-    Misforture
-}
+enum LuckType { LUCKY, MISFORTUNE }
 
 public class LuckCard {
-    private const LuckType type;
-    private const String story;
+    private final LuckType type;
+    private final String story;
+
+    public LuckCard(LuckType type, String story) {
+        this.type = type;
+        this.story = story;
+    }
+
+    public LuckType getType() { return type; }
+    public String getStory()  { return story; }
 }
