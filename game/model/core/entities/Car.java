@@ -1,6 +1,31 @@
 package game.model.core.entities;
 
-public class Car {
+class Car {
     private Space position;
     private boolean in_prison;
+
+    public static void advancePosition(int steps) {
+        // move the car forward by 'steps'(according to the dice roll) spaces
+        for (int i = 0; i < steps; i++) {
+            position = position.next;
+        }
+    }
+    
+    public boolean isInPrison() {
+        // since all the atributes are private, we need a getter for this instead of accessing it directly
+        return in_prison;
+    }
+
+    public void setInPrison(boolean status) {
+        in_prison = status;
+    }
+
+    public Space getPosition() {
+        return position;
+    }  
+
+    public void setPosition(Space newPosition) {
+        //useful for the "Go to Prison" space, for example
+        position = newPosition;
+    }
 }
