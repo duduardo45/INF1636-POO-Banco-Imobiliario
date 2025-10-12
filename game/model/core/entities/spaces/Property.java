@@ -1,12 +1,22 @@
 package game.model.core.spaces;
 
-import game.model.core.entities.Money;
-import game.model.core.entities.Player;
-import game.model.core.entities.Turn;
+public abstract class Property extends Space {
+    protected final int cost;
+    protected Player owner;
+    protected int currentRent;
 
-public class Property extends Space {
-    private Player owner;
-    private int cost;
+    public Property(String name, int cost) { super(name); }
 
-    abstract public void event();
+    public int getPrice() {}
+    public Player getOwner() {}
+    public void setOwner(Player owner) {}
+    public boolean isOwned() {}
+    
+    /** Retorna o valor do aluguel atualmente aplicável para esta propriedade. */
+    public int getCurrentRent() {
+        return this.currentRent;
+    }
+
+    @Override
+    public void event(Player player) {}
 }
