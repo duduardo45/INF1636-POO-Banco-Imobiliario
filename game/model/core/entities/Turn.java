@@ -5,7 +5,7 @@ import java.util.LinkedList;
 public class Turn {
     // singleton that holds the active player
     private static Player current_player;
-    private static LinkedList<Player> player_order;
+    private static LinkedList<Player> player_order; // BACALHAU needs fix cause this doesn't work
 
     public static Player getPlayer() {
         return current_player;

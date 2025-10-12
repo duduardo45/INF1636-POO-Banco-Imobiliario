@@ -34,11 +34,11 @@ graph
     Player;
     Car;
     Dice;
-    Card --> ReceiveCard;
-    Card --> ReceiveFromOthersCard;
-    Card --> PayCard;
-    Card --> GetOutPrisonCard;
-    Card --> GoToPrisonCard;
+    LuckCard --> ReceiveCard;
+    LuckCard --> ReceiveFromOthersCard;
+    LuckCard --> PayCard;
+    LuckCard --> GetOutPrisonCard;
+    LuckCard --> GoToPrisonCard;
     Turn;
 ```
 ## Modelagem de Classes
@@ -55,7 +55,7 @@ erDiagram
     Property ||--o{ Building : has
 ```
 ## Ações possíveis
-- Rodada de dados e Avanço do Pino
+- Rodada de dados e Avanço do Pino - Barella
 ```mermaid
 flowchart LR;
     Turn -- calls --> Player -- Rolls --> Dice -- Advances --> Car;
@@ -63,7 +63,7 @@ flowchart LR;
     id([InPrison]) -- Does --> id2{SaidaDaPrisao};
     id([InPrison]) -- "Moves To" --> Space;
 ```
-- Entrada na Prisão
+- Entrada na Prisão - Carneiro
 ```mermaid
 flowchart LR;
 Player -- "Lands in" --> GotoPrison --> i{{EnterPrison}};
@@ -72,7 +72,7 @@ i{{EnterPrison}} -- Move --> Car -- to --> Prison;
 Player -- Receives --> GoToPrisonCard --> i{{EnterPrison}};
 ```
 
-- Saída da Prisão
+- Saída da Prisão - Carneiro
 ```mermaid
 flowchart LR;
 Prison -- Rolls --> Dice;
@@ -81,7 +81,7 @@ Dice -- "Not Equal" --> id2{{Remain}};
 
 Prison -- "Has" --> GetOutPrisonCard --> id3{{Leave}};
 ```
-- Avanço do Carro
+- Avanço do Carro - Barella
 ```mermaid
 flowchart LR;
     Car -- Lands --> Space -- Triggers --> id3{{Event}};
@@ -90,7 +90,7 @@ flowchart LR;
     Player -- Responds --> id2{Choices} -- passes --> Turn;
 ```
 
-- Casas de Escolha (Propriedade)
+- Casas de Escolha (Propriedade) - Eugênio
 ```mermaid
 flowchart TD;
     Property -- calls --> id3{{Event}} -- checks --> id1([Available]);
@@ -102,7 +102,7 @@ flowchart TD;
     Owner -- myself --> id6{Construção};
 ```
 
-- Casas de Escolha (Construção)
+- Casas de Escolha (Construção) - Barella
 ```mermaid
 flowchart LR
     id2([Type]) --> Company -- passes --> Turn;
@@ -112,13 +112,13 @@ flowchart LR
     id1([Buildings]) -- buys --> id3[(House)]; 
 ```
 
-- Casas de Escolha (Pagamento de Aluguel)
+- Casas de Escolha (Pagamento de Aluguel) - Carneiro
 ```mermaid
 flowchart LR;
     id2([Type]) --> Company -- Rolls --> Dice -- "passes amount" --> id4{Pagamento entre Jogadores};
     id2([Type]) --> Place-- "checks amount of" --> Building -- "passes amount" --> id4{Pagamento entre Jogadores};
 ```
-- Casas de Escolha (Pagamento entre Jogadores)
+- Casas de Escolha (Pagamento entre Jogadores) - Eugênio
 ```mermaid
 flowchart TD;
     Payer -- checks --> id1([Amount]); 
