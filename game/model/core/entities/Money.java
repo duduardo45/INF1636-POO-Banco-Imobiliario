@@ -1,4 +1,4 @@
-package game.entities;
+package game.model.core.entities;
 
 enum Amount {
     $1,

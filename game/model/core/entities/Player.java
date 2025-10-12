@@ -1,4 +1,4 @@
-package game.entities;
+package game.model.core.entities;
 
 public class Player {
     private Money held;

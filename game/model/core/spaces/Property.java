@@ -1,9 +1,9 @@
-package game.spaces;
+package game.model.core.spaces;
 
-import game.entities.Space;
-import game.entities.Player;
-import game.entities.Turn;
-import game.entities.Money;
+import game.model.core.entities.Money;
+import game.model.core.entities.Player;
+import game.model.core.entities.Space;
+import game.model.core.entities.Turn;
 
 public class Property extends Space {
     private Player owner;
