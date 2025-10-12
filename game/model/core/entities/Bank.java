@@ -6,17 +6,50 @@ public class Bank {
     /** Lista de propriedades que ainda não foram compradas por nenhum jogador. */
     private final List<Property> unownedProperties;
 
-    public Bank(int initialTreasury, List<Property> allProperties) {}
+    public Bank(int initialTreasury, List<Property> allProperties) {
+        // A implementação do construtor iria aqui...
+        this.treasury = initialTreasury;
+        this.unownedProperties = new ArrayList<>(allProperties);
+    }
 
-    public void credit(int amount) {}
+    /**
+     * Adiciona uma quantia de dinheiro ao tesouro do banco.
+     * @param amount A quantia a ser creditada. Deve ser positiva.
+     */
+    public void credit(int amount) {
+        if (amount > 0) {
+            this.treasury += amount;
+        }
+    }
+
+    /**
+     * Remove uma quantia de dinheiro do tesouro do banco.
+     * @param amount A quantia a ser debitada.
+     */
     public void debit(int amount) {}
     
-    /** Verifica se uma propriedade específica pertence ao banco (não tem dono). */
-    public boolean isPropertyUnowned(Property property) {}
+    /**
+     * Verifica se uma propriedade específica pertence ao banco (não tem dono).
+     * @param property A propriedade a ser verificada.
+     * @return true se a propriedade estiver na lista de não possuídas, false caso contrário.
+     */
+    public boolean isPropertyUnowned(Property property) {
+        return this.unownedProperties.contains(property);
+    }
     
-    /** Remove uma propriedade da lista de não possuídas (quando um jogador compra). */
-    public void markPropertyAsOwned(Property property) {}
+    /**
+     * Remove uma propriedade da lista de não possuídas (quando um jogador compra).
+     * @param property A propriedade que foi comprada.
+     */
+    public void markPropertyAsOwned(Property property) {
+        this.unownedProperties.remove(property);
+    }
     
-    /** Adiciona uma propriedade de volta à lista de não possuídas (ex: falência para o banco). */
-    public void returnPropertyToBank(Property property) {}
+    /**
+     * Adiciona uma propriedade de volta à lista de não possuídas (ex: falência para o banco).
+     * @param property A propriedade a ser retornada ao banco.
+     */
+    public void returnPropertyToBank(Property property) {
+        this.unownedProperties.add(property);
+    }
 }

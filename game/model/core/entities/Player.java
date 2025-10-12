@@ -1,31 +1,25 @@
 package game.model.core.entities;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import game.model.core.entities.cards.LuckCard;
-import game.model.core.entities.spaces.Property;
-
 public class Player {
     private final String name;
     private int balance;
     private final Car car;
     private final List<Property> ownedProperties;
 
-    // Construtor e outros métodos existentes...
     public Player(String name, String carColor, int initialBalance) {
+        // A implementação do construtor iria aqui...
         this.name = name;
         this.balance = initialBalance;
         this.car = new Car(carColor);
         this.ownedProperties = new ArrayList<>();
     }
 
-    public String getName() {}
-    public Car getCar() {}
+    public String getName() { return this.name; }
+    public Car getCar() { return this.car; }
 
 
     /**
-     * Retorna o saldo atual do jogador.
+     * Retorna o saldo monetário atual do jogador.
      * @return O valor do saldo.
      */
     public int getBalance() {
@@ -33,19 +27,8 @@ public class Player {
     }
 
     /**
-     * Deduz um valor do saldo do jogador.
-     * Assume que a verificação se o jogador pode pagar já foi feita.
-     * @param amount O valor a ser debitado.
-     */
-    public void debit(int amount) {
-        if (amount > 0) {
-            this.balance -= amount;
-        }
-    }
-
-    /**
-     * Adiciona um valor ao saldo do jogador.
-     * @param amount O valor a ser creditado.
+     * Adiciona uma quantia ao saldo do jogador.
+     * @param amount A quantia a ser creditada. Deve ser positiva.
      */
     public void credit(int amount) {
         if (amount > 0) {
@@ -54,9 +37,21 @@ public class Player {
     }
 
     /**
-     * Transfere uma quantia do jogador atual para outro jogador.
+     * Subtrai uma quantia do saldo do jogador.
+     * Não verifica se o jogador tem saldo suficiente; essa lógica
+     * geralmente é tratada por um serviço ou controlador de jogo.
+     * @param amount A quantia a ser debitada. Deve ser positiva.
+     */
+    public void debit(int amount) {
+        if (amount > 0) {
+            this.balance -= amount;
+        }
+    }
+
+    /**
+     * Transfere uma quantia do jogador atual para um jogador recebedor.
      * @param receiver O jogador que receberá o dinheiro.
-     * @param amount O valor a ser pago.
+     * @param amount A quantia a ser transferida.
      */
     public void pay(Player receiver, int amount) {
         this.debit(amount);
@@ -64,9 +59,7 @@ public class Player {
     }
 
     /**
-     * Realiza a compra de uma propriedade.
-     * Deduz o preço do saldo, adiciona a propriedade à lista do jogador
-     * e define o jogador como o novo dono.
+     * Associa uma propriedade ao jogador e debita o valor de sua compra.
      * @param property A propriedade a ser comprada.
      */
     public void buyProperty(Property property) {
@@ -74,54 +67,50 @@ public class Player {
         this.ownedProperties.add(property);
         property.setOwner(this);
     }
+ 
+    public void sellProperty(Property property) {}
 
     /**
-     * Verifica se o jogador possui ativos (propriedades) que podem ser liquidados.
-     * @return true se o jogador possuir pelo menos uma propriedade, false caso contrário.
+     * Verifica se o jogador possui propriedades que podem ser vendidas/hipotecadas.
+     * @return true se o jogador possuir pelo menos uma propriedade.
      */
     public boolean hasLiquidAssets() {
         return !this.ownedProperties.isEmpty();
     }
 
     /**
-     * Retorna uma lista de todas as propriedades do jogador.
-     * @return Uma nova lista contendo as propriedades do jogador.
+     * Retorna a lista de propriedades do jogador.
+     * @return Uma nova lista contendo as propriedades para evitar modificação externa.
      */
     public List<Property> getLiquidAssets() {
-        // Retorna uma cópia para evitar modificação externa da lista original.
         return new ArrayList<>(this.ownedProperties);
     }
 
     /**
-     * Vende uma propriedade de volta para o banco (liquidação).
-     * O jogador recebe metade do valor original, a propriedade é removida de sua posse
-     * e o dono da propriedade é setado para null (representando o banco).
+     * Vende uma propriedade de volta ao banco pela metade de seu preço de compra.
      * @param asset A propriedade a ser liquidada.
      */
     public void liquidate(Property asset) {
         if (this.ownedProperties.contains(asset)) {
-            // Regra comum: vende pela metade do preço de compra.
-            int salePrice = asset.getPrice() / 2;
-            this.credit(salePrice);
+            int sellPrice = asset.getPrice() / 2; // BACALHAU trocar para ser 90%
+            this.credit(sellPrice);
             this.ownedProperties.remove(asset);
-            asset.setOwner(null); 
+            asset.setOwner(null);
+            // Um GameController seria responsável por chamar bank.returnPropertyToBank(asset).
         }
     }
 
     /**
-     * Inicia o processo de falência do jogador.
-     * Todas as propriedades retornam ao estado sem dono, a lista de propriedades
-     * é esvaziada e o saldo é zerado. A lógica de transferir para um credor
-     * seria gerenciada por uma classe de controle de jogo.
+     * Zera o saldo e remove a posse de todas as propriedades do jogador.
      */
     public void declareBankruptcy() {
-        for (Property property : this.ownedProperties) {
-            property.setOwner(null); // Retorna a propriedade ao "banco"
-        }
-        this.ownedProperties.clear();
         this.balance = 0;
-        // A lógica de remover o jogador do jogo ficaria em uma classe de controle.
+        // Transforma a lista em um stream para evitar ConcurrentModificationException
+        // enquanto removemos a posse.
+        new ArrayList<>(this.ownedProperties).forEach(prop -> {
+            prop.setOwner(null);
+            // O GameController decidiria se a propriedade vai para o credor ou para o banco.
+        });
+        this.ownedProperties.clear();
     }
-    
-    // Getters e outros métodos não implementados aqui...
 }
