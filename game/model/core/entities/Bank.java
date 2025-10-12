@@ -5,6 +5,14 @@ private class Bank {
     private int treasury;
     /** Lista de propriedades que ainda não foram compradas por nenhum jogador. */
     private final List<Property> unownedProperties;
+    
+    /**
+     * Retorna o saldo atual do tesouro do banco.
+     * @return O valor atual do tesouro.
+     */
+    public int getTreasuryBalance() {
+        return this.treasury;
+    }
 
     public Bank(int initialTreasury, List<Property> allProperties) {
         // A implementação do construtor iria aqui...

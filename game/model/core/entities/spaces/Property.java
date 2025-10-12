@@ -1,7 +1,7 @@
 package game.model.core.entities.spaces;
 
 
-private class Property
+private class Property {
     protected final int cost;
     protected Player owner;
     protected int currentRent;
@@ -32,6 +32,14 @@ private class Property
      */
     public int getCurrentRent() {
         return this.currentRent;
+    }
+    
+    /**
+     * Define o valor do aluguel atual da propriedade. Usado para testes.
+     * @param rent O novo valor do aluguel.
+     */
+    public void setCurrentRent(int rent) {
+        this.currentRent = rent;
     }
 
     /**
