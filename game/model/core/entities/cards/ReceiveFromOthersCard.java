@@ -1,5 +1,11 @@
-package game.model.core.entities.cards;
+package model.core.entities.cards;
 
-private class ReceiveFromOthersCard extends LuckCard {
-    private const int value;
+public class ReceiveFromOthersCard extends LuckCard {
+    private final int value;
+    
+    public ReceiveFromOthersCard(String story, int value) {
+    	super(LuckType.LUCKY, story);
+    	
+    	this.value = value;
+    }
 }

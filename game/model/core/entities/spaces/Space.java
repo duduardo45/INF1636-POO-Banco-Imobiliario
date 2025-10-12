@@ -1,4 +1,4 @@
-package game.model.core.entities.spaces;
+package model.core.entities.spaces;
 
 public abstract class Space {
     // ... conteúdo da classe Space ...

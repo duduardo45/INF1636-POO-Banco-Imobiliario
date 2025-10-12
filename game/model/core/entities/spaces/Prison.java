@@ -1,5 +1,8 @@
-package game.model.core.spaces;
+package model.core.entities.spaces;
 
-private class Prison extends Space {
+class Prison extends Space {
     
+    public Prison(String name) {
+        super(name);
+    }
 }

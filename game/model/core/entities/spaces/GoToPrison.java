@@ -1,7 +1,14 @@
-package game.model.core.entities.spaces;
+package model.core.entities.spaces;
 
-import game.model.core.spaces.Space;
 
-private class GoToPrison extends Space{
+class GoToPrison extends Space {
     
+    public GoToPrison() {
+        super("Go to Prison");
+    }
+    
+    @Override
+    public void event() {
+        // TODO: Implement logic to send player to prison
+    }
 }

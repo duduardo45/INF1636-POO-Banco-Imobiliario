@@ -1,6 +1,10 @@
-package game.model.core.entities;
+package model.core.entities;
 
-private class Bank {
+import model.core.entities.spaces.Property;
+import java.util.List;
+import java.util.ArrayList;
+
+class Bank {
     /** O dinheiro total que o banco possui. */
     private int treasury;
     /** Lista de propriedades que ainda não foram compradas por nenhum jogador. */
@@ -22,6 +26,7 @@ private class Bank {
 
     /**
      * Adiciona uma quantia de dinheiro ao tesouro do banco.
+     * 
      * @param amount A quantia a ser creditada. Deve ser positiva.
      */
     public void credit(int amount) {
@@ -32,29 +37,36 @@ private class Bank {
 
     /**
      * Remove uma quantia de dinheiro do tesouro do banco.
+     * 
      * @param amount A quantia a ser debitada.
      */
-    public void debit(int amount) {}
-    
+    public void debit(int amount) {
+    }
+
     /**
      * Verifica se uma propriedade específica pertence ao banco (não tem dono).
+     * 
      * @param property A propriedade a ser verificada.
-     * @return true se a propriedade estiver na lista de não possuídas, false caso contrário.
+     * @return true se a propriedade estiver na lista de não possuídas, false caso
+     *         contrário.
      */
     public boolean isPropertyUnowned(Property property) {
         return this.unownedProperties.contains(property);
     }
-    
+
     /**
      * Remove uma propriedade da lista de não possuídas (quando um jogador compra).
+     * 
      * @param property A propriedade que foi comprada.
      */
     public void markPropertyAsOwned(Property property) {
         this.unownedProperties.remove(property);
     }
-    
+
     /**
-     * Adiciona uma propriedade de volta à lista de não possuídas (ex: falência para o banco).
+     * Adiciona uma propriedade de volta à lista de não possuídas (ex: falência para
+     * o banco).
+     * 
      * @param property A propriedade a ser retornada ao banco.
      */
     public void returnPropertyToBank(Property property) {

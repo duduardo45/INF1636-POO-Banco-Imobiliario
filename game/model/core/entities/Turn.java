@@ -1,4 +1,4 @@
-package game.model.core.entities;
+package model.core.entities;
 
 import java.util.LinkedList;
 

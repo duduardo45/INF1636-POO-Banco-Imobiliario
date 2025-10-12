@@ -1,2 +1,6 @@
 .class
 .jar
+/bin/
+.DS_Store
+Thumbs.db
+*.log

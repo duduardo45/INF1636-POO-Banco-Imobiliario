@@ -1,6 +1,12 @@
-package game.model.core.entities;
+package model.core.entities;
 
-private class Player {
+import java.util.List;
+import java.util.ArrayList;
+
+import model.core.entities.cards.LuckCard;
+import model.core.entities.spaces.Property;
+
+public class Player {
     private final String name;
     private int balance;
     private final Car car;
@@ -14,12 +20,17 @@ private class Player {
         this.ownedProperties = new ArrayList<>();
     }
 
-    public String getName() { return this.name; }
-    public Car getCar() { return this.car; }
+    public String getName() {
+        return this.name;
+    }
 
+    public Car getCar() {
+        return this.car;
+    }
 
     /**
      * Retorna o saldo monetário atual do jogador.
+     * 
      * @return O valor do saldo.
      */
     public int getBalance() {
@@ -28,6 +39,7 @@ private class Player {
 
     /**
      * Adiciona uma quantia ao saldo do jogador.
+     * 
      * @param amount A quantia a ser creditada. Deve ser positiva.
      */
     public void credit(int amount) {
@@ -40,6 +52,7 @@ private class Player {
      * Subtrai uma quantia do saldo do jogador.
      * Não verifica se o jogador tem saldo suficiente; essa lógica
      * geralmente é tratada por um serviço ou controlador de jogo.
+     * 
      * @param amount A quantia a ser debitada. Deve ser positiva.
      */
     public void debit(int amount) {
@@ -50,8 +63,9 @@ private class Player {
 
     /**
      * Transfere uma quantia do jogador atual para um jogador recebedor.
+     * 
      * @param receiver O jogador que receberá o dinheiro.
-     * @param amount A quantia a ser transferida.
+     * @param amount   A quantia a ser transferida.
      */
     public void pay(Player receiver, int amount) {
         this.debit(amount);
@@ -60,18 +74,21 @@ private class Player {
 
     /**
      * Associa uma propriedade ao jogador e debita o valor de sua compra.
+     * 
      * @param property A propriedade a ser comprada.
      */
     public void buyProperty(Property property) {
-        this.debit(property.getPrice());
+        this.debit(property.getCost());
         this.ownedProperties.add(property);
         property.setOwner(this);
     }
- 
-    public void sellProperty(Property property) {}
+
+    public void sellProperty(Property property) {
+    }
 
     /**
      * Verifica se o jogador possui propriedades que podem ser vendidas/hipotecadas.
+     * 
      * @return true se o jogador possuir pelo menos uma propriedade.
      */
     public boolean hasLiquidAssets() {
@@ -80,7 +97,9 @@ private class Player {
 
     /**
      * Retorna a lista de propriedades do jogador.
-     * @return Uma nova lista contendo as propriedades para evitar modificação externa.
+     * 
+     * @return Uma nova lista contendo as propriedades para evitar modificação
+     *         externa.
      */
     public List<Property> getLiquidAssets() {
         return new ArrayList<>(this.ownedProperties);
