@@ -5,7 +5,7 @@ private enum LuckType {
     Misforture
 }
 
-public class LuckCard {
+private class LuckCard {
     private const LuckType type;
     private const String story;
 }

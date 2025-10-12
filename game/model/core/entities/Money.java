@@ -9,6 +9,6 @@ enum Amount {
     $200
 }
 
-public class Money {
+private class Money {
     public int value;
 }

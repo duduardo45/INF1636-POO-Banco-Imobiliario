@@ -1,5 +1,5 @@
 package game.model.core.entities;
 
-public class LuckDeck {
+private class LuckDeck {
     private List<LuckCard> deck;
 }

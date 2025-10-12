@@ -1,6 +1,6 @@
 package game.model.core.entities;
 
-public class Player {
+private class Player {
     private final String name;
     private int balance;
     private final Car car;

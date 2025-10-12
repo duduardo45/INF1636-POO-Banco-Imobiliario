@@ -1,7 +1,7 @@
 package game.model.core.entities.spaces;
 
 
-public abstract class Property extends Space {
+private class Property
     protected final int cost;
     protected Player owner;
     protected int currentRent;

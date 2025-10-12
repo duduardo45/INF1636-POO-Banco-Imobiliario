@@ -1,6 +1,6 @@
 package game.model.core.entities;
 
-public class Bank {
+private class Bank {
     /** O dinheiro total que o banco possui. */
     private int treasury;
     /** Lista de propriedades que ainda não foram compradas por nenhum jogador. */
