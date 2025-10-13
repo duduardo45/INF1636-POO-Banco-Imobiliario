@@ -1,6 +1,5 @@
 package model.core.entities;
 
-import model.core.entities.spaces.Property;
 import java.util.List;
 import java.util.ArrayList;
 

@@ -1,10 +1,11 @@
-package game.model.core.entities;
+package model.core.entities;
 
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
+
 import java.util.List;
-import game.model.core.entities.spaces.Property;
+import java.util.ArrayList;
 
 public class PlayerTest {
     private Player player;
@@ -15,7 +16,7 @@ public class PlayerTest {
     public void setUp() {
         player = new Player("Test Player", "Blue", 1000);
         otherPlayer = new Player("Other Player", "Red", 1000);
-        property = new Property("Test Property", 200);
+        property = new Company("Test Property", null, 200, 200);
     }
     
     @Test

@@ -1,4 +1,4 @@
-package model.core.entities.cards;
+package model.core.entities;
 
 enum LuckType { LUCKY, MISFORTUNE }
 

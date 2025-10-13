@@ -3,10 +3,7 @@ package model.core.entities;
 import java.util.List;
 import java.util.ArrayList;
 
-import model.core.entities.cards.LuckCard;
-import model.core.entities.spaces.Property;
-
-public class Player {
+class Player {
     private final String name;
     private int balance;
     private final Car car;
@@ -111,7 +108,7 @@ public class Player {
      */
     public void liquidate(Property asset, Bank bank) {
         if (this.ownedProperties.contains(asset)) {
-            int sellPrice = asset.getPrice() / 2; // BACALHAU trocar para ser 90%
+            int sellPrice = asset.getCost() / 2; // BACALHAU trocar para ser 90%
             this.credit(sellPrice);
             this.ownedProperties.remove(asset);
             asset.setOwner(null);

@@ -1,8 +1,6 @@
-package model.core.entities.cards;
+package model.core.entities;
 
-import model.core.entities.Player;
-
-private class GetOutPrisonCard extends LuckCard {
+class GetOutPrisonCard extends LuckCard {
     private Player owner;
     
     public GetOutPrisonCard(String story, Player owner) {

@@ -1,15 +1,12 @@
-package model.core.entities.spaces;
+package model.core.entities;
 
-import model.core.entities.Player;
-
-
-class Property extends Space {
+abstract class Property extends Space {
     protected final int cost;
     protected Player owner;
     protected int currentRent;
 
-    public Property(String name, int cost) { 
-        super(name);
+    public Property(String name, Space next, int cost) { 
+        super(name, next);
         this.cost = cost;
         this.owner = null; // Começa sem dono
     }
@@ -50,9 +47,10 @@ class Property extends Space {
      * A lógica específica de cobrança de aluguel deve ser tratada pelo GameController.
      */
     @Override
-    public void event() {
+    public void event(Player player) {
         // A implementação específica será feita pelo GameController
         // que terá acesso ao jogador atual e poderá chamar handleRentPayment()
+    	handleRentPayment(player);
     }
     
     /**

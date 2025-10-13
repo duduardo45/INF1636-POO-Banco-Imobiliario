@@ -1,9 +1,8 @@
-package game.model.core.entities.spaces;
+package model.core.entities;
 
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-import game.model.core.entities.Player;
 
 public class PropertyTest {
     private Property property;
@@ -12,7 +11,7 @@ public class PropertyTest {
     
     @Before
     public void setUp() {
-        property = new Property("Test Property", 200);
+        property = new Company("Test Property", null, 200, 200);;
         owner = new Player("Owner", "Blue", 1000);
         visitor = new Player("Visitor", "Red", 1000);
     }

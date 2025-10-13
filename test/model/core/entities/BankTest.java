@@ -1,11 +1,10 @@
-package game.model.core.entities;
+package model.core.entities;
 
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
-import game.model.core.entities.spaces.Property;
 
 public class BankTest {
     private Bank bank;
@@ -15,7 +14,7 @@ public class BankTest {
     @Before
     public void setUp() {
         properties = new ArrayList<>();
-        property = new Property("Test Property", 200);
+        property = new Company("Test Property", null, 200, 200);
         properties.add(property);
         bank = new Bank(1000, properties);
     }
@@ -29,7 +28,7 @@ public class BankTest {
     @Test
     public void testCreditWithNegativeAmount() {
         bank.credit(-100);
-        assertEquals(1000, bank.getTreasuryBalance())
+        assertEquals(1000, bank.getTreasuryBalance());
     }
     
     @Test
