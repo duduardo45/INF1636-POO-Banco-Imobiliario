@@ -9,6 +9,6 @@ class GoToPrison extends Space {
     
     @Override
     public void event(Player player) {
-        // TODO: Implement logic to send player to prison
+        player.sendToPrison();
     }
 }
