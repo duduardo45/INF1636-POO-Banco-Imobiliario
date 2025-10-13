@@ -1,8 +1,14 @@
 package model.core.entities.spaces;
 
-public abstract class Prison extends Space {
+public class Prison extends Space {
     
-    public Prison(String name) {
-        super(name);
+    public Prison() {
+        super("Prison");
+    }
+    
+    @Override
+    public void event() {
+        // A lógica específica da prisão será tratada pelo GameModel
+        // Este método é chamado quando um jogador para na casa prisão
     }
 }

@@ -2,28 +2,44 @@ package model.core.entities.spaces;
 
 import model.core.entities.Player;
 
-
-public class Property extends Space {
+/**
+ * Classe abstrata que representa uma propriedade no jogo Banco Imobiliário.
+ * Propriedades podem ser compradas e geram aluguel quando outros jogadores param nelas.
+ */
+public abstract class Property extends Space {
     protected final int cost;
     protected Player owner;
+    protected Integer ownerId; // ID do dono para facilitar consultas
     protected int currentRent;
 
     public Property(String name, int cost) { 
         super(name);
         this.cost = cost;
         this.owner = null; // Começa sem dono
+        this.ownerId = null;
     }
 
     public int getCost() { return this.cost; }
     public Player getOwner() { return this.owner; }
-    public boolean isOwned() { return this.owner != null; }
+    public Integer getOwnerId() { return this.ownerId; }
+    public boolean isOwned() { return this.owner != null && this.ownerId != null; }
     
     /**
      * Define ou altera o dono da propriedade.
      * @param owner O novo jogador dono, ou null para remover o dono.
+     * @param ownerId ID do dono para facilitar consultas
      */
-    public void setOwner(Player owner) {
+    public void setOwner(Player owner, Integer ownerId) {
         this.owner = owner;
+        this.ownerId = ownerId;
+    }
+    
+    /**
+     * Remove o dono da propriedade (torna-a disponível para compra).
+     */
+    public void removeOwner() {
+        this.owner = null;
+        this.ownerId = null;
     }
     
     /**
@@ -35,6 +51,20 @@ public class Property extends Space {
     public int getCurrentRent() {
         return this.currentRent;
     }
+    
+    /**
+     * Calcula o valor do aluguel para esta propriedade.
+     * Implementação específica nas subclasses (Company, Place).
+     * @return O valor do aluguel calculado
+     */
+    public abstract int calculateRent();
+    
+    /**
+     * Verifica se deve cobrar aluguel para esta propriedade.
+     * Regra: só cobra se tem dono e (para Place) tem pelo menos 1 casa.
+     * @return true se deve cobrar aluguel
+     */
+    public abstract boolean shouldChargeRent();
 
     /**
      * Lógica executada quando um jogador para na propriedade.

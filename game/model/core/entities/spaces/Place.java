@@ -1,112 +1,125 @@
 package model.core.entities.spaces;
 
-import java.util.HashMap;
 import java.util.Map;
 
-
-enum Building {
-    HOUSE,
-    HOTEL
-}
-
-class Place extends Property {
+/**
+ * Representa um lugar (território) no jogo onde podem ser construídas casas e hotéis.
+ * O aluguel é calculado baseado no número de construções.
+ */
+public class Place extends Property {
     
-    private final int base_rent;
-    private final int house_price;
-    private final int hotel_price;
-    private final int hotel_rent;
-    private final Map<Integer, Integer> house_rent;
-    private Map<Building, Integer> buildings;
-    private int current_rent; // How will we update this value when a house or hotel is built? -> updateCurrentRent()
+    private final int baseRent;
+    private final int housePrice;
+    private final int hotelPrice;
+    private final int hotelRent;
+    private final Map<Integer, Integer> houseRentTable; // Tabela de aluguel por número de casas
+    private Building building;
 
-    public Place (String name, int cost, int base_rent, int house_price, int hotel_price, int hotel_rent, Map<Integer, Integer> house_rent) {
+    public Place(String name, int cost, int baseRent, int housePrice, int hotelPrice, int hotelRent, Map<Integer, Integer> houseRentTable) {
         super(name, cost);
-        this.base_rent = base_rent;
-        this.house_price = house_price;
-        this.hotel_price = hotel_price;
-        this.hotel_rent = hotel_rent;
-        this.house_rent = house_rent;
-        current_rent = base_rent; // Initially, the rent is the base rent
-
-        buildings = new HashMap<>();    
-        buildings.put(Building.HOUSE, 0);
-        buildings.put(Building.HOTEL, 0);
-
+        this.baseRent = baseRent;
+        this.housePrice = housePrice;
+        this.hotelPrice = hotelPrice;
+        this.hotelRent = hotelRent;
+        this.houseRentTable = houseRentTable;
+        this.building = new Building();
+        this.currentRent = baseRent; // Inicialmente, o aluguel é o aluguel base
     }
 
     public int getHousePrice() {
-        return house_price;
+        return housePrice;
     }
 
     public int getHotelPrice() {
-        return hotel_price;
+        return hotelPrice;
     }
     
-    public int getCurrentRent() {
-        return current_rent;
+    public Building getBuilding() {
+        return building;
+    }
+    
+    public int getBaseRent() {
+        return baseRent;
+    }
+    
+    public int getHotelRent() {
+        return hotelRent;
+    }
+    
+    public Map<Integer, Integer> getHouseRentTable() {
+        return houseRentTable;
     }
 
-    private void updateCurrentRent() {
-        // Updates the current rent based on the number of houses and hotels built - is call
-        int housesCount = getNumOfHouses();
-        int hotelsCount = getNumOfHotels();
-
-        int currentHouseRent = (housesCount > 0) ? house_rent.get(housesCount) : 0;
-        int currentHotelRent = (hotelsCount > 0) ? hotel_rent : 0;
-
-        current_rent = currentHouseRent + currentHotelRent;
+    @Override
+    public int calculateRent() {
+        int calculatedRent;
+        
+        if (building.getHotels() > 0) {
+            // Se tem hotel, aluguel é o valor do hotel
+            calculatedRent = hotelRent;
+        } else if (building.getHouses() > 0) {
+            // Se tem casas, consulta a tabela de aluguel
+            calculatedRent = houseRentTable.getOrDefault(building.getHouses(), baseRent);
+        } else {
+            // Se não tem construções, aluguel é o valor base
+            calculatedRent = baseRent;
+        }
+        
+        // Atualiza o aluguel atual
+        this.currentRent = calculatedRent;
+        
+        return calculatedRent;
     }
-
-    private int getNumOfHouses() {
-        Integer housesCount = buildings.get(Building.HOUSE);
-        return housesCount == null ? 0 : housesCount;
+    
+    @Override
+    public boolean shouldChargeRent() {
+        // Place só cobra aluguel se tem dono E tem pelo menos 1 casa (regra da iteração)
+        return isOwned() && building.hasAtLeastOneHouse();
     }
-
-    private int getNumOfHotels() {
-        Integer hotelsCount = buildings.get(Building.HOTEL);
-        return hotelsCount == null ? 0 : hotelsCount;
+    
+    /**
+     * Adiciona uma casa à propriedade.
+     * @return true se conseguiu adicionar
+     */
+    public boolean addHouse() {
+        boolean success = building.addHouse();
+        if (success) {
+            calculateRent(); // Recalcula o aluguel
+        }
+        return success;
     }
-
+    
+    /**
+     * Adiciona um hotel à propriedade.
+     * @return true se conseguiu adicionar
+     */
+    public boolean addHotel() {
+        boolean success = building.addHotel();
+        if (success) {
+            calculateRent(); // Recalcula o aluguel
+        }
+        return success;
+    }
+    
+    /**
+     * Verifica se pode construir uma casa.
+     * @return true se pode construir casa
+     */
     public boolean canBuildHouse() {
-        // If the player has less than 4 houses at this property, they can build a house
-        int housesCount = getNumOfHouses();
-
-        return housesCount < 4; 
+        return building.getHouses() < 4 && building.getHotels() == 0;
     }
     
+    /**
+     * Verifica se pode construir um hotel.
+     * @return true se pode construir hotel
+     */
     public boolean canBuildHotel() {
-        // If the player has at least one house at this property, they can build a hotel
-        int housesCount = getNumOfHouses();
-        int hotelsCount = getNumOfHotels();
-
-        if (housesCount < 1 || hotelsCount == 1) {
-            return false;
-        } 
-        else {
-            return true;
-        }        
+        return building.getHouses() == 4 && building.getHotels() == 0;
     }
 
-
-    public void buildHouse() {
-        // Assuming that the canBuildHouse method has already been called and returned true in the controller
-        // The responsibility of decreasing the player's money is in the controller class
-        int housesCount = getNumOfHouses();
-        buildings.put(Building.HOUSE, housesCount + 1);
-        updateCurrentRent();
-    }    
-
-    public void buildHotel() {
-        // Assuming the same as the buildHouse for the CanBuildHotel method.
-        buildings.put(Building.HOTEL, 1);
-        updateCurrentRent();
+    @Override
+    public void event() {
+        // A lógica específica será tratada pelo GameModel
+        // que chamará os métodos de cálculo e pagamento de aluguel
     }
-
-	@Override
-	public void event() {
-		// TODO Implement event
-		
-	}
-
-
 }
