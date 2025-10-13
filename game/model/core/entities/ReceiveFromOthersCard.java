@@ -1,4 +1,4 @@
-package model.core.entities.cards;
+package model.core.entities;
 
 public class ReceiveFromOthersCard extends LuckCard {
     private final int value;

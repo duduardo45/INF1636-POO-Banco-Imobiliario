@@ -1,15 +1,12 @@
-package model.core.entities.spaces;
+package model.core.entities;
 
-import model.core.entities.Player;
-
-
-public class Property extends Space {
+abstract class Property extends Space {
     protected final int cost;
     protected Player owner;
     protected int currentRent;
 
-    public Property(String name, int cost) { 
-        super(name);
+    public Property(String name, Space next, int cost) { 
+        super(name, next);
         this.cost = cost;
         this.owner = null; // Começa sem dono
     }
@@ -34,6 +31,14 @@ public class Property extends Space {
      */
     public int getCurrentRent() {
         return this.currentRent;
+    }  
+     
+    /**
+     * Define o valor do aluguel atual da propriedade. Usado para testes.
+     * @param rent O novo valor do aluguel.
+     */
+    public void setCurrentRent(int rent) {
+        this.currentRent = rent;
     }
 
     /**
@@ -42,9 +47,10 @@ public class Property extends Space {
      * A lógica específica de cobrança de aluguel deve ser tratada pelo GameController.
      */
     @Override
-    public void event() {
+    public void event(Player player) {
         // A implementação específica será feita pelo GameController
         // que terá acesso ao jogador atual e poderá chamar handleRentPayment()
+    	handleRentPayment(player);
     }
     
     /**

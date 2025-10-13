@@ -1,8 +1,8 @@
-package model.core.entities.cards;
+package model.core.entities;
 
 enum LuckType { LUCKY, MISFORTUNE }
 
-public class LuckCard {
+class LuckCard {
     private final LuckType type;
     private final String story;
 

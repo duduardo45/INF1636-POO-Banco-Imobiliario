@@ -1,14 +1,21 @@
 package model.core.entities;
 
-import model.core.entities.spaces.Property;
 import java.util.List;
 import java.util.ArrayList;
 
-public class Bank {
+class Bank {
     /** O dinheiro total que o banco possui. */
     private int treasury;
     /** Lista de propriedades que ainda não foram compradas por nenhum jogador. */
     private final List<Property> unownedProperties;
+    
+    /**
+     * Retorna o saldo atual do tesouro do banco.
+     * @return O valor atual do tesouro.
+     */
+    public int getTreasuryBalance() {
+        return this.treasury;
+    }
 
     public Bank(int initialTreasury, List<Property> allProperties) {
         // A implementação do construtor iria aqui...

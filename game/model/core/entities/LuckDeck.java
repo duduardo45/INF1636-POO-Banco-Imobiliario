@@ -1,8 +1,7 @@
 package model.core.entities;
 
 import java.util.List;
-import model.core.entities.cards.LuckCard;
 
-public class LuckDeck {
+class LuckDeck {
     private List<LuckCard> deck;
 }

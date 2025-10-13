@@ -3,10 +3,7 @@ package model.core.entities;
 import java.util.List;
 import java.util.ArrayList;
 
-import model.core.entities.cards.LuckCard;
-import model.core.entities.spaces.Property;
-
-public class Player {
+class Player {
     private final String name;
     private int balance;
     private final Car car;
@@ -107,31 +104,28 @@ public class Player {
 
     /**
      * Vende uma propriedade de volta ao banco pela metade de seu preço de compra.
-     * 
      * @param asset A propriedade a ser liquidada.
      */
-    public void liquidate(Property asset) {
+    public void liquidate(Property asset, Bank bank) {
         if (this.ownedProperties.contains(asset)) {
             int sellPrice = asset.getCost() / 2; // BACALHAU trocar para ser 90%
             this.credit(sellPrice);
             this.ownedProperties.remove(asset);
             asset.setOwner(null);
-            // Um GameController seria responsável por chamar
-            // bank.returnPropertyToBank(asset).
+            bank.returnPropertyToBank(asset);
         }
     }
 
     /**
      * Zera o saldo e remove a posse de todas as propriedades do jogador.
      */
-    public void declareBankruptcy() {
+    public void declareBankruptcy(Bank bank) {
         this.balance = 0;
         // Transforma a lista em um stream para evitar ConcurrentModificationException
         // enquanto removemos a posse.
         new ArrayList<>(this.ownedProperties).forEach(prop -> {
             prop.setOwner(null);
-            // O GameController decidiria se a propriedade vai para o credor ou para o
-            // banco.
+            bank.returnPropertyToBank(prop);
         });
         this.ownedProperties.clear();
     }

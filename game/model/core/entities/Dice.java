@@ -2,7 +2,7 @@ package model.core.entities;
 
 import java.util.Random;
 
-public class Dice {
+class Dice {
     public int roll() {
     	Random rand = new Random();
     	int min = 1;

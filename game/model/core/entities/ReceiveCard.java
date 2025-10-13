@@ -1,6 +1,6 @@
-package model.core.entities.cards;
+package model.core.entities;
 
-public class ReceiveCard extends LuckCard {
+class ReceiveCard extends LuckCard {
     private final int value;
     
     public ReceiveCard(String story, int value) {
