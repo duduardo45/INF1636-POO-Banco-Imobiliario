@@ -1,9 +1,9 @@
 package model.core.entities;
 
-public abstract class Space {
+abstract class Space {
     // ... conteúdo da classe Space ...
     protected final String name;
-    private final Space next;
+    private Space next;
     public Space(String name, Space next) { 
     	this.name = name; 
     	this.next = next;
@@ -11,4 +11,7 @@ public abstract class Space {
     public String getName() { return this.name; }
     public Space getNext() { return this.next; }
     public abstract void event(Player player);
+    public void setNext(Space next) { 
+    	this.next = next;
+    }
 }

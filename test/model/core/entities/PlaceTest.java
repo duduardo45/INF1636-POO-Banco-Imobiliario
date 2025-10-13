@@ -1,4 +1,4 @@
-package model.core.entities.spaces;
+package model.core.entities;
 
 import org.junit.Before;
 import org.junit.Test;

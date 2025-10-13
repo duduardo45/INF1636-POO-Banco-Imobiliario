@@ -1,4 +1,4 @@
-package model.core.entities.spaces;
+package model.core.entities;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +20,7 @@ class Place extends Property {
     private int current_rent; // How will we update this value when a house or hotel is built? -> updateCurrentRent()
 
     public Place (String name, int cost, Space next, int base_rent, int house_price, int hotel_price, int hotel_rent, Map<Integer, Integer> house_rent) {
-        super(name, cost, next);
+        super(name,next, cost);
         this.base_rent = base_rent;
         this.house_price = house_price;
         this.hotel_price = hotel_price;

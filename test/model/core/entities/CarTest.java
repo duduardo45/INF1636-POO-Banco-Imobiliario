@@ -1,4 +1,4 @@
-package game.model.core.entities;
+package model.core.entities;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,15 +14,13 @@ public class CarTest {
 
     @Before
     public void setUp() {
-        startSpace = new Space("Start");
-        secondSpace = new Space("Second");
-        thirdSpace = new Space("Third");
+    	thirdSpace = new Company("Third", null, 10, 10);
+    	secondSpace = new Company("Second", thirdSpace, 20, 20);
+        startSpace = new Company("Start", secondSpace, 30, 30);
         // Linking spaces in a circular manner for testing
-        startSpace.setNext(secondSpace);
-        secondSpace.setNext(thirdSpace);
         thirdSpace.setNext(startSpace);
-
-        testCar = new Car(startSpace);
+        
+        testCar = new Car("testColor", startSpace);
     }
 
     @Test(timeout = DEFAULT_TIMEOUT)
