@@ -62,7 +62,7 @@ abstract class Property extends Space {
     public void handleRentPayment(Player player) {
         // Verifica se a propriedade tem um dono, se o dono não é o jogador atual,
         // e se o dono não está na prisão (regra comum).
-        if (isOwned() && getOwner() != player && !getOwner().getCar().isInPrison()) {
+        if (isOwned() && getOwner() != player) {
             int rentToPay = getCurrentRent();
             
             // O jogador paga o aluguel ao proprietário.
