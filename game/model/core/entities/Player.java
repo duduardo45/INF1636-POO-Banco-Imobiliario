@@ -13,11 +13,11 @@ class Player {
     private GetOutPrisonCard getOutPrisonCard;
     private int consecutiveDoubles;
 
-    public Player(String name, String carColor, int initialBalance) {
+    public Player(String name, String carColor, Car ownCar, int initialBalance) {
         // A implementação do construtor iria aqui...
         this.name = name;
         this.balance = initialBalance;
-        this.car = new Car(carColor);
+        this.car = ownCar;
         this.ownedProperties = new ArrayList<>();
         this.inPrison = false;
         this.turnsInPrison = 0;

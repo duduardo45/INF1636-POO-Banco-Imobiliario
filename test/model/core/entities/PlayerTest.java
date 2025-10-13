@@ -14,8 +14,8 @@ public class PlayerTest {
     
     @Before
     public void setUp() {
-        player = new Player("Test Player", "Blue", 1000);
-        otherPlayer = new Player("Other Player", "Red", 1000);
+        player = new Player("Test Player", "Blue", null, 1000);
+        otherPlayer = new Player("Other Player", "Red", null, 1000);
         property = new Company("Test Property", null, 200, 200);
     }
     

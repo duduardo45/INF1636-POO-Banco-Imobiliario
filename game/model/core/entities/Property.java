@@ -128,7 +128,16 @@ abstract class Property extends Space {
      * @param player O jogador que parou na casa.
      */
     public void handleRentPayment(Player player) {
-        // Usa o novo método payRent para processar o pagamento
-        payRent(player);
+        // Verifica se a propriedade tem um dono, se o dono não é o jogador atual,
+        // e se o dono não está na prisão (regra comum).
+        if (isOwned() && getOwner() != player) {
+            int rentToPay = getCurrentRent();
+            
+            // O jogador paga o aluguel ao proprietário.
+            player.pay(getOwner(), rentToPay);
+        }
+        // Nota: A lógica de "oferecer compra" se a propriedade não tem dono
+        // ficaria a cargo de uma classe de controle de jogo (GameController),
+        // que chamaria player.buyProperty() se o jogador aceitar.
     }
 }

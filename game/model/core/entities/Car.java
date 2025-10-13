@@ -5,8 +5,10 @@ class Car {
     private boolean in_prison;
     private String color;
 
-    public Car(String color) {
+    public Car(String color, Space startPosition) {
         this.color = color;
+        this.position = startPosition;
+        this.in_prison = false; // Initially, the car is not in prison
     }
 
     public void advancePosition(int steps) {
