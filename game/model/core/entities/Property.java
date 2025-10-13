@@ -8,7 +8,7 @@ abstract class Property extends Space {
     public Property(String name, Space next, int cost) { 
         super(name, next);
         this.cost = cost;
-        this.owner = null; // Começa sem dono
+        this.owner = null; // Starts without owner
     }
 
     public int getCost() { return this.cost; }
@@ -16,97 +16,97 @@ abstract class Property extends Space {
     public boolean isOwned() { return this.owner != null; }
     
     /**
-     * Define ou altera o dono da propriedade.
-     * @param owner O novo jogador dono, ou null para remover o dono.
+     * Sets or changes the property owner.
+     * @param owner The new player owner, or null to remove the owner.
      */
     public void setOwner(Player owner) {
         this.owner = owner;
     }
     
     /**
-     * Retorna o valor do aluguel atualmente aplicável para esta propriedade.
-     * As subclasses (Place, Company) são responsáveis por calcular e atualizar
-     * o atributo `currentRent`. Este método apenas o retorna.
-     * @return O valor do aluguel corrente.
+     * Returns the currently applicable rent value for this property.
+     * Subclasses (Place, Company) are responsible for calculating and updating
+     * the `currentRent` attribute. This method only returns it.
+     * @return The current rent value.
      */
     public int getCurrentRent() {
         return this.currentRent;
     }  
      
     /**
-     * Define o valor do aluguel atual da propriedade. Usado para testes.
-     * @param rent O novo valor do aluguel.
+     * Sets the current rent value of the property. Used for testing.
+     * @param rent The new rent value.
      */
     public void setCurrentRent(int rent) {
         this.currentRent = rent;
     }
 
     /**
-     * Lógica executada quando um jogador para na propriedade.
-     * Este método é chamado automaticamente pelo sistema de jogo.
-     * A lógica específica de cobrança de aluguel deve ser tratada pelo GameController.
+     * Logic executed when a player lands on the property.
+     * This method is called automatically by the game system.
+     * Specific rent collection logic should be handled by GameController.
      */
     @Override
     public void event(Player player) {
-        // A implementação específica será feita pelo GameController
-        // que terá acesso ao jogador atual e poderá chamar handleRentPayment()
+        // Specific implementation will be done by GameController
+        // which will have access to the current player and can call handleRentPayment()
     	handleRentPayment(player);
     }
     
     /**
-     * Verifica se há aluguel devido quando um jogador para na propriedade.
-     * Regras corretas:
-     * - Propriedade deve ter dono
-     * - Dono não pode ser o próprio jogador
-     * - Propriedade deve ter pelo menos 1 casa (regra desta iteração)
+     * Checks if rent is due when a player lands on the property.
+     * Correct rules:
+     * - Property must have an owner
+     * - Owner cannot be the player themselves
+     * - Property must have at least 1 house (rule of this iteration)
      * 
-     * @param player O jogador que parou na casa.
-     * @return true se há aluguel devido, false caso contrário.
+     * @param player The player who landed on the space.
+     * @return true if rent is due, false otherwise.
      */
     public boolean isRentDue(Player player) {
-        // Verifica se a propriedade tem um dono
+        // Checks if the property has an owner
         if (!isOwned()) {
             return false;
         }
         
-        // Verifica se o dono não é o próprio jogador
+        // Checks if the owner is not the player themselves
         if (getOwner() == player) {
             return false;
         }
         
-        // Regra desta iteração: só cobra se tiver pelo menos 1 casa
+        // Rule of this iteration: only charges if it has at least 1 house
         return hasAtLeastOneHouse();
     }
     
     /**
-     * Verifica se a propriedade tem pelo menos uma casa.
-     * Implementação padrão retorna false (sem casas).
-     * Subclasses (Place) devem sobrescrever este método.
+     * Checks if the property has at least one house.
+     * Default implementation returns false (no houses).
+     * Subclasses (Place) should override this method.
      * 
-     * @return true se tem pelo menos 1 casa, false caso contrário.
+     * @return true if it has at least 1 house, false otherwise.
      */
     protected boolean hasAtLeastOneHouse() {
-        return false; // Propriedades genéricas não têm casas
+        return false; // Generic properties do not have houses
     }
     
     
     /**
-     * Calcula o valor do aluguel para esta propriedade.
-     * Implementação padrão retorna 0.
-     * Subclasses devem sobrescrever este método.
+     * Calculates the rent value for this property.
+     * Default implementation returns 0.
+     * Subclasses should override this method.
      * 
-     * @return O valor do aluguel calculado.
+     * @return The calculated rent value.
      */
     public int calculateRent() {
-        return 0; // Propriedades genéricas não têm aluguel
+        return 0; // Generic properties do not have rent
     }
     
     /**
-     * Processa o pagamento de aluguel.
-     * Se há aluguel devido, debita do pagador e credita ao dono.
+     * Processes rent payment.
+     * If rent is due, debits from payer and credits to owner.
      * 
-     * @param player O jogador que deve pagar o aluguel.
-     * @return O valor pago (0 se não há aluguel devido).
+     * @param player The player who must pay the rent.
+     * @return The amount paid (0 if no rent is due).
      */
     public int payRent(Player player) {
         if (!isRentDue(player)) {
@@ -115,29 +115,29 @@ abstract class Property extends Space {
         
         int rentAmount = calculateRent();
         
-        // Transfere o dinheiro do pagador para o dono
+        // Transfers money from payer to owner
         player.pay(getOwner(), rentAmount);
         
         return rentAmount;
     }
     
     /**
-     * Lógica para cobrança de aluguel quando um jogador para na propriedade.
-     * Se a propriedade tiver um dono (que não seja o próprio jogador e não esteja preso), 
-     * o aluguel é cobrado.
-     * @param player O jogador que parou na casa.
+     * Logic for rent collection when a player lands on the property.
+     * If the property has an owner (who is not the player themselves and not in prison), 
+     * rent is collected.
+     * @param player The player who landed on the space.
      */
     public void handleRentPayment(Player player) {
-        // Verifica se a propriedade tem um dono, se o dono não é o jogador atual,
-        // e se o dono não está na prisão (regra comum).
+        // Checks if the property has an owner, if the owner is not the current player,
+        // and if the owner is not in prison (common rule).
         if (isOwned() && getOwner() != player) {
             int rentToPay = getCurrentRent();
             
-            // O jogador paga o aluguel ao proprietário.
+            // The player pays rent to the owner.
             player.pay(getOwner(), rentToPay);
         }
-        // Nota: A lógica de "oferecer compra" se a propriedade não tem dono
-        // ficaria a cargo de uma classe de controle de jogo (GameController),
-        // que chamaria player.buyProperty() se o jogador aceitar.
+        // Note: The logic for "offering purchase" if the property has no owner
+        // would be handled by a game control class (GameController),
+        // which would call player.buyProperty() if the player accepts.
     }
 }

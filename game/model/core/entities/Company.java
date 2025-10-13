@@ -6,34 +6,34 @@ class Company extends Property {
     public Company(String name, Space next, int cost, int base_rent) {
     	super(name, next, cost);
     	this.base_rent = base_rent;
-    	this.currentRent = base_rent; // Inicializa o aluguel atual
+    	this.currentRent = base_rent; // Initialize current rent
     }
     
     /**
-     * Verifica se a propriedade tem pelo menos uma casa.
-     * Companhias sempre têm "casa" (sempre cobram taxa fixa).
+     * Checks if the property has at least one house.
+     * Companies always have "house" (always charge fixed rate).
      * 
-     * @return true (companhias sempre cobram).
+     * @return true (companies always charge).
      */
     @Override
     protected boolean hasAtLeastOneHouse() {
-        return true; // Companhias sempre cobram taxa fixa
+        return true; // Companies always charge fixed rate
     }
     
     /**
-     * Retorna o aluguel base da companhia.
+     * Returns the base rent of the company.
      * 
-     * @return O valor do aluguel base.
+     * @return The base rent value.
      */
     public int getBaseRent() {
         return this.base_rent;
     }
     
     /**
-     * Calcula o valor do aluguel para esta companhia.
-     * Companhias cobram taxa fixa (base_rent).
+     * Calculates the rent value for this company.
+     * Companies charge fixed rate (base_rent).
      * 
-     * @return O valor do aluguel calculado.
+     * @return The calculated rent value.
      */
     @Override
     public int calculateRent() {

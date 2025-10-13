@@ -14,7 +14,6 @@ class Player {
     private int consecutiveDoubles;
 
     public Player(String name, String carColor, Car ownCar, int initialBalance) {
-        // A implementação do construtor iria aqui...
         this.name = name;
         this.balance = initialBalance;
         this.car = ownCar;
@@ -34,18 +33,18 @@ class Player {
     }
 
     /**
-     * Retorna o saldo monetário atual do jogador.
+     * Returns the current monetary balance of the player.
      * 
-     * @return O valor do saldo.
+     * @return The balance value.
      */
     public int getBalance() {
         return this.balance;
     }
 
     /**
-     * Adiciona uma quantia ao saldo do jogador.
+     * Adds an amount to the player's balance.
      * 
-     * @param amount A quantia a ser creditada. Deve ser positiva.
+     * @param amount The amount to be credited. Must be positive.
      */
     public void credit(int amount) {
         if (amount > 0) {
@@ -54,11 +53,11 @@ class Player {
     }
 
     /**
-     * Subtrai uma quantia do saldo do jogador.
-     * Não verifica se o jogador tem saldo suficiente; essa lógica
-     * geralmente é tratada por um serviço ou controlador de jogo.
+     * Subtracts an amount from the player's balance.
+     * Does not check if the player has sufficient balance; this logic
+     * is usually handled by a service or game controller.
      * 
-     * @param amount A quantia a ser debitada. Deve ser positiva.
+     * @param amount The amount to be debited. Must be positive.
      */
     public void debit(int amount) {
         if (amount > 0) {
@@ -67,10 +66,10 @@ class Player {
     }
 
     /**
-     * Transfere uma quantia do jogador atual para um jogador recebedor.
+     * Transfers an amount from the current player to a receiving player.
      * 
-     * @param receiver O jogador que receberá o dinheiro.
-     * @param amount   A quantia a ser transferida.
+     * @param receiver The player who will receive the money.
+     * @param amount   The amount to be transferred.
      */
     public void pay(Player receiver, int amount) {
         this.debit(amount);
@@ -78,9 +77,9 @@ class Player {
     }
 
     /**
-     * Associa uma propriedade ao jogador e debita o valor de sua compra.
+     * Associates a property with the player and debits its purchase value.
      * 
-     * @param property A propriedade a ser comprada.
+     * @param property The property to be purchased.
      */
     public void buyProperty(Property property) {
         this.debit(property.getCost());
@@ -92,31 +91,31 @@ class Player {
     }
 
     /**
-     * Verifica se o jogador possui propriedades que podem ser vendidas/hipotecadas.
+     * Checks if the player has properties that can be sold/mortgaged.
      * 
-     * @return true se o jogador possuir pelo menos uma propriedade.
+     * @return true if the player has at least one property.
      */
     public boolean hasLiquidAssets() {
         return !this.ownedProperties.isEmpty();
     }
 
     /**
-     * Retorna a lista de propriedades do jogador.
+     * Returns the list of player's properties.
      * 
-     * @return Uma nova lista contendo as propriedades para evitar modificação
-     *         externa.
+     * @return A new list containing the properties to avoid external
+     *         modification.
      */
     public List<Property> getLiquidAssets() {
         return new ArrayList<>(this.ownedProperties);
     }
 
     /**
-     * Vende uma propriedade de volta ao banco pela metade de seu preço de compra.
-     * @param asset A propriedade a ser liquidada.
+     * Sells a property back to the bank for half its purchase price.
+     * @param asset The property to be liquidated.
      */
     public void liquidate(Property asset, Bank bank) {
         if (this.ownedProperties.contains(asset)) {
-            int sellPrice = asset.getCost() / 2; // BACALHAU trocar para ser 90%
+            int sellPrice = asset.getCost() / 2; // TODO: change to 90%
             this.credit(sellPrice);
             this.ownedProperties.remove(asset);
             asset.setOwner(null);
@@ -125,12 +124,12 @@ class Player {
     }
 
     /**
-     * Zera o saldo e remove a posse de todas as propriedades do jogador.
+     * Zeros the balance and removes ownership of all player's properties.
      */
     public void declareBankruptcy(Bank bank) {
         this.balance = 0;
-        // Transforma a lista em um stream para evitar ConcurrentModificationException
-        // enquanto removemos a posse.
+        // Converts the list to a stream to avoid ConcurrentModificationException
+        // while removing ownership.
         new ArrayList<>(this.ownedProperties).forEach(prop -> {
             prop.setOwner(null);
             bank.returnPropertyToBank(prop);
@@ -139,36 +138,36 @@ class Player {
     }
 
     /**
-     * Verifica se o jogador está atualmente na prisão.
+     * Checks if the player is currently in prison.
      * 
-     * @return true se o jogador estiver na prisão, false caso contrário.
+     * @return true if the player is in prison, false otherwise.
      */
     public boolean isInPrison() {
         return this.inPrison;
     }
 
     /**
-     * Retorna o número de turnos que o jogador passou na prisão.
+     * Returns the number of turns the player has spent in prison.
      * 
-     * @return O número de turnos na prisão.
+     * @return The number of turns in prison.
      */
     public int getTurnsInPrison() {
         return this.turnsInPrison;
     }
 
     /**
-     * Envia o jogador para a prisão, definindo sua posição e estado.
+     * Sends the player to prison, setting their position and state.
      */
     public void sendToPrison() {
         this.inPrison = true;
         this.turnsInPrison = 0;
         this.consecutiveDoubles = 0;
         this.car.setInPrison(true);
-        // A posição do carro será definida pelo tabuleiro para a casa da prisão
+        // The car position will be set by the board to the prison space
     }
 
     /**
-     * Incrementa o contador de turnos na prisão.
+     * Increments the counter of turns in prison.
      */
     public void incrementTurnsInPrison() {
         if (this.inPrison) {
@@ -177,7 +176,7 @@ class Player {
     }
 
     /**
-     * Liberta o jogador da prisão, resetando seu estado.
+     * Releases the player from prison, resetting their state.
      */
     public void releaseFromPrison() {
         this.inPrison = false;
@@ -187,9 +186,9 @@ class Player {
     }
 
     /**
-     * Verifica se o jogador possui uma carta "Saia da Prisão".
+     * Checks if the player has a "Get Out of Prison" card.
      * 
-     * @return true se o jogador tiver a carta, false caso contrário.
+     * @return true if the player has the card, false otherwise.
      */
     public boolean hasGetOutPrisonCard() {
         return this.getOutPrisonCard != null;
@@ -198,16 +197,16 @@ class Player {
     /**
      * Adiciona uma carta "Saia da Prisão" ao jogador.
      * 
-     * @param card A carta a ser adicionada.
+     * @param card The card to be added.
      */
     public void receiveGetOutPrisonCard(GetOutPrisonCard card) {
         this.getOutPrisonCard = card;
     }
 
     /**
-     * Remove e retorna a carta "Saia da Prisão" do jogador.
+     * Removes and returns the "Get Out of Prison" card from the player.
      * 
-     * @return A carta removida, ou null se o jogador não tiver uma.
+     * @return The removed card, or null if the player doesn't have one.
      */
     public GetOutPrisonCard useGetOutPrisonCard() {
         GetOutPrisonCard card = this.getOutPrisonCard;
@@ -217,58 +216,58 @@ class Player {
 
 
     /**
-     * Verifica se o jogador pode tentar sair da prisão jogando os dados (duplo).
+     * Checks if the player can try to get out of prison by rolling dice (double).
      * 
-     * @return true se o jogador estiver na prisão, false caso contrário.
+     * @return true if the player is in prison, false otherwise.
      */
     public boolean canTryDoubleDice() {
         return this.inPrison;
     }
 
     /**
-     * Retorna o número de dados duplos consecutivos que o jogador rolou.
+     * Returns the number of consecutive doubles the player has rolled.
      * 
-     * @return O número de duplos consecutivos.
+     * @return The number of consecutive doubles.
      */
     public int getConsecutiveDoubles() {
         return this.consecutiveDoubles;
     }
 
     /**
-     * Processa o resultado de uma jogada de dados, verificando se é duplo e se deve ir para prisão.
+     * Processes the result of a dice roll, checking if it's a double and if should go to prison.
      * 
-     * @param dice1 O valor do primeiro dado.
-     * @param dice2 O valor do segundo dado.
-     * @return true se o jogador deve ir para prisão (3 duplos consecutivos), false caso contrário.
+     * @param dice1 The value of the first die.
+     * @param dice2 The value of the second die.
+     * @return true if the player should go to prison (3 consecutive doubles), false otherwise.
      */
     public boolean processDiceRoll(int dice1, int dice2) {
         if (dice1 == dice2) {
             this.consecutiveDoubles++;
-            // Se rolou 3 duplos consecutivos, deve ir para prisão
+            // If rolled 3 consecutive doubles, must go to prison
             if (this.consecutiveDoubles >= 3) {
                 this.sendToPrison();
-                this.consecutiveDoubles = 0; // Reset contador
-                return true; // Deve ir para prisão
+                this.consecutiveDoubles = 0; // Reset counter
+                return true; // Must go to prison
             }
         } else {
-            // Se não é duplo, reseta o contador
+            // If not a double, reset the counter
             this.consecutiveDoubles = 0;
         }
-        return false; // Não vai para prisão
+        return false; // Does not go to prison
     }
 
     /**
-     * Reseta o contador de dados duplos consecutivos.
+     * Resets the counter of consecutive doubles.
      */
     public void resetConsecutiveDoubles() {
         this.consecutiveDoubles = 0;
     }
 
     /**
-     * Verifica se este jogador é igual a outro objeto.
+     * Checks if this player is equal to another object.
      * 
-     * @param obj O objeto a ser comparado.
-     * @return true se os objetos são iguais, false caso contrário.
+     * @param obj The object to be compared.
+     * @return true if the objects are equal, false otherwise.
      */
     @Override
     public boolean equals(Object obj) {
@@ -279,9 +278,9 @@ class Player {
     }
 
     /**
-     * Retorna o hash code do jogador baseado no nome.
+     * Returns the player's hash code based on the name.
      * 
-     * @return O hash code do jogador.
+     * @return The player's hash code.
      */
     @Override
     public int hashCode() {

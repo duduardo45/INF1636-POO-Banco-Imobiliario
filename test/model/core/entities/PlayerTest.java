@@ -14,8 +14,8 @@ public class PlayerTest {
     
     @Before
     public void setUp() {
-        player = new Player("Test Player", "Blue", null, 1000);
-        otherPlayer = new Player("Other Player", "Red", null, 1000);
+        player = new Player("Test Player", "Blue", new Car("Blue", null), 1000);
+        otherPlayer = new Player("Other Player", "Red", new Car("Red", null), 1000);
         property = new Company("Test Property", null, 200, 200);
     }
     
@@ -269,8 +269,8 @@ public class PlayerTest {
     
     @Test
     public void testEquals() {
-        Player samePlayer = new Player("Test Player", "Green", 500);
-        Player differentPlayer = new Player("Different Player", "Blue", 1000);
+        Player samePlayer = new Player("Test Player", "Green", new Car("Green", null), 500);
+        Player differentPlayer = new Player("Different Player", "Blue", new Car("Blue", null), 1000);
         
         assertTrue("Players with same name should be equal", player.equals(samePlayer));
         assertFalse("Players with different names should not be equal", player.equals(differentPlayer));
@@ -280,8 +280,8 @@ public class PlayerTest {
     
     @Test
     public void testHashCode() {
-        Player samePlayer = new Player("Test Player", "Green", 500);
-        Player differentPlayer = new Player("Different Player", "Blue", 1000);
+        Player samePlayer = new Player("Test Player", "Green", new Car("Green", null), 500);
+        Player differentPlayer = new Player("Different Player", "Blue", new Car("Blue", null), 1000);
         
         assertEquals("Players with same name should have same hash code", 
                     player.hashCode(), samePlayer.hashCode());

@@ -10,43 +10,43 @@ class GetOutPrisonCard extends LuckCard {
     }
     
     /**
-     * Retorna o jogador que possui esta carta.
+     * Returns the player who owns this card.
      * 
-     * @return O jogador proprietário da carta.
+     * @return The player owner of the card.
      */
     public Player getOwner() {
         return this.owner;
     }
     
     /**
-     * Define o novo proprietário da carta.
+     * Sets the new owner of the card.
      * 
-     * @param newOwner O novo jogador proprietário.
+     * @param newOwner The new player owner.
      */
     public void setOwner(Player newOwner) {
         this.owner = newOwner;
     }
     
     /**
-     * Verifica se a carta pode ser usada pelo jogador especificado.
+     * Checks if the card can be used by the specified player.
      * 
-     * @param player O jogador tentando usar a carta.
-     * @return true se o jogador é o proprietário e está na prisão, false caso contrário.
+     * @param player The player trying to use the card.
+     * @return true if the player is the owner and is in prison, false otherwise.
      */
     public boolean canBeUsedBy(Player player) {
         return this.owner != null && this.owner.equals(player) && player.isInPrison();
     }
     
     /**
-     * Usa a carta para libertar o jogador da prisão.
+     * Uses the card to release the player from prison.
      * 
-     * @param player O jogador usando a carta.
-     * @return true se a carta foi usada com sucesso, false caso contrário.
+     * @param player The player using the card.
+     * @return true if the card was used successfully, false otherwise.
      */
     public boolean use(Player player) {
         if (canBeUsedBy(player)) {
             player.releaseFromPrison();
-            // Remove a carta do jogador
+            // Removes the card from the player
             player.useGetOutPrisonCard();
             return true;
         }

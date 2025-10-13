@@ -8,22 +8,22 @@ class Prison extends Space {
     
     @Override
     public void event(Player player) {
-        // Se o jogador não está na prisão, não faz nada
+        // If the player is not in prison, do nothing
         if (!player.isInPrison()) {
             return;
         }
         
-        // Incrementa o contador de turnos na prisão
+        // Increments the counter of turns in prison
         player.incrementTurnsInPrison();
     }
     
     /**
-     * Processa a tentativa de saída da prisão usando dados duplos.
+     * Processes the attempt to get out of prison using double dice.
      * 
-     * @param player O jogador tentando sair.
-     * @param dice1 O valor do primeiro dado.
-     * @param dice2 O valor do segundo dado.
-     * @return true se o jogador conseguiu sair (dados duplos), false caso contrário.
+     * @param player The player trying to get out.
+     * @param dice1 The value of the first die.
+     * @param dice2 The value of the second die.
+     * @return true if the player succeeded in getting out (double dice), false otherwise.
      */
     public boolean tryDoubleDice(Player player, int dice1, int dice2) {
         if (!player.canTryDoubleDice()) {
@@ -39,35 +39,35 @@ class Prison extends Space {
     }
     
     /**
-     * Processa o turno de um jogador na prisão, incluindo tentativas de saída.
+     * Processes a player's turn in prison, including escape attempts.
      * 
-     * @param player O jogador na prisão.
-     * @param dice1 O valor do primeiro dado.
-     * @param dice2 O valor do segundo dado.
-     * @return true se o jogador conseguiu sair da prisão, false caso contrário.
+     * @param player The player in prison.
+     * @param dice1 The value of the first die.
+     * @param dice2 The value of the second die.
+     * @return true if the player succeeded in getting out of prison, false otherwise.
      */
     public boolean processPrisonTurn(Player player, int dice1, int dice2) {
         if (!player.isInPrison()) {
             return false;
         }
         
-        // Incrementa o contador de turnos na prisão
+        // Increments the counter of turns in prison
         player.incrementTurnsInPrison();
         
-        // Tenta sair com dados duplos
+        // Tries to get out with double dice
         if (tryDoubleDice(player, dice1, dice2)) {
-            return true; // Conseguiu sair
+            return true; // Succeeded in getting out
         }
         
-        return false; // Ainda está na prisão
+        return false; // Still in prison
     }
     
     
     /**
-     * Processa o uso de uma carta "Saia da Prisão".
+     * Processes the use of a "Get Out of Prison" card.
      * 
-     * @param player O jogador tentando usar a carta.
-     * @return true se a carta foi usada com sucesso, false caso contrário.
+     * @param player The player trying to use the card.
+     * @return true if the card was used successfully, false otherwise.
      */
     public boolean useGetOutPrisonCard(Player player) {
         if (player.hasGetOutPrisonCard() && player.isInPrison()) {

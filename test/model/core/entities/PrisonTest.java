@@ -15,7 +15,7 @@ public class PrisonTest {
         // Create a simple Space for testing
         nextSpace = new Prison("Next Space", null);
         prison = new Prison("Prison", nextSpace);
-        player = new Player("Test Player", "Blue", 1000);
+        player = new Player("Test Player", "Blue", new Car("Blue", null), 1000);
     }
     
     @Test
@@ -215,7 +215,7 @@ public class PrisonTest {
     
     @Test
     public void testMultiplePlayersInPrison() {
-        Player player2 = new Player("Player 2", "Red", 1000);
+        Player player2 = new Player("Player 2", "Red", new Car("Red", null), 1000);
         
         // Both players in prison
         player.sendToPrison();

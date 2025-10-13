@@ -1,7 +1,7 @@
 package model.core.entities;
 
 abstract class Space {
-    // ... conteúdo da classe Space ...
+    // ... Space class content ...
     protected final String name;
     private Space next;
     public Space(String name, Space next) { 

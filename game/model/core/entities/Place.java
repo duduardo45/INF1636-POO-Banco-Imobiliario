@@ -35,13 +35,52 @@ class Place extends Property {
     }
 
     
+    public int getBaseRent() {
+        return base_rent;
+    }
+
+    public int getHousePrice() {
+        return house_price;
+    }
+
+    public int getHotelPrice() {
+        return hotel_price;
+    }
+
+    public int getHotelRent() {
+        return hotel_rent;
+    }
+
     public int getCurrentRent() {
         return current_rent;
     }
 
+    public int getRentForHouses(int numHouses) {
+        if (numHouses <= 0 || numHouses > 4) {
+            return 0;
+        }
+        return house_rent.getOrDefault(numHouses, 0);
+    }
+
+    @Override
+    protected boolean hasAtLeastOneHouse() {
+        return getNumOfHouses() > 0 || getNumOfHotels() > 0;
+    }
+
+    @Override
+    public int calculateRent() {
+        int housesCount = getNumOfHouses();
+        int hotelsCount = getNumOfHotels();
+        
+        int currentHouseRent = (housesCount > 0) ? house_rent.getOrDefault(housesCount, 0) : 0;
+        int currentHotelRent = (hotelsCount > 0) ? hotel_rent : 0;
+        
+        return currentHouseRent + currentHotelRent;
+    }
+
     private void updateCurrentRent() {
         // Updates the current rent based on the number of houses and hotels built
-        // Segue a mesma lógica do calculateRent()
+        // Follows the same logic as calculateRent()
         int housesCount = getNumOfHouses();
         int hotelsCount = getNumOfHotels();
 

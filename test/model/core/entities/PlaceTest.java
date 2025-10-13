@@ -16,22 +16,22 @@ public class PlaceTest {
     
     @Before
     public void setUp() {
-        // Cria tabela de aluguel para casas
+        // Creates rent table for houses
         houseRentTable = new HashMap<>();
-        houseRentTable.put(1, 50);   // 1 casa = 50 de aluguel
-        houseRentTable.put(2, 100);  // 2 casas = 100 de aluguel
-        houseRentTable.put(3, 200);  // 3 casas = 200 de aluguel
-        houseRentTable.put(4, 400);  // 4 casas = 400 de aluguel
+        houseRentTable.put(1, 50);   // 1 house = 50 rent
+        houseRentTable.put(2, 100);  // 2 houses = 100 rent
+        houseRentTable.put(3, 200);  // 3 houses = 200 rent
+        houseRentTable.put(4, 400);  // 4 houses = 400 rent
         
-        // Cria propriedade Place
-        place = new Place("Test Place", null, 200, 20, 50, 200, 500, houseRentTable);
+        // Creates Place property
+        place = new Place("Test Place", 200, null, 20, 50, 200, 500, houseRentTable);
         
-        // Cria jogadores
-        player1 = new Player("Player 1", "Blue", 1000);
-        player2 = new Player("Player 2", "Red", 1000);
+        // Creates players
+        player1 = new Player("Player 1", "Blue", new Car("Blue", null), 1000);
+        player2 = new Player("Player 2", "Red", new Car("Red", null), 1000);
     }
     
-    // ========== TESTES PARA CONSTRUTOR E GETTERS BÁSICOS ==========
+    // ========== TESTS FOR CONSTRUCTOR AND BASIC GETTERS ==========
     
     @Test
     public void testConstructor() {
@@ -70,26 +70,26 @@ public class PlaceTest {
         // Inicialmente deve retornar base_rent
         assertEquals("Should return base rent initially", 20, place.getCurrentRent());
         
-        // Após construir 1 casa
+        // After building 1 house
         place.buildHouse();
         assertEquals("Should return rent for 1 house", 50, place.getCurrentRent());
         
-        // Após construir 2 casas
+        // After building 2 houses
         place.buildHouse();
         assertEquals("Should return rent for 2 houses", 100, place.getCurrentRent());
         
-        // Após construir hotel
+        // After building hotel
         place.buildHouse();
         place.buildHouse();
         place.buildHotel();
-        assertEquals("Should return hotel rent", 500, place.getCurrentRent());
+        assertEquals("Should return house + hotel rent", 900, place.getCurrentRent()); // 400 + 500
     }
     
-    // ========== TESTES PARA hasAtLeastOneHouse() ==========
+    // ========== TESTS FOR hasAtLeastOneHouse() ==========
     
     @Test
     public void testHasAtLeastOneHouseWithZeroHouses() {
-        // 0 casas, 0 hotéis
+        // 0 houses, 0 hotels
         assertFalse("Should not have at least one house with 0 houses and 0 hotels", 
                    place.hasAtLeastOneHouse());
     }
@@ -103,16 +103,17 @@ public class PlaceTest {
     
     @Test
     public void testHasAtLeastOneHouseWithHotel() {
+        place.buildHouse(); // Build a house first
         place.buildHotel();
         assertTrue("Should have at least one house with 1 hotel", 
                   place.hasAtLeastOneHouse());
     }
     
-    // ========== TESTES PARA calculateRent() ==========
+    // ========== TESTS FOR calculateRent() ==========
     
     @Test
     public void testCalculateRentWithZeroHouses() {
-        // 0 casas, 0 hotéis
+        // 0 houses, 0 hotels
         assertEquals("Should return 0 with 0 houses and 0 hotels", 0, place.calculateRent());
     }
     
@@ -148,18 +149,18 @@ public class PlaceTest {
     
     @Test
     public void testCalculateRentWithHotel() {
-        // Constrói 4 casas primeiro
+        // Builds 4 houses first
         place.buildHouse();
         place.buildHouse();
         place.buildHouse();
         place.buildHouse();
         
-        // Constrói hotel
+        // Builds hotel
         place.buildHotel();
-        assertEquals("Should return hotel rent", 500, place.calculateRent());
+        assertEquals("Should return house + hotel rent", 900, place.calculateRent()); // 400 + 500
     }
     
-    // ========== TESTES PARA isRentDue() ==========
+    // ========== TESTS FOR isRentDue() ==========
     
     @Test
     public void testIsRentDueWithNoOwner() {
@@ -170,7 +171,7 @@ public class PlaceTest {
     
     @Test
     public void testIsRentDueWithVisitorAsOwner() {
-        // Visitante é o próprio dono
+        // Visitor is the owner themselves
         place.setOwner(player1);
         assertFalse("Should not be rent due when visitor is the owner", 
                    place.isRentDue(player1));
@@ -197,12 +198,13 @@ public class PlaceTest {
     public void testIsRentDueWithHotel() {
         // Diferente dono com hotel
         place.setOwner(player2);
+        place.buildHouse(); // Build a house first
         place.buildHotel();
         assertTrue("Should be rent due when property has hotel", 
                   place.isRentDue(player1));
     }
     
-    // ========== TESTES PARA payRent() ==========
+    // ========== TESTS FOR payRent() ==========
     
     @Test
     public void testPayRentWithNoOwner() {
@@ -216,7 +218,7 @@ public class PlaceTest {
     
     @Test
     public void testPayRentWithVisitorAsOwner() {
-        // Visitante é o próprio dono
+        // Visitor is the owner themselves
         place.setOwner(player1);
         int player1InitialBalance = player1.getBalance();
         int paidAmount = place.payRent(player1);
@@ -277,10 +279,11 @@ public class PlaceTest {
     public void testPayRentWithHotel() {
         // Diferente dono com hotel
         place.setOwner(player2);
+        place.buildHouse(); // Build a house first
         place.buildHotel();
         int player1InitialBalance = player1.getBalance();
         int player2InitialBalance = player2.getBalance();
-        int expectedRent = 500; // hotel = 500
+        int expectedRent = 550; // house + hotel = 50 + 500
         
         int paidAmount = place.payRent(player1);
         
@@ -306,7 +309,7 @@ public class PlaceTest {
         assertEquals("Player2 should be credited", player2InitialBalance + expectedRent, player2.getBalance());
     }
     
-    // ========== TESTES PARA getRentForHouses() ==========
+    // ========== TESTS FOR getRentForHouses() ==========
     
     @Test
     public void testGetRentForHouses() {
@@ -318,7 +321,7 @@ public class PlaceTest {
         assertEquals("Should return 0 for invalid number", 0, place.getRentForHouses(5));
     }
     
-    // ========== TESTES PARA getNumOfHouses() E getNumOfHotels() ==========
+    // ========== TESTS FOR getNumOfHouses() AND getNumOfHotels() ==========
     
     @Test
     public void testGetNumOfHousesInitially() {
@@ -341,11 +344,12 @@ public class PlaceTest {
     
     @Test
     public void testGetNumOfHotelsAfterBuilding() {
+        place.buildHouse(); // Build a house first
         place.buildHotel();
         assertEquals("Should have 1 hotel after building one", 1, place.getNumOfHotels());
     }
     
-    // ========== TESTES PARA canBuildHouse() ==========
+    // ========== TESTS FOR canBuildHouse() ==========
     
     @Test
     public void testCanBuildHouseWithZeroHouses() {
@@ -385,7 +389,7 @@ public class PlaceTest {
     
     @Test
     public void testCanBuildHouseWithHotel() {
-        // Constrói 4 casas e depois hotel
+        // Builds 4 houses and then hotel
         place.buildHouse();
         place.buildHouse();
         place.buildHouse();
@@ -394,7 +398,7 @@ public class PlaceTest {
         assertFalse("Should NOT be able to build house when hotel exists", place.canBuildHouse());
     }
     
-    // ========== TESTES PARA event() ==========
+    // ========== TESTS FOR event() ==========
     
     @Test
     public void testEventDelegatesToHandleRentPayment() {
@@ -411,11 +415,11 @@ public class PlaceTest {
         assertEquals("Player2 should be credited", player2InitialBalance + expectedRent, player2.getBalance());
     }
     
-    // ========== TESTES DE INTEGRAÇÃO ==========
+    // ========== INTEGRATION TESTS ==========
     
     @Test
     public void testMultipleRentPayments() {
-        // Múltiplos pagamentos
+        // Multiple payments
         place.setOwner(player2);
         place.buildHouse();
         int player1InitialBalance = player1.getBalance();
@@ -437,7 +441,7 @@ public class PlaceTest {
     
     @Test
     public void testRentCalculationAccuracy() {
-        // Verifica cálculo preciso para cada número de casas
+        // Verifies precise calculation for each number of houses
         assertEquals("0 casas = 0", 0, place.calculateRent());
         
         place.buildHouse();
@@ -453,6 +457,6 @@ public class PlaceTest {
         assertEquals("4 casas = 400", 400, place.calculateRent());
         
         place.buildHotel();
-        assertEquals("Hotel = 500", 500, place.calculateRent());
+        assertEquals("House + Hotel = 900", 900, place.calculateRent()); // 400 + 500
     }
 }

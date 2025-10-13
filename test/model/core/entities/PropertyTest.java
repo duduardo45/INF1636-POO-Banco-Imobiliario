@@ -58,7 +58,7 @@ public class PropertyTest {
     @Test
     public void testEventWithOwner() {
         property.setOwner(owner);
-        // Company sempre cobra base_rent (200), não o valor de setCurrentRent
+        // Company always charges base_rent (200), not the setCurrentRent value
         int expectedRent = 200; // base_rent da Company
         int visitorInitialBalance = visitor.getBalance();
         int ownerInitialBalance = owner.getBalance();
@@ -99,7 +99,7 @@ public class PropertyTest {
     
     @Test
     public void testIsRentDueWithVisitorAsOwner() {
-        // Visitante é o próprio dono
+        // Visitor is the owner themselves
         property.setOwner(visitor);
         assertFalse("Should not be rent due when visitor is the owner", 
                    property.isRentDue(visitor));
@@ -115,14 +115,14 @@ public class PropertyTest {
     
     @Test
     public void testHasAtLeastOneHouseDefault() {
-        // Testa implementação padrão (Company sempre retorna true)
+        // Tests default implementation (Company always returns true)
         assertTrue("Company should always have at least one house", 
                   property.hasAtLeastOneHouse());
     }
     
     @Test
     public void testCalculateRentDefault() {
-        // Testa implementação padrão (Company retorna base_rent)
+        // Tests default implementation (Company returns base_rent)
         assertEquals("Company should return base rent", 200, property.calculateRent());
     }
     
@@ -138,7 +138,7 @@ public class PropertyTest {
     
     @Test
     public void testPayRentWithVisitorAsOwner() {
-        // Visitante é o próprio dono
+        // Visitor is the owner themselves
         property.setOwner(visitor);
         int visitorInitialBalance = visitor.getBalance();
         int paidAmount = property.payRent(visitor);
@@ -194,7 +194,7 @@ public class PropertyTest {
     
     @Test
     public void testMultipleRentPayments() {
-        // Múltiplos pagamentos
+        // Multiple payments
         property.setOwner(owner);
         int visitorInitialBalance = visitor.getBalance();
         int ownerInitialBalance = owner.getBalance();

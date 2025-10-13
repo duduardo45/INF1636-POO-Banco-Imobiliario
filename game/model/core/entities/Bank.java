@@ -4,29 +4,29 @@ import java.util.List;
 import java.util.ArrayList;
 
 class Bank {
-    /** O dinheiro total que o banco possui. */
+    /** The total money the bank has. */
     private int treasury;
-    /** Lista de propriedades que ainda não foram compradas por nenhum jogador. */
+    /** List of properties that have not yet been purchased by any player. */
     private final List<Property> unownedProperties;
     
     /**
-     * Retorna o saldo atual do tesouro do banco.
-     * @return O valor atual do tesouro.
+     * Returns the current balance of the bank's treasury.
+     * @return The current treasury value.
      */
     public int getTreasuryBalance() {
         return this.treasury;
     }
 
     public Bank(int initialTreasury, List<Property> allProperties) {
-        // A implementação do construtor iria aqui...
+        // Constructor implementation would go here...
         this.treasury = initialTreasury;
         this.unownedProperties = new ArrayList<>(allProperties);
     }
 
     /**
-     * Adiciona uma quantia de dinheiro ao tesouro do banco.
+     * Adds an amount of money to the bank's treasury.
      * 
-     * @param amount A quantia a ser creditada. Deve ser positiva.
+     * @param amount The amount to be credited. Must be positive.
      */
     public void credit(int amount) {
         if (amount > 0) {
@@ -35,38 +35,37 @@ class Bank {
     }
 
     /**
-     * Remove uma quantia de dinheiro do tesouro do banco.
+     * Removes an amount of money from the bank's treasury.
      * 
-     * @param amount A quantia a ser debitada.
+     * @param amount The amount to be debited.
      */
     public void debit(int amount) {
     }
 
     /**
-     * Verifica se uma propriedade específica pertence ao banco (não tem dono).
+     * Checks if a specific property belongs to the bank (has no owner).
      * 
-     * @param property A propriedade a ser verificada.
-     * @return true se a propriedade estiver na lista de não possuídas, false caso
-     *         contrário.
+     * @param property The property to be checked.
+     * @return true if the property is in the unowned list, false otherwise.
      */
     public boolean isPropertyUnowned(Property property) {
         return this.unownedProperties.contains(property);
     }
 
     /**
-     * Remove uma propriedade da lista de não possuídas (quando um jogador compra).
+     * Removes a property from the unowned list (when a player buys it).
      * 
-     * @param property A propriedade que foi comprada.
+     * @param property The property that was purchased.
      */
     public void markPropertyAsOwned(Property property) {
         this.unownedProperties.remove(property);
     }
 
     /**
-     * Adiciona uma propriedade de volta à lista de não possuídas (ex: falência para
-     * o banco).
+     * Adds a property back to the unowned list (e.g.: bankruptcy to
+     * the bank).
      * 
-     * @param property A propriedade a ser retornada ao banco.
+     * @param property The property to be returned to the bank.
      */
     public void returnPropertyToBank(Property property) {
         this.unownedProperties.add(property);
