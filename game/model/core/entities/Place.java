@@ -1,4 +1,4 @@
-package model.core.entities;
+package model.core.entities.spaces;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,8 +19,8 @@ class Place extends Property {
     private Map<Building, Integer> buildings;
     private int current_rent; // How will we update this value when a house or hotel is built? -> updateCurrentRent()
 
-    public Place (String name, Space next, int cost, int base_rent, int house_price, int hotel_price, int hotel_rent, Map<Integer, Integer> house_rent) {
-        super(name, next, cost);
+    public Place (String name, int cost, Space next, int base_rent, int house_price, int hotel_price, int hotel_rent, Map<Integer, Integer> house_rent) {
+        super(name, cost, next);
         this.base_rent = base_rent;
         this.house_price = house_price;
         this.hotel_price = hotel_price;
@@ -57,12 +57,12 @@ class Place extends Property {
         current_rent = currentHouseRent + currentHotelRent;
     }
 
-    private int getNumOfHouses() {
+    public int getNumOfHouses() {
         Integer housesCount = buildings.get(Building.HOUSE);
         return housesCount == null ? 0 : housesCount;
     }
 
-    private int getNumOfHotels() {
+    public int getNumOfHotels() {
         Integer hotelsCount = buildings.get(Building.HOTEL);
         return hotelsCount == null ? 0 : hotelsCount;
     }
@@ -90,23 +90,25 @@ class Place extends Property {
 
     public void buildHouse() {
         // Assuming that the canBuildHouse method has already been called and returned true in the controller
-        // The responsibility of decreasing the player's money is in the controller class
+        if (!canBuildHouse()) {
+            throw new IllegalStateException("Cannot build more houses on this property");
+        }
+        else{
         int housesCount = getNumOfHouses();
         buildings.put(Building.HOUSE, housesCount + 1);
         updateCurrentRent();
+        }        
     }    
 
     public void buildHotel() {
         // Assuming the same as the buildHouse for the CanBuildHotel method.
+        if (!canBuildHotel()) {
+            throw new IllegalStateException("Cannot build a hotel on this property");
+        }
+        else {
         buildings.put(Building.HOTEL, 1);
         updateCurrentRent();
+        }
     }
-
-	@Override
-	public void event(Player player) {
-		// TODO Implement event
-		
-	}
-
 
 }
