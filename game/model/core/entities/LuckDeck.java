@@ -6,11 +6,9 @@ import java.util.Collections;
 
 class LuckDeck {
     private List<LuckCard> deck;
-    private int currentIndex;
     
     public LuckDeck() {
         this.deck = new ArrayList<>();
-        this.currentIndex = 0;
         initializeDeck();
     }
     
@@ -33,23 +31,20 @@ class LuckDeck {
      */
     public void shuffle() {
         Collections.shuffle(this.deck);
-        this.currentIndex = 0;
     }
     
     /**
-     * Draws the next card from the deck.
+     * Draws and removes the next card from the deck.
      * 
-     * @return The next luck card.
+     * @return The next luck card, or null if deck is empty.
      */
     public LuckCard drawCard() {
         if (deck.isEmpty()) {
             return null;
         }
         
-        LuckCard card = deck.get(currentIndex);
-        currentIndex = (currentIndex + 1) % deck.size();
-        
-        return card;
+        // Remove and return the first card
+        return deck.remove(0);
     }
     
     /**
@@ -77,5 +72,14 @@ class LuckDeck {
      */
     public boolean isEmpty() {
         return this.deck.isEmpty();
+    }
+    
+    /**
+     * Resets the deck to its initial state with all default cards.
+     * Useful when the deck becomes empty and needs to be replenished.
+     */
+    public void reset() {
+        this.deck.clear();
+        initializeDeck();
     }
 }
