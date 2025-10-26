@@ -9,10 +9,14 @@ class Board {
     private List<Space> spaces;
     // private List<Car> cars;
     
-    public Board() {
+    Board() {
         this.spaces = new ArrayList<>();
         // this.cars = new ArrayList<>();
         initializeBoard();
+    }
+    
+    Board(List<Space> spaces) {
+        this.spaces = new ArrayList<>(spaces);
     }
     
     /**
@@ -51,7 +55,7 @@ class Board {
      * @param position The position on the board (0-based).
      * @return The space at that position.
      */
-    public Space getSpace(int position) {
+    Space getSpace(int position) {
         if (position >= 0 && position < spaces.size()) {
             return spaces.get(position);
         }
@@ -64,7 +68,7 @@ class Board {
      * @param space The space to find.
      * @return The position of the space, or -1 if not found.
      */
-    public int getPosition(Space space) {
+    int getPosition(Space space) {
         return spaces.indexOf(space);
     }
     
@@ -117,7 +121,7 @@ class Board {
      * 
      * @return The start space.
      */
-    public Space getStartSpace() {
+    Space getStartSpace() {
         return spaces.isEmpty() ? null : spaces.get(0);
     }
     
@@ -126,7 +130,7 @@ class Board {
      * 
      * @return The prison space, or null if not found.
      */
-    public Prison getPrisonSpace() {
+    Prison getPrisonSpace() {
         for (Space space : spaces) {
             if (space instanceof Prison) {
                 return (Prison) space;
@@ -140,7 +144,7 @@ class Board {
      * 
      * @return The board size.
      */
-    public int getBoardSize() {
+    int getBoardSize() {
         return spaces.size();
     }
     
@@ -149,7 +153,7 @@ class Board {
      * 
      * @return A new list containing all spaces.
      */
-    public List<Space> getAllSpaces() {
+    List<Space> getAllSpaces() {
         return new ArrayList<>(spaces);
     }
     
