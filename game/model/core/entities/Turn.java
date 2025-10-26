@@ -13,4 +13,16 @@ class Turn {
     public static void advance_turn() {
         current_player = player_order.iterator().next();
     }
+    public static void setPlayerOrder(List<Player> player_order) {
+        Turn.player_order = player_order;
+    }
+    public static void setFirstPlayer(Player player) {
+        current_player = player;
+    }
+    public static void removePlayer(Player player) {
+        player_order.remove(player);
+    }
+    public static List<Player> getPlayers()  {
+        return player_order;
+    }
 }

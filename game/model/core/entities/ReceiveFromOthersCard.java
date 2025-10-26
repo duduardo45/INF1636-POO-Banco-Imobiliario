@@ -26,8 +26,9 @@ class ReceiveFromOthersCard extends AutomaticCard {
      * @param allPlayers List of all players in the game.
      */
     @Override
-    public boolean use(Player cardHolder, List<Player> allPlayers) { 
+    public boolean use(Player cardHolder) { 
         // TODO: Should get the list of players from somewhere else
+        List<Player> allPlayers = Turn.getPlayers();
         for (Player player : allPlayers) {
             if (!player.equals(cardHolder)) {
                 player.pay(cardHolder, this.value);
