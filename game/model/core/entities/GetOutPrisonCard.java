@@ -1,6 +1,6 @@
 package model.core.entities;
 
-class GetOutPrisonCard extends LuckCard {
+class GetOutPrisonCard extends ManualCard {
     private Player owner;
     
     public GetOutPrisonCard(String story, Player owner) {
@@ -43,6 +43,7 @@ class GetOutPrisonCard extends LuckCard {
      * @param player The player using the card.
      * @return true if the card was used successfully, false otherwise.
      */
+    @Override
     public boolean use(Player player) {
         if (canBeUsedBy(player)) {
             player.releaseFromPrison();

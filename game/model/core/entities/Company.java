@@ -39,4 +39,15 @@ class Company extends Property {
     public int calculateRent() {
         return this.base_rent;
     }
+    
+    /**
+     * Calculates the rent value for this company based on dice roll.
+     * For companies, rent is typically base_rent * dice_value.
+     * 
+     * @param diceValue The sum of dice values rolled.
+     * @return The calculated rent value.
+     */
+    public int calculateRent(int diceValue) {
+        return this.base_rent * diceValue;
+    }
 }
