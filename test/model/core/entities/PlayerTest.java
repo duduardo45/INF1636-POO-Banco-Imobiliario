@@ -11,11 +11,13 @@ public class PlayerTest {
     private Player player;
     private Player otherPlayer;
     private Property property;
+    private Prison prisonSpace;
     
     @Before
     public void setUp() {
-        player = new Player("Test Player", "Blue", new Car("Blue", null), 1000);
-        otherPlayer = new Player("Other Player", "Red", new Car("Red", null), 1000);
+        prisonSpace = new Prison("Prisão", null);
+        player = new Player("Test Player", "Blue", new Car("Blue", prisonSpace), 1000);
+        otherPlayer = new Player("Other Player", "Red", new Car("Red", prisonSpace), 1000);
         property = new Company("Test Property", null, 200, 200);
     }
     
@@ -124,7 +126,7 @@ public class PlayerTest {
     
     @Test
     public void testSendToPrison() {
-        player.sendToPrison();
+        player.sendToPrison(prisonSpace);
         
         assertTrue("Player should be in prison after sendToPrison()", player.isInPrison());
         assertEquals("Player should have 0 turns in prison after being sent", 0, player.getTurnsInPrison());
@@ -133,7 +135,7 @@ public class PlayerTest {
     
     @Test
     public void testIncrementTurnsInPrison() {
-        player.sendToPrison();
+        player.sendToPrison(prisonSpace);
         
         player.incrementTurnsInPrison();
         assertEquals("Player should have 1 turn in prison", 1, player.getTurnsInPrison());
@@ -151,7 +153,7 @@ public class PlayerTest {
     
     @Test
     public void testReleaseFromPrison() {
-        player.sendToPrison();
+        player.sendToPrison(prisonSpace);
         player.incrementTurnsInPrison();
         player.incrementTurnsInPrison();
         
@@ -202,7 +204,7 @@ public class PlayerTest {
     
     @Test
     public void testCanTryDoubleDiceWhenInPrison() {
-        player.sendToPrison();
+        player.sendToPrison(prisonSpace);
         
         assertTrue("Player should be able to try double dice when in prison", 
                   player.canTryDoubleDice());
@@ -228,8 +230,13 @@ public class PlayerTest {
         // Third double - should go to prison
         shouldGoToPrison = player.processDiceRoll(5, 5);
         assertTrue("Should go to prison after third consecutive double", shouldGoToPrison);
-        assertTrue("Player should be in prison", player.isInPrison());
         assertEquals("Consecutive doubles should reset to 0", 0, player.getConsecutiveDoubles());
+        
+        // Caller should send player to prison based on the flag
+        if (shouldGoToPrison) {
+            player.sendToPrison(prisonSpace);
+        }
+        assertTrue("Player should be in prison after being sent", player.isInPrison());
     }
     
     @Test
@@ -254,7 +261,12 @@ public class PlayerTest {
         boolean shouldGoToPrison = player.processDiceRoll(6, 6); // 3 consecutive - should go to prison
         
         assertTrue("Should go to prison after third consecutive double", shouldGoToPrison);
-        assertTrue("Player should be in prison", player.isInPrison());
+        
+        // Caller should send player to prison based on the flag
+        if (shouldGoToPrison) {
+            player.sendToPrison(prisonSpace);
+        }
+        assertTrue("Player should be in prison after being sent", player.isInPrison());
     }
     
     @Test

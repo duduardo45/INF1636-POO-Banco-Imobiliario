@@ -164,8 +164,9 @@ public class PlayerEnhancedTest {
     
     @Test
     public void testGetOutPrisonCardIntegrationWithPrison() {
+        Prison prisonSpace = new Prison("Prisão", null);
         player.receiveGetOutPrisonCard(card1);
-        player.sendToPrison();
+        player.sendToPrison(prisonSpace);
         
         assertTrue(player.isInPrison());
         assertTrue(player.hasGetOutPrisonCard());

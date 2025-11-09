@@ -39,6 +39,12 @@ public class GameController {
         int total = diceResults[0] + diceResults[1];
         modelFacade.moveCurrentPlayer(total);
         
+        // Captura mensagem do evento
+        String eventMessage = modelFacade.getLastEventMessage();
+        if (!eventMessage.isEmpty()) {
+            gameState.setMessage(eventMessage);
+        }
+        
         // Atualiza GameState completo
         updateGameState();
         

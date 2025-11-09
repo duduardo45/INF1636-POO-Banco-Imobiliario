@@ -7,14 +7,15 @@ class Prison extends Space {
     }
     
     @Override
-    public void event(Player player) {
+    public String event(Player player) {
         // If the player is not in prison, do nothing
         if (!player.isInPrison()) {
-            return;
+            return "";
         }
         
         // Increments the counter of turns in prison
         player.incrementTurnsInPrison();
+        return "";
     }
     
     /**

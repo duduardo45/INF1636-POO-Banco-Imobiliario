@@ -9,11 +9,13 @@ public class GetOutPrisonCardTest {
     private Player player;
     private Player otherPlayer;
     private GetOutPrisonCard card;
+    private Prison prisonSpace;
     
     @Before
     public void setUp() {
-        player = new Player("Test Player", "Blue", new Car("Blue", null), 1000);
-        otherPlayer = new Player("Other Player", "Red", new Car("Red", null), 1000);
+        prisonSpace = new Prison("Prisão", null);
+        player = new Player("Test Player", "Blue", new Car("Blue", prisonSpace), 1000);
+        otherPlayer = new Player("Other Player", "Red", new Car("Red", prisonSpace), 1000);
         card = new GetOutPrisonCard("Test story", player);
     }
     
@@ -44,7 +46,7 @@ public class GetOutPrisonCardTest {
     @Test
     public void testCanBeUsedByWithCorrectOwnerInPrison() {
         // Player is owner and in prison
-        player.sendToPrison();
+        player.sendToPrison(prisonSpace);
         assertTrue(player.isInPrison());
         
         boolean result = card.canBeUsedBy(player);
@@ -65,7 +67,7 @@ public class GetOutPrisonCardTest {
     @Test
     public void testCanBeUsedByWithWrongOwner() {
         // Other player tries to use the card
-        otherPlayer.sendToPrison();
+        otherPlayer.sendToPrison(prisonSpace);
         assertTrue(otherPlayer.isInPrison());
         
         boolean result = card.canBeUsedBy(otherPlayer);
@@ -77,7 +79,7 @@ public class GetOutPrisonCardTest {
     public void testCanBeUsedByWithNullOwner() {
         // Card has no owner
         card.setOwner(null);
-        player.sendToPrison();
+        player.sendToPrison(prisonSpace);
         
         boolean result = card.canBeUsedBy(player);
         
@@ -86,7 +88,7 @@ public class GetOutPrisonCardTest {
     
     @Test
     public void testCanBeUsedByWithNullPlayer() {
-        player.sendToPrison();
+        player.sendToPrison(prisonSpace);
         
         boolean result = card.canBeUsedBy(null);
         
@@ -96,7 +98,7 @@ public class GetOutPrisonCardTest {
     @Test
     public void testUseWithCorrectOwnerInPrison() {
         // Player is owner and in prison
-        player.sendToPrison();
+        player.sendToPrison(prisonSpace);
         player.receiveGetOutPrisonCard(card); // Give the card to the player
         assertTrue(player.isInPrison());
         assertTrue(player.hasGetOutPrisonCard());
@@ -126,7 +128,7 @@ public class GetOutPrisonCardTest {
     public void testUseWithWrongOwner() {
         // Other player tries to use the card
         player.receiveGetOutPrisonCard(card); // Give the card to the original player
-        otherPlayer.sendToPrison();
+        otherPlayer.sendToPrison(prisonSpace);
         assertTrue(otherPlayer.isInPrison());
         
         boolean result = card.use(otherPlayer);
@@ -138,7 +140,7 @@ public class GetOutPrisonCardTest {
     
     @Test
     public void testUseWithNullPlayer() {
-        player.sendToPrison();
+        player.sendToPrison(prisonSpace);
         player.receiveGetOutPrisonCard(card); // Give the card to the player
         
         boolean result = card.use(null);
@@ -151,7 +153,7 @@ public class GetOutPrisonCardTest {
     @Test
     public void testUseWithNullOwner() {
         card.setOwner(null);
-        player.sendToPrison();
+        player.sendToPrison(prisonSpace);
         
         boolean result = card.use(player);
         
@@ -161,7 +163,7 @@ public class GetOutPrisonCardTest {
     
     @Test
     public void testUseResetsPlayerTurnsInPrison() {
-        player.sendToPrison();
+        player.sendToPrison(prisonSpace);
         player.receiveGetOutPrisonCard(card); // Give the card to the player
         player.incrementTurnsInPrison();
         player.incrementTurnsInPrison();
@@ -175,7 +177,7 @@ public class GetOutPrisonCardTest {
     
     @Test
     public void testUseRemovesCardFromPlayerInventory() {
-        player.sendToPrison();
+        player.sendToPrison(prisonSpace);
         player.receiveGetOutPrisonCard(card); // Give the card to the player
         assertTrue("Player should have the card initially", player.hasGetOutPrisonCard());
         
@@ -190,8 +192,8 @@ public class GetOutPrisonCardTest {
         GetOutPrisonCard card2 = new GetOutPrisonCard("Another story", otherPlayer);
         
         // Both players in prison
-        player.sendToPrison();
-        otherPlayer.sendToPrison();
+        player.sendToPrison(prisonSpace);
+        otherPlayer.sendToPrison(prisonSpace);
         
         // Each player can only use their own card
         assertTrue("Player should be able to use their own card", card.canBeUsedBy(player));

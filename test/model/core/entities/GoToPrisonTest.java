@@ -8,13 +8,16 @@ import org.junit.Test;
 public class GoToPrisonTest {
     private GoToPrison goToPrison;
     private Player player;
+    private Prison prisonSpace;
     private Space nextSpace;
     
     @Before
     public void setUp() {
+        prisonSpace = new Prison("Prisão", null);
         nextSpace = new Prison("Next Space", null);
         goToPrison = new GoToPrison(nextSpace);
-        player = new Player("Test Player", "Blue", new Car("Blue", null), 1000);
+        goToPrison.setPrisonSpace(prisonSpace);
+        player = new Player("Test Player", "Blue", new Car("Blue", prisonSpace), 1000);
     }
     
     @Test
@@ -40,7 +43,7 @@ public class GoToPrisonTest {
     @Test
     public void testEventWithPlayerAlreadyInPrison() {
         // Player already in prison
-        player.sendToPrison();
+        player.sendToPrison(prisonSpace);
         assertTrue(player.isInPrison());
         int initialTurns = player.getTurnsInPrison();
         

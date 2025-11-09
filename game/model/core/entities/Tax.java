@@ -9,7 +9,8 @@ class Tax extends Space {
     }
     
     @Override
-    public void event(Player player) {
+    public String event(Player player) {
         player.debit(taxAmount);
+        return "";
     }
 }

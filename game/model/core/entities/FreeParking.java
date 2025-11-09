@@ -6,7 +6,8 @@ class FreeParking extends Space {
     }
     
     @Override
-    public void event(Player player) {
+    public String event(Player player) {
         // Não faz nada
+        return "";
     }
 }

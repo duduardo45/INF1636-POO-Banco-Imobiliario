@@ -157,13 +157,15 @@ class Player {
 
     /**
      * Sends the player to prison, setting their position and state.
+     * 
+     * @param prisonSpace The prison space to send the player to.
      */
-    public void sendToPrison() {
+    public void sendToPrison(Space prisonSpace) {
         this.inPrison = true;
         this.turnsInPrison = 0;
         this.consecutiveDoubles = 0;
         this.car.setInPrison(true);
-        // The car position will be set by the board to the prison space
+        this.car.setPosition(prisonSpace);
     }
 
     /**
@@ -256,9 +258,8 @@ class Player {
             this.consecutiveDoubles++;
             // If rolled 3 consecutive doubles, must go to prison
             if (this.consecutiveDoubles >= 3) {
-                this.sendToPrison();
                 this.consecutiveDoubles = 0; // Reset counter
-                return true; // Must go to prison
+                return true; // Must go to prison (caller should call sendToPrison with prison space)
             }
         } else {
             // If not a double, reset the counter

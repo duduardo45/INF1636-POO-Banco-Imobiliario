@@ -10,6 +10,7 @@ public class ModelFacade {
     private Dice dice1;
     private Dice dice2;
     private int[] lastDiceRoll;
+    private String lastEventMessage;
     
     public ModelFacade() {
         this.dice1 = new Dice();
@@ -60,12 +61,58 @@ public class ModelFacade {
     public void moveCurrentPlayer(int steps) {
         Player currentPlayer = players.get(currentPlayerIndex);
         
-        // Move o pião
+        // Process dice roll to check for consecutive doubles
+        boolean shouldGoToPrison = currentPlayer.processDiceRoll(lastDiceRoll[0], lastDiceRoll[1]);
+        
+        if (shouldGoToPrison) {
+            // Send player to prison for 3 consecutive doubles
+            Prison prisonSpace = board.getPrisonSpace();
+            currentPlayer.sendToPrison(prisonSpace);
+            lastEventMessage = "3 duplas consecutivas! Você foi enviado para a PRISÃO!";
+            return;
+        }
+        
+        // Get start space and current position before moving
+        Space startSpace = board.getStartSpace();
+        Space positionBeforeMove = currentPlayer.getCar().getPosition();
+        
+        // Move the car
         currentPlayer.getCar().advancePosition(steps);
         
-        // Executa evento da casa
-        Space currentSpace = currentPlayer.getCar().getPosition();
-        currentSpace.event(currentPlayer);
+        // Check if passed over start (but didn't land on it)
+        Space finalPosition = currentPlayer.getCar().getPosition();
+        boolean passedStart = checkPassedStart(positionBeforeMove, finalPosition, startSpace, steps);
+        
+        // Apply start pass bonus if player passed over start (but didn't land on it)
+        if (passedStart) {
+            Start start = (Start) startSpace;
+            currentPlayer.credit(start.getPassBonus());
+        }
+        
+        // Executa evento da casa e captura mensagem
+        lastEventMessage = finalPosition.event(currentPlayer);
+    }
+    
+    /**
+     * Checks if the player passed over the start space during movement
+     */
+    private boolean checkPassedStart(Space startPosition, Space endPosition, Space startSpace, int steps) {
+        // If landed on start, didn't pass over it
+        if (endPosition == startSpace) {
+            return false;
+        }
+        
+        // Traverse the path taken and check if we crossed start
+        Space current = startPosition;
+        for (int i = 0; i < steps; i++) {
+            current = current.getNext();
+            // If we hit start before the last step, we passed over it
+            if (current == startSpace && i < steps - 1) {
+                return true;
+            }
+        }
+        
+        return false;
     }
     
     /**
@@ -184,6 +231,10 @@ public class ModelFacade {
     
     public int getNumPlayers() {
         return players.size();
+    }
+    
+    public String getLastEventMessage() {
+        return lastEventMessage != null ? lastEventMessage : "";
     }
     
     /**
