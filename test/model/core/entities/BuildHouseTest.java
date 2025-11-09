@@ -1,10 +1,10 @@
-package game.model.core.tests;
+package model.core.entities;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class JailRulesTest {
+public class BuildHouseTest {
 
 	@Test
 	public void test() {

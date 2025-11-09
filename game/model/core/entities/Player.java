@@ -10,7 +10,7 @@ class Player {
     private final List<Property> ownedProperties;
     private boolean inPrison;
     private int turnsInPrison;
-    private GetOutPrisonCard getOutPrisonCard;
+    private List<GetOutPrisonCard> getOutPrisonCards;
     private int consecutiveDoubles;
 
     public Player(String name, String carColor, Car ownCar, int initialBalance) {
@@ -20,7 +20,7 @@ class Player {
         this.ownedProperties = new ArrayList<>();
         this.inPrison = false;
         this.turnsInPrison = 0;
-        this.getOutPrisonCard = null;
+        this.getOutPrisonCards = new ArrayList<>();
         this.consecutiveDoubles = 0;
     }
 
@@ -188,10 +188,10 @@ class Player {
     /**
      * Checks if the player has a "Get Out of Prison" card.
      * 
-     * @return true if the player has the card, false otherwise.
+     * @return true if the player has at least one card, false otherwise.
      */
     public boolean hasGetOutPrisonCard() {
-        return this.getOutPrisonCard != null;
+        return !this.getOutPrisonCards.isEmpty();
     }
 
     /**
@@ -200,18 +200,29 @@ class Player {
      * @param card The card to be added.
      */
     public void receiveGetOutPrisonCard(GetOutPrisonCard card) {
-        this.getOutPrisonCard = card;
+        this.getOutPrisonCards.add(card);
+        card.setOwner(this);
     }
 
     /**
-     * Removes and returns the "Get Out of Prison" card from the player.
+     * Removes and returns the first "Get Out of Prison" card from the player.
      * 
      * @return The removed card, or null if the player doesn't have one.
      */
     public GetOutPrisonCard useGetOutPrisonCard() {
-        GetOutPrisonCard card = this.getOutPrisonCard;
-        this.getOutPrisonCard = null;
-        return card;
+        if (getOutPrisonCards.isEmpty()) {
+            return null;
+        }
+        return getOutPrisonCards.remove(0);
+    }
+    
+    /**
+     * Returns the number of "Get Out of Prison" cards the player has.
+     * 
+     * @return The number of cards.
+     */
+    public int getGetOutPrisonCardCount() {
+        return this.getOutPrisonCards.size();
     }
 
 

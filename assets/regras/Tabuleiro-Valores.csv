@@ -1,0 +1,34 @@
+﻿PARTIDA;200;recebe
+Leblon;100;
+Av. Presidente Vargas;60;
+Av. Nossa Sra. De Copacabana;60;
+Companhia Ferroviária;200;
+Av. Brigadeiro Faria Lima;240;
+Companhia de Viação;200;
+Av. Rebouças;220;
+Av. 9 de Julho;220;
+PRISÃO;;
+Av. Europa;200;
+Rua Augusta;180;
+Av. Pacaembú;180;
+Companhia de Táxi;150;
+Interlagos;350;
+Lucros ou Dividendos ($$);200;recebe
+Morumbi;400;
+PARADA LIVRE;;
+Flamengo;120;
+Botafogo;100;
+Imposto de Renda ($$);200;paga
+Companhia de Navegação;150;
+Av. Brasil;160;
+Av. Paulista;140;
+Jardim Europa;140;
+VÁ PARA A PRISÃO;;
+Copacabana;260;
+Companhia de Aviação;200;
+Av. Vieira Souto;320;
+Av. Atlântica;300;
+Companhia de Táxi Aéreo;200;
+Ipanema;300;
+Jardim Paulista;280;
+Brooklin;260;

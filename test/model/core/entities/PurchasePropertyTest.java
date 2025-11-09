@@ -1,14 +1,14 @@
-package game.model.core.tests;
+package model.core.entities;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class DiceTest {
+public class PurchasePropertyTest {
 
 	@Test
 	public void test() {
-//		fail("Not yet implemented");
+		
 	}
 
 }

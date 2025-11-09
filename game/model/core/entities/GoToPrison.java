@@ -7,6 +7,10 @@ class GoToPrison extends Space {
         super("Go to Prison", next);
     }
     
+    public GoToPrison(String name, Space next) {
+        super(name, next);
+    }
+    
     @Override
     public void event(Player player) {
         player.sendToPrison();
