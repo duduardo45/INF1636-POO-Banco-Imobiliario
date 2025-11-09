@@ -110,39 +110,65 @@ public class BoardPanel extends JPanel {
     }
     
     private void initializeSpaceCoordinates() {
-        // Baseado na imagem real do tabuleiro (760x760 px)
-        // Cada casa tem ~76px de largura
-        // START = canto inferior direito, movimento anti-horário
+        // Dimensões reais do tabuleiro baseadas na imagem
+        int border = 6;
+        int cornerSize = 94;
+        int horizontalWidth = 54;   // largura das casas horizontais
+        int horizontalHeight = 94;  // altura das casas horizontais
+        int verticalWidth = 94;     // largura das casas verticais
+        int verticalHeight = 54;    // altura das casas verticais
         
-        int cellSize = 70;
-        int boardSize = 700;
+        // Calcular posição do canto inferior direito (casa 0 - Início)
+        int bottomRightX = border + cornerSize + (9 * horizontalWidth);
+        int bottomRightY = border + cornerSize + (9 * verticalHeight);
         
-        // Linha inferior (0-10): da direita para esquerda
-        int bottomY = boardSize - cellSize;
-        for (int i = 0; i <= 10; i++) {
-            int x = boardSize - cellSize - (i * cellSize);
-            spaceCoordinates.put(i, new Point(x, bottomY));
+        // Casa 0 (canto inferior direito - Início)
+        spaceCoordinates.put(0, new Point(bottomRightX, bottomRightY));
+        
+        // Linha inferior (1-9): da direita para esquerda
+        for (int i = 1; i <= 9; i++) {
+            int x = bottomRightX - (i * horizontalWidth);
+            int y = bottomRightY;
+            spaceCoordinates.put(i, new Point(x, y));
         }
+        
+        // Casa 10 (canto inferior esquerdo - Prisão)
+        spaceCoordinates.put(10, new Point(border, bottomRightY));
         
         // Linha esquerda (11-19): de baixo para cima
-        int leftX = 0;
         for (int i = 11; i <= 19; i++) {
-            int y = boardSize - cellSize - ((i - 10) * cellSize);
-            spaceCoordinates.put(i, new Point(leftX, y));
+            int x = border;
+            int y = bottomRightY - ((i - 10) * verticalHeight);
+            spaceCoordinates.put(i, new Point(x, y));
         }
         
-        // Linha superior (20-30): da esquerda para direita
-        int topY = 0;
-        for (int i = 20; i <= 30; i++) {
-            int x = (i - 20) * cellSize;
-            spaceCoordinates.put(i, new Point(x, topY));
+        // Casa 20 (canto superior esquerdo - Parada Livre)
+        spaceCoordinates.put(20, new Point(border, border));
+        
+        // Linha superior (21-29): da esquerda para direita
+        for (int i = 21; i <= 29; i++) {
+            int x = border + cornerSize + ((i - 21) * horizontalWidth);
+            int y = border;
+            spaceCoordinates.put(i, new Point(x, y));
         }
+        
+        // Casa 30 (canto superior direito - Vá para Prisão)
+        spaceCoordinates.put(30, new Point(bottomRightX, border));
         
         // Linha direita (31-39): de cima para baixo
-        int rightX = boardSize - cellSize;
         for (int i = 31; i <= 39; i++) {
-            int y = (i - 30) * cellSize;
-            spaceCoordinates.put(i, new Point(rightX, y));
+            int x = bottomRightX;
+            int y = border + cornerSize + ((i - 31) * verticalHeight);
+            spaceCoordinates.put(i, new Point(x, y));
+        }
+        
+        // Validação: verificar que todas as coordenadas estão dentro dos limites
+        for (Map.Entry<Integer, Point> entry : spaceCoordinates.entrySet()) {
+            Point p = entry.getValue();
+            if (p.x < 0 || p.x > 700 || p.y < 0 || p.y > 700) {
+                System.err.println("AVISO: Coordenada fora dos limites para casa " 
+                    + entry.getKey() + ": (" + p.x + ", " + p.y + ")");
+            }
         }
     }
     

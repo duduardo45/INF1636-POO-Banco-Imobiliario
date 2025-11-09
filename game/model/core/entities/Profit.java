@@ -9,7 +9,8 @@ class Profit extends Space {
     }
     
     @Override
-    public void event(Player player) {
+    public String event(Player player) {
         player.credit(profitAmount);
+        return "";
     }
 }

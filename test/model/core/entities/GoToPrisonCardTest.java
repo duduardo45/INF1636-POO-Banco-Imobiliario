@@ -8,11 +8,14 @@ import org.junit.Test;
 public class GoToPrisonCardTest {
     private GoToPrisonCard card;
     private Player player;
+    private Prison prisonSpace;
     
     @Before
     public void setUp() {
+        prisonSpace = new Prison("Prisão", null);
         card = new GoToPrisonCard("Go directly to prison. Do not pass Go. Do not collect $200.");
-        player = new Player("Test Player", "Blue", new Car("Blue", null), 1000);
+        card.setPrisonSpace(prisonSpace);
+        player = new Player("Test Player", "Blue", new Car("Blue", prisonSpace), 1000);
     }
     
     @Test
@@ -38,7 +41,7 @@ public class GoToPrisonCardTest {
     @Test
     public void testUseWithPlayerAlreadyInPrison() {
         // Player already in prison
-        player.sendToPrison();
+        player.sendToPrison(prisonSpace);
         assertTrue(player.isInPrison());
         int initialTurns = player.getTurnsInPrison();
         

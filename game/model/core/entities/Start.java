@@ -14,9 +14,10 @@ class Start extends Space {
     }
     
     @Override
-    public void event(Player player) {
+    public String event(Player player) {
         // Player receives bonus for landing on or passing START
         player.credit(passBonus);
+        return "";
     }
     
     /**

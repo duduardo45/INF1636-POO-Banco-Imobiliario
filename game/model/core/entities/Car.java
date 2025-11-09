@@ -11,6 +11,11 @@ class Car {
         this.in_prison = false; // Initially, the car is not in prison
     }
 
+    /**
+     * Advances the car position by the specified number of steps.
+     * 
+     * @param steps The number of spaces to move forward.
+     */
     public void advancePosition(int steps) {
         // move the car forward by 'steps'(according to the dice roll) spaces
         for (int i = 0; i < steps; i++) {
