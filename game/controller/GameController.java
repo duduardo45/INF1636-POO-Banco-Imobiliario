@@ -178,6 +178,8 @@ public class GameController {
         // Atualiza posições de todos os jogadores
         Map<Integer, Integer> positions = modelFacade.getAllPlayerPositions();
         gameState.setAllPlayerPositions(positions);
+        List<ModelFacade.PlayerStatusInfo> allStatus = modelFacade.getAllPlayerStatusInfo();
+        gameState.setAllPlayerStatusInfo(allStatus);
     }
     
     public GameState getGameState() {

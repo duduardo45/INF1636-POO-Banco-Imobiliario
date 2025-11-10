@@ -33,6 +33,19 @@ class Place extends Property {
         buildings.put(Building.HOTEL, 0);
 
     }
+    
+    public int getTotalValue() {
+        // Pega o custo base da classe pai (Property)
+        int baseCost = super.getCost(); 
+        
+        // Calcula o valor das casas construídas
+        int housesValue = getNumOfHouses() * this.house_price;
+        
+        // Calcula o valor do hotel construído
+        int hotelsValue = getNumOfHotels() * this.hotel_price;
+        
+        return baseCost + housesValue + hotelsValue;
+    }
 
     
     public int getBaseRent() {

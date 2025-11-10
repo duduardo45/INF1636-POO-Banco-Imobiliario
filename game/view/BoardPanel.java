@@ -3,6 +3,7 @@ package view;
 import controller.GameState;
 import controller.GameController;
 import model.core.entities.ModelFacade.PropertyInfo;
+import model.core.entities.ModelFacade.PlayerStatusInfo;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -213,9 +214,14 @@ public class BoardPanel extends JPanel {
     
     private void drawPawns(Graphics2D g2d) {
         Map<Integer, Integer> playerPositions = gameState.getAllPlayerPositions();
-        if (playerPositions == null || playerPositions.isEmpty()) {
-            return;
-        }
+        
+        java.util.List<PlayerStatusInfo> allStatus = gameState.getAllPlayerStatusInfo();//TODO linha feia, importar corretamente depois para cada pacote
+        
+        if (playerPositions == null || playerPositions.isEmpty() || 
+                allStatus == null || allStatus.isEmpty() ||
+                playerPositions.size() != allStatus.size()) {
+                return; // Ainda não carregou
+            }
         
         for (Map.Entry<Integer, Integer> entry : playerPositions.entrySet()) {
             int playerIndex = entry.getKey();
@@ -224,7 +230,18 @@ public class BoardPanel extends JPanel {
             Point coords = spaceCoordinates.get(spaceIndex);
             if (coords == null) continue;
             
-            BufferedImage pinImage = imageCache.get("pin" + playerIndex);
+            // Pegar o status do jogador atual (pelo índice)
+            model.core.entities.ModelFacade.PlayerStatusInfo playerStatus = allStatus.get(playerIndex);
+            
+            //Pegar o nome da cor que ele escolheu
+            String colorName = playerStatus.color; // Etipo: "VERMELHO", "AZUL", etc.
+            
+            //Traduzir o nome da cor para o nome do arquivo do pino
+            String pinFilename = getPinFilenameFromColor(colorName);
+            
+            //  Buscar a imagem correta do cache
+            BufferedImage pinImage = imageCache.get(pinFilename);
+            
             if (pinImage != null) {
                 // Offset para múltiplos piões na mesma casa
                 int offsetX = (playerIndex % 3) * 20;
@@ -236,6 +253,36 @@ public class BoardPanel extends JPanel {
                               30, 30,  // tamanho do pião
                               null);
             }
+        }
+    }
+    
+    /**
+     * Mapeia o nome da cor (em Português) para o nome do arquivo de imagem do pino.
+     * Baseado na sua descrição:
+     * pin0: Vermelho, pin1: Azul, pin2: Laranja, 
+     * pin3: Amarelo, pin4: Roxo, pin5: Verde.
+     */
+    private String getPinFilenameFromColor(String colorName) {
+        if (colorName == null) {
+            return "pin0"; // Padrão (Vermelho)
+        }
+        
+        switch (colorName.toUpperCase()) {
+            case "VERMELHO":
+                return "pin0";
+            case "AZUL":
+                return "pin1";
+            case "LARANJA":
+                return "pin2";
+            case "AMARELO":
+                return "pin3";
+            case "ROXO":
+                return "pin4";
+            case "VERDE":
+                return "pin5";
+            default:
+                // Se a cor não for mapeada (ex: "Pink"), usa o pin0 - so para nao quebrar o codigo, mas isso nao deve ocorrer
+                return "pin0";
         }
     }
     
@@ -363,7 +410,41 @@ public class BoardPanel extends JPanel {
             int infoY = cardY + cardImage.getHeight() + 10;
             
             g2d.setColor(Color.BLACK);
+            
+            int totalValue = propertyInfo.totalValue;
+            int sellValue = (int)(totalValue * 0.9);
+            
             g2d.setFont(new Font("Arial", Font.BOLD, 12));
+            g2d.drawString("Preço Total: $" + totalValue, cardX, infoY);
+            infoY += 15; // Pula linha
+            
+            g2d.setFont(new Font("Arial", Font.PLAIN, 11)); // Fonte menor
+            g2d.drawString("Preço de Venda (90%): $" + sellValue, cardX, infoY);
+            infoY += 20; // Pula linha com espaço
+            
+            g2d.setFont(new Font("Arial", Font.BOLD, 12)); // Restaura fonte
+            
+            
+            // Usamos um ArrayList para o caso de termos 2 linhas (casas e hotel)
+            java.util.ArrayList<String> buildingInfoLines = new java.util.ArrayList<>(); //TODO melhorar imports aqui tbm
+            
+            //Verifica se tem hotel
+            if (propertyInfo.hasHotel) {
+                buildingInfoLines.add("Construção: 1 Hotel");
+            }
+            
+            //  vverifica se tem casas 
+            if (propertyInfo.houses > 0) {
+                buildingInfoLines.add("Construção: " + propertyInfo.houses + " Casa(s)");
+            }
+            
+            // Desenha as linhas que foram adicionadas
+            if (!buildingInfoLines.isEmpty()) {
+                for (String line : buildingInfoLines) {
+                    g2d.drawString(line, cardX, infoY);
+                    infoY += 15; // Pula uma linha para cada item
+                }
+            }
             
             if (propertyInfo.ownerName != null) {
                 // Verificar se é do jogador atual
@@ -386,7 +467,7 @@ public class BoardPanel extends JPanel {
                 g2d.setFont(new Font("Arial", Font.BOLD, 11));
                 g2d.drawString("C: Comprar", cardX, infoY + 15);
             }
-        } else {
+        } else { //TODO: refatorar aqui
             // Placeholder se não houver imagem (150x200)
             g2d.setColor(Color.LIGHT_GRAY);
             g2d.fillRect(cardX, cardY, 150, 200);
@@ -400,23 +481,35 @@ public class BoardPanel extends JPanel {
             g2d.drawString("Preço: $" + propertyInfo.cost, cardX + 10, cardY + 60);
             g2d.drawString("Aluguel: $" + propertyInfo.rent, cardX + 10, cardY + 80);
             
+            int buildY = cardY + 95;
+            
+            if (propertyInfo.hasHotel) {
+                g2d.drawString("Construção: 1 Hotel", cardX + 10, buildY);
+                buildY += 15; // Move para a próxima linha
+            }
+            
+            if (propertyInfo.houses > 0) {
+                g2d.drawString("Construção: " + propertyInfo.houses + " Casa(s)", cardX + 10, buildY);
+            }
+            
+            
             if (propertyInfo.ownerName != null) {
                 String currentPlayer = gameState.getCurrentPlayerName();
                 
                 if (propertyInfo.ownerName.equals(currentPlayer)) {
                     g2d.setColor(new Color(0, 100, 200));
-                    g2d.drawString("Sua!", cardX + 10, cardY + 110);
+                    g2d.drawString("Sua!", cardX + 10, cardY + 140); 
                     g2d.setFont(new Font("Arial", Font.BOLD, 9));
-                    g2d.drawString("H: Casa V: Vender", cardX + 10, cardY + 125);
+                    g2d.drawString("H: Casa V: Vender", cardX + 10, cardY + 155); 
                 } else {
                     g2d.setColor(Color.RED);
-                    g2d.drawString("Dono: " + propertyInfo.ownerName, cardX + 10, cardY + 110);
+                    g2d.drawString("Dono: " + propertyInfo.ownerName, cardX + 10, cardY + 140); 
                 }
             } else {
                 g2d.setColor(new Color(0, 150, 0));
-                g2d.drawString("Disponível!", cardX + 10, cardY + 110);
+                g2d.drawString("Disponível!", cardX + 10, cardY + 140);
                 g2d.setFont(new Font("Arial", Font.BOLD, 10));
-                g2d.drawString("C: Comprar", cardX + 10, cardY + 125);
+                g2d.drawString("C: Comprar", cardX + 10, cardY + 155);
             }
         }
     }
