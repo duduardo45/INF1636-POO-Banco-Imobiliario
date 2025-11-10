@@ -11,6 +11,8 @@ public class ModelFacade {
     private Dice dice2;
     private int[] lastDiceRoll;
     private String lastEventMessage;
+    private boolean hasBuiltThisTurn = false;
+    private Property propertyJustBought = null;
     
     public ModelFacade() {
         this.dice1 = new Dice();
@@ -138,6 +140,8 @@ public class ModelFacade {
         
         currentPlayer.buyProperty(property);
         bank.markPropertyAsOwned(property);
+        this.propertyJustBought = property;
+        
         return true;
     }
     
@@ -145,6 +149,8 @@ public class ModelFacade {
      * Passa para o próximo jogador
      */
     public void nextTurn() {
+    	this.hasBuiltThisTurn = false;
+        this.propertyJustBought = null;
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
     }
     
@@ -192,6 +198,7 @@ public class ModelFacade {
         for (Property prop : playerProperties) {
             currentPlayer.sellProperty(prop);
             bank.returnPropertyToBank(prop);
+            prop.setOwner(null);
         }
         
         // Marcar como eliminado (saldo muito negativo)
@@ -260,12 +267,26 @@ public class ModelFacade {
         
         if (currentSpace instanceof Property) {
             Property prop = (Property) currentSpace;
+            
+            int houses = 0;
+            boolean hasHotel = false;
+            int currentPrice = prop.getCost();
+            // Verifica se esta propriedade é um "Place" (onde se pode construir)
+            if (prop instanceof Place) {
+                Place place = (Place) prop;
+                houses = place.getNumOfHouses(); 
+                hasHotel = place.getNumOfHotels() > 0;
+                currentPrice = place.getTotalValue();
+            }
             return new PropertyInfo(
-                prop.getName(),
-                prop.getCost(),
-                prop.isOwned() ? prop.getOwner().getName() : null,
-                prop.getCurrentRent()
-            );
+                    prop.getName(),
+                    prop.getCost(),
+                    prop.isOwned() ? prop.getOwner().getName() : null,
+                    prop.getCurrentRent(),
+                    houses,          
+                    hasHotel,
+                    currentPrice
+                );
         }
         return null;
     }
@@ -325,8 +346,17 @@ public class ModelFacade {
      * Tenta construir casa na propriedade atual
      */
     public boolean buildHouseOnCurrentProperty() {
+    	
+    	if (this.hasBuiltThisTurn) {
+            return false; // Erro: Jogador já construiu nesta rodada.
+        }
+    	
         Player currentPlayer = players.get(currentPlayerIndex);
         Space currentSpace = currentPlayer.getCar().getPosition();
+        
+        if (this.propertyJustBought != null && this.propertyJustBought == currentSpace) {
+            return false; // Erro: Não pode construir na mesma rodada que comprou.
+        }
         
         if (!(currentSpace instanceof Place)) {
             return false;
@@ -353,6 +383,9 @@ public class ModelFacade {
         // Construir casa
         place.buildHouse();
         currentPlayer.debit(housePrice);
+        
+        this.hasBuiltThisTurn = true;
+        
         return true;
     }
     
@@ -380,6 +413,7 @@ public class ModelFacade {
         // Vender ao banco
         currentPlayer.sellProperty(property);
         currentPlayer.credit(sellValue);
+        property.setOwner(null);
         bank.returnPropertyToBank(property);
         
         return true;
@@ -396,12 +430,18 @@ public class ModelFacade {
         public final int cost;
         public final String ownerName; // null se não tiver dono
         public final int rent;
+        public final int houses;
+        public final boolean hasHotel;
+        public final int totalValue;
         
-        public PropertyInfo(String name, int cost, String ownerName, int rent) {
+        public PropertyInfo(String name, int cost, String ownerName, int rent, int houses, boolean hasHotel, int totalValue) {
             this.name = name;
             this.cost = cost;
             this.ownerName = ownerName;
             this.rent = rent;
+            this.houses = houses;
+            this.hasHotel = hasHotel;
+            this.totalValue = totalValue;
         }
     }
     
@@ -423,5 +463,46 @@ public class ModelFacade {
             this.hasHotel = hasHotel;
         }
     }
+    
+    /**
+     * Classe para transferir status de um jogador para Controller/View
+     */
+    public static class PlayerStatusInfo {
+        public final String name;
+        public final String color;
+        public final int balance;
+        public final String spaceName;
+    
+        public PlayerStatusInfo(String name, String color, int balance, String spaceName) {
+            this.name = name;
+            this.color = color;
+            this.balance = balance;
+            this.spaceName = spaceName;
+        }
+    }
+    
+    /**
+    * Retorna lista com status de TODOS os jogadores
+    */
+   public List<PlayerStatusInfo> getAllPlayerStatusInfo() {
+       List<PlayerStatusInfo> allStatus = new ArrayList<>();
+       
+       // Loop por todos os jogadores, não apenas o atual
+       for (Player player : players) {
+           String playerName = player.getName();
+           String playerColor = player.getCar().getColor();
+           int playerBalance = player.getBalance();
+           String playerSpaceName = player.getCar().getPosition().getName();
+           
+           allStatus.add(new PlayerStatusInfo(
+               playerName,
+               playerColor,
+               playerBalance,
+               playerSpaceName
+           ));
+       }
+       
+       return allStatus;
+   }
 }
 

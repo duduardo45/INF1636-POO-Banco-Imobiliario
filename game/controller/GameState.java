@@ -1,6 +1,7 @@
 package controller;
 
 import java.util.*;
+import model.core.entities.ModelFacade.PlayerStatusInfo;
 
 public class GameState extends Observable {
     private static GameState instance;
@@ -15,11 +16,13 @@ public class GameState extends Observable {
     private String message;
     private boolean gameOver;
     private String winner;
+    private List<PlayerStatusInfo> allPlayerStatusInfo;
     
     // Singleton
     private GameState() {
         this.lastDiceRoll = new int[]{0, 0};
         this.currentPlayerProperties = new ArrayList<>();
+        this.allPlayerStatusInfo = new ArrayList<>();
         this.allPlayerPositions = new HashMap<>();
         this.message = "";
     }
@@ -32,6 +35,11 @@ public class GameState extends Observable {
     }
     
     // ===== SETTERS (chamados pelo Controller) =====
+    
+    public void setAllPlayerStatusInfo(List<PlayerStatusInfo> allStatus) {
+        this.allPlayerStatusInfo = allStatus;
+        notifyObserversAndUpdate();
+    }
     
     public void updateCurrentPlayer(String name, int balance, String color, List<String> properties) {
         this.currentPlayerName = name;
@@ -63,6 +71,10 @@ public class GameState extends Observable {
     }
     
     // ===== GETTERS (para a View) =====
+    
+    public List<PlayerStatusInfo> getAllPlayerStatusInfo() {
+        return allPlayerStatusInfo;
+    }
     
     public String getCurrentPlayerName() {
         return currentPlayerName;
