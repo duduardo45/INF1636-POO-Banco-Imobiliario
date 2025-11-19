@@ -1,0 +1,63 @@
+### 🛠️ Grupo 1: Arquitetura, Refatoração e Bugs Críticos
+*Foco: Limpar o código e garantir que a base não quebre antes de adicionar coisas novas.*
+
+- [ ] Mover lógica do `ModelFacade` para um `GameController` (Refatoração estrutural).
+- [ ] Resolver erro de `allPlayers` (Bug crítico).
+- [x] Criar a estrutura do objeto `GameState` (necessário para o salvamento futuro).
+- [ ] Retornar/Exibir o motivo técnico pelo qual uma operação foi ou não possível (Feedback de erro).
+
+### 🔄 Grupo 2: Fluxo de Turno e Controles
+*Foco: Garantir que o jogador só possa fazer o que é permitido em cada momento.*
+
+- [ ] Proibir o jogador de agir antes de rolar os dados.
+- [ ] Bloquear teclas de comando em momentos indevidos (ex: `C`/`V` na casa de Parada Livre).
+- [ ] Fazer o turno passar automaticamente ao fazer uma escolha (quando aplicável).
+- [ ] **Feature de Teste (Pedido do Ivan):** Permitir rolagem de dados escolhida pelo usuário manualmente.
+- [X] Implementar Hotkey ou Botão principal para passar o turno.
+- [ ] Eliminar de fato o jogador do ciclo de turnos quando ele for removido.
+
+### 🏠 Grupo 3: Economia e Propriedades
+*Foco: Compra, venda, aluguel e construção.*
+
+- [ ] Rever e ajustar preço de casas e hotéis.
+- [ ] Implementar a separação lógica entre Hotel e Casa.
+- [ ] Testar o fluxo de compra de hotéis.
+- [ ] Impedir venda e compra da mesma propriedade no mesmo turno (e vice-versa).
+- [ ] **Companhias:** Multiplicar o preço do aluguel pelo valor dos dados.
+- [ ] **Companhias:** Remover a opção de "Comprar Casa" para este tipo de propriedade.
+
+### 💸 Grupo 4: Falência e Eliminação
+*Foco: O que acontece quando o dinheiro acaba.*
+
+- [ ] Permitir escolha de qual propriedade vender em caso de falência (atualmente só tenta vender a atual).
+- [ ] Bloquear o jogador de passar a vez se estiver em estado de falência.
+- [ ] Proibir o jogador de apertar `E` (render-se) se ainda tiver dinheiro.
+
+### 🎲 Grupo 5: Regras Especiais do Tabuleiro
+*Foco: Prisão e Sorte/Revés.*
+
+- [ ] Fazer a Prisão de fato prender o jogador (bloquear movimento/ações).
+- [ ] Inicializar o `luckDeck` com as cartas reais.
+- [ ] Mostrar na tela a carta de Sorte ou Revés que foi sorteada.
+
+### 🖥️ Grupo 6: Interface (UI) e Feedback Visual
+*Foco: Melhorar a experiência do usuário e visualização.*
+
+- [ ] Converter opções de escolha (hotkeys) em Botões clicáveis.
+- [ ] Mostrar visualmente quais propriedades são de qual jogador (ex: transparência colorida sobre a casa).
+- [ ] Adicionar texto no tabuleiro mostrando quantidade de casas e hotéis em cada território.
+- [ ] Criar um `BoardPanel` para histórico de acontecimentos.
+- [ ] Implementar notificações de eventos (quem pagou aluguel, quanto, etc.) no histórico.
+- [ ] Garantir que o popup de "Fim de Jogo" apareça apenas uma vez.
+
+### 💾 Grupo 7: Persistência (Save/Load) e Finalização
+*Foco: Salvar o jogo e calcular o vencedor.*
+
+- [ ] Adicionar Botão para terminar a partida manualmente e calcular vencedor (baseado no dinheiro).
+- [ ] Implementar Salvamento de partida:
+    - [ ] Usar `JFileChooser`.
+    - [ ] Formato `.txt` puro (UTF-8).
+    - [ ] Só permitir salvar antes de rolar os dados.
+- [ ] Implementar Carregamento de partida (parser do `.txt` para o `GameState`).
+- [ ] Adicionar botão específico para encerrar o jogo/sair.
+
