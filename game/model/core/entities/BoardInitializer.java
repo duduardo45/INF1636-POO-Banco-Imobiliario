@@ -30,13 +30,13 @@ public class BoardInitializer {
         spaces.add(createPlace("Av. Nossa Sra. De Copacabana", 60));
         
         // Position 5: Companhia Ferroviária
-        spaces.add(new Company("Companhia Ferroviária", null, 200, 25));
+        spaces.add(new Company("Companhia Ferroviária", null, 200, 50));
         
         // Position 6: Av. Brigadeiro Faria Lima
         spaces.add(createPlace("Av. Brigadeiro Faria Lima", 240));
         
         // Position 7: Companhia de Viação
-        spaces.add(new Company("Companhia de Viação", null, 200, 25));
+        spaces.add(new Company("Companhia de Viação", null, 200, 50));
         
         // Position 8: Av. Rebouças
         spaces.add(createPlace("Av. Rebouças", 220));
@@ -60,7 +60,7 @@ public class BoardInitializer {
         spaces.add(createPlace("Av. Pacaembú", 180));
         
         // Position 15: Companhia de Táxi
-        spaces.add(new Company("Companhia de Táxi", null, 150, 20));
+        spaces.add(new Company("Companhia de Táxi", null, 150, 40));
         
         // Position 16: Sorte ou Revés
         spaces.add(new LuckSpace("Sorte ou Revés", null, luckDeck));
@@ -90,7 +90,7 @@ public class BoardInitializer {
         spaces.add(new Tax("Imposto de Renda", null, 200));
         
         // Position 25: Companhia de Navegação
-        spaces.add(new Company("Companhia de Navegação", null, 150, 20));
+        spaces.add(new Company("Companhia de Navegação", null, 150, 40));
         
         // Position 26: Av. Brasil
         spaces.add(createPlace("Av. Brasil", 160));
@@ -111,7 +111,7 @@ public class BoardInitializer {
         spaces.add(createPlace("Copacabana", 260));
         
         // Position 32: Companhia de Aviação
-        spaces.add(new Company("Companhia de Aviação", null, 200, 25));
+        spaces.add(new Company("Companhia de Aviação", null, 200, 50));
         
         // Position 33: Av. Vieira Souto
         spaces.add(createPlace("Av. Vieira Souto", 320));
@@ -120,7 +120,7 @@ public class BoardInitializer {
         spaces.add(createPlace("Av. Atlântica", 300));
         
         // Position 35: Companhia de Táxi Aéreo
-        spaces.add(new Company("Companhia de Táxi Aéreo", null, 200, 25));
+        spaces.add(new Company("Companhia de Táxi Aéreo", null, 200, 40));
         
         // Position 36: Ipanema
         spaces.add(createPlace("Ipanema", 300));
@@ -160,13 +160,13 @@ public class BoardInitializer {
         int baseRent = cost / 10; // 10% of cost
         int housePrice = cost / 2; // 50% of cost
         int hotelPrice = cost * 2; // 200% of cost
-        int hotelRent = baseRent * 50; // 50x base rent
-        
+        int hotelRent = (int)(cost * 0.30); // 30% of cost
+        int singleHouseRent = (int)(cost * 0.15); // 15% of cost //TODO: Criar um atributo em Place.
         Map<Integer, Integer> houseRent = new HashMap<>();
-        houseRent.put(1, baseRent * 3);  // 3x base
-        houseRent.put(2, baseRent * 9);  // 9x base
-        houseRent.put(3, baseRent * 16); // 16x base
-        houseRent.put(4, baseRent * 25); // 25x base
+        houseRent.put(1, singleHouseRent * 1);  // 1x base
+        houseRent.put(2, singleHouseRent * 2);  // 2x base
+        houseRent.put(3, singleHouseRent * 3); // 3x base
+        houseRent.put(4, singleHouseRent * 4); // 4x base
         
         return new Place(name, cost, null, baseRent, housePrice, hotelPrice, hotelRent, houseRent);
     }

@@ -16,6 +16,7 @@ public class BoardFrame extends JFrame implements Observer {
     private JButton rollDiceButton;
     private JButton manualDiceButton;
     private PlayerStatusPanel playerStatusPanel;
+    private GameLogPanel gameLogPanel;
     
     public BoardFrame(GameController controller) {
         this.controller = controller;
@@ -53,6 +54,9 @@ public class BoardFrame extends JFrame implements Observer {
         
         playerStatusPanel = new PlayerStatusPanel(gameState);
         add(playerStatusPanel, BorderLayout.EAST); // Adiciona o painel à direita
+
+        gameLogPanel = new GameLogPanel(gameState);
+        add(gameLogPanel, BorderLayout.WEST);
         
         // Ajustar tamanho da janela ao conteúdo
         pack();

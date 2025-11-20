@@ -25,6 +25,9 @@ public class GameController {
         updateGameState();
     }
     
+    private void log(String msg) {
+        gameState.addLogMessage(msg);
+    }
     /**
      * Rola os dados e move o jogador atual
      */
@@ -42,9 +45,12 @@ public class GameController {
         // Captura mensagem do evento
         String eventMessage = modelFacade.getLastEventMessage();
         if (!eventMessage.isEmpty()) {
+            log(modelFacade.getCurrentPlayerName() + ": " + eventMessage);
             gameState.setMessage(eventMessage);
         }
-        
+        else{
+            log(modelFacade.getCurrentPlayerName() + " avançou para " + modelFacade.getCurrentSpaceName());
+        }
         // Atualiza GameState completo
         updateGameState();
         
@@ -77,9 +83,12 @@ public class GameController {
         // 4. Captura mensagem do evento (cair em propriedade, sorte, etc)
         String eventMessage = modelFacade.getLastEventMessage();
         if (!eventMessage.isEmpty()) {
+            log(modelFacade.getCurrentPlayerName() + ": " + eventMessage);
             gameState.setMessage(eventMessage);
         }
-        
+        else {
+            log(modelFacade.getCurrentPlayerName() + " avançou para " + modelFacade.getCurrentSpaceName());
+        }
         // 5. Atualiza toda a tela
         updateGameState();
         
@@ -97,6 +106,7 @@ public class GameController {
         
         if (success) {
             gameState.setMessage("Propriedade comprada com sucesso!");
+            log(modelFacade.getCurrentPlayerName() + " comprou a propriedade " + modelFacade.getCurrentSpaceName());
             updateGameState();
         } else {
             gameState.setMessage("Não foi possível comprar a propriedade.");
@@ -128,6 +138,7 @@ public class GameController {
         boolean success = modelFacade.buildHouseOnCurrentProperty();
         
         if (success) {
+            log(modelFacade.getCurrentPlayerName() + " construiu uma casa na propriedade " + modelFacade.getCurrentSpaceName());
             gameState.setMessage("Casa construída com sucesso!");
             updateGameState();
         } else {
@@ -144,6 +155,7 @@ public class GameController {
         boolean success = modelFacade.buildHotelOnCurrentProperty();
         
         if (success) {
+            log(modelFacade.getCurrentPlayerName() + " construiu um hotel na propriedade " + modelFacade.getCurrentSpaceName());
             gameState.setMessage("Hotel construído com sucesso!");
             updateGameState();
         } else {
@@ -160,6 +172,7 @@ public class GameController {
         boolean success = modelFacade.sellCurrentPropertyToBank();
         
         if (success) {
+            log(modelFacade.getCurrentPlayerName() + " vendeu a propriedade " + modelFacade.getCurrentSpaceName() + " ao banco.");
             gameState.setMessage("Propriedade vendida ao banco por 90%!");
             updateGameState();
         } else {
@@ -182,7 +195,7 @@ public class GameController {
      */
     public void sellSpecificProperty(String propertyName) {
         String result = modelFacade.sellPropertyByName(propertyName);
-        
+        log(modelFacade.getCurrentPlayerName() + ": " + result);
         gameState.setMessage(result);
         updateGameState();
     }

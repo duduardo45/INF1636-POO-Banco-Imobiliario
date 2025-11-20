@@ -92,6 +92,10 @@ public class ModelFacade {
             currentPlayer.credit(start.getPassBonus());
         }
         
+        if (finalPosition instanceof Company) {
+            // Se for, injetamos o valor dos dados (steps) nela
+            ((Company) finalPosition).setDiceRollForRent(steps);
+        }
         // Executa evento da casa e captura mensagem
         lastEventMessage = finalPosition.event(currentPlayer);
     }
@@ -474,8 +478,19 @@ public class ModelFacade {
             return false;
         }
         
-        // Calcular valor de venda (90%)
-        int sellValue = (int) (property.getCost() * 0.9);
+        if (this.propertyJustBought != null && this.propertyJustBought == property) {
+            // Se acabou de comprar nesta rodada, não pode vender com 'V'
+            // (Você pode retornar false ou setar uma mensagem de erro no lastEventMessage se quiser)
+            lastEventMessage = "Não pode vender imóvel recém-comprado!";
+            return false;
+        }
+
+        int totalValue = property.getCost();
+        if (property instanceof Place) {
+            totalValue = ((Place) property).getTotalValue();
+        }
+        
+        int sellValue = (int) (totalValue * 0.9);
         
         // Vender ao banco
         currentPlayer.sellProperty(property);
