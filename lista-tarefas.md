@@ -21,7 +21,7 @@
 
 - [ ] Rever e ajustar preço de casas e hotéis.
 - [ ] Implementar a separação lógica entre Hotel e Casa.
-- [ ] Testar o fluxo de compra de hotéis.
+- [X] Testar o fluxo de compra de hotéis. - Barella
 - [ ] Impedir venda e compra da mesma propriedade no mesmo turno (e vice-versa).
 - [ ] **Companhias:** Multiplicar o preço do aluguel pelo valor dos dados.
 - [ ] **Companhias:** Remover a opção de "Comprar Casa" para este tipo de propriedade.
@@ -29,7 +29,7 @@
 ### 💸 Grupo 4: Falência e Eliminação
 *Foco: O que acontece quando o dinheiro acaba.*
 
-- [ ] Permitir escolha de qual propriedade vender em caso de falência (atualmente só tenta vender a atual).
+- [X] Permitir escolha de qual propriedade vender em caso de falência (atualmente só tenta vender a atual). - Barella
 - [ ] Bloquear o jogador de passar a vez se estiver em estado de falência.
 - [ ] Proibir o jogador de apertar `E` (render-se) se ainda tiver dinheiro.
 
@@ -43,8 +43,9 @@
 ### 🖥️ Grupo 6: Interface (UI) e Feedback Visual
 *Foco: Melhorar a experiência do usuário e visualização.*
 
-- [ ] Converter opções de escolha (hotkeys) em Botões clicáveis.
-- [ ] Mostrar visualmente quais propriedades são de qual jogador (ex: transparência colorida sobre a casa).
+- [X] Converter opções de escolha (hotkeys) em Botões clicáveis. - Barella(parcial: Compra de casas, hoteis e Compra e Venda de propriedades.)
+- [ ] Terminar criação de botões (verificar botões faltantes)
+- [ ] Mostrar visualmente quais propriedades são de qual jogador (ex: transparência colorida sobre a casa). 
 - [ ] Adicionar texto no tabuleiro mostrando quantidade de casas e hotéis em cada território.
 - [ ] Criar um `BoardPanel` para histórico de acontecimentos.
 - [ ] Implementar notificações de eventos (quem pagou aluguel, quanto, etc.) no histórico.
