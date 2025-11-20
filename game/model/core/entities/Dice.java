@@ -10,4 +10,11 @@ class Dice {
     	
         return rand.nextInt((max - min) + 1) + min;
     }
+    public int rollFixed(int value) {
+        if (value < 1) value = 1;
+        if (value > 6) value = 6;
+        
+        return value;
+    }
+    
 }

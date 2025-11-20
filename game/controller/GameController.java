@@ -54,6 +54,41 @@ public class GameController {
         }
     }
     
+    public void rollDiceManual(int totalSteps) {
+        // Divide o valor total em dois dados para manter a consistência visual
+        // Ex: Se o usuário quer andar 7, fazemos d1=3 e d2=4.
+        int d1 = totalSteps / 2;
+        int d2 = totalSteps - d1;
+        
+        // Garante que os dados visuais fiquem entre 1 e 6 para carregar a imagem correta.
+        
+        int visualD1 = (d1 > 6) ? 6 : (d1 < 1 ? 1 : d1);
+        int visualD2 = (d2 > 6) ? 6 : (d2 < 1 ? 1 : d2);
+
+        // 1. Atualiza os valores dos dados no Model (usando a nova lógica do Dice)
+        modelFacade.rollDiceManual(visualD1, visualD2);
+        
+        // 2. Atualiza o GameState para a View desenhar os dados
+        gameState.setDiceRoll(visualD1, visualD2);
+        
+        // 3. Move o jogador o total de passos solicitado
+        modelFacade.moveCurrentPlayer(totalSteps);
+        
+        // 4. Captura mensagem do evento (cair em propriedade, sorte, etc)
+        String eventMessage = modelFacade.getLastEventMessage();
+        if (!eventMessage.isEmpty()) {
+            gameState.setMessage(eventMessage);
+        }
+        
+        // 5. Atualiza toda a tela
+        updateGameState();
+        
+        // 6. Verifica falência
+        if (modelFacade.isCurrentPlayerBankrupt()) {
+            gameState.setMessage("FALÊNCIA! Saldo negativo. Venda propriedades ou será eliminado!");
+        }
+    }
+    
     /**
      * Compra propriedade atual
      */
@@ -103,6 +138,22 @@ public class GameController {
     }
     
     /**
+     * Constrói um HOTEL na propriedade atual
+     */
+    public boolean buildHotel() {
+        boolean success = modelFacade.buildHotelOnCurrentProperty();
+        
+        if (success) {
+            gameState.setMessage("Hotel construído com sucesso!");
+            updateGameState();
+        } else {
+            gameState.setMessage("Não foi possível construir hotel.");
+        }
+        
+        return success;
+    }
+
+    /**
      * Vende propriedade atual ao banco
      */
     public boolean sellProperty() {
@@ -117,7 +168,25 @@ public class GameController {
         
         return success;
     }
+
+    /**
+     * Retorna mapa de propriedades que o jogador pode vender
+     */
+    public Map<String, Integer> getSellableProperties() {
+        return modelFacade.getCurrentPlayerSellableProperties();
+    }
     
+
+    /**
+     * Realiza a venda de uma propriedade específica
+     */
+    public void sellSpecificProperty(String propertyName) {
+        String result = modelFacade.sellPropertyByName(propertyName);
+        
+        gameState.setMessage(result);
+        updateGameState();
+    }
+
     /**
      * Retorna lista detalhada das propriedades
      */

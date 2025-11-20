@@ -87,9 +87,16 @@ class Player {
         property.setOwner(this);
     }
 
+   /**
+     * Removes a property from the player's ownership list.
+     * Note: Financial credit is handled externally (e.g., by the Facade).
+     * * @param property The property to be sold/removed.
+     */
     public void sellProperty(Property property) {
+        if (this.ownedProperties.contains(property)) {
+            this.ownedProperties.remove(property);
+        }
     }
-
     /**
      * Checks if the player has properties that can be sold/mortgaged.
      * 
