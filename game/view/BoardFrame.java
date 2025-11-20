@@ -14,7 +14,9 @@ public class BoardFrame extends JFrame implements Observer {
     private GameState gameState;
     private BoardPanel boardPanel;
     private JButton rollDiceButton;
+    private JButton manualDiceButton;
     private PlayerStatusPanel playerStatusPanel;
+    private GameLogPanel gameLogPanel;
     
     public BoardFrame(GameController controller) {
         this.controller = controller;
@@ -41,12 +43,20 @@ public class BoardFrame extends JFrame implements Observer {
         // Botão de rolar dados
         rollDiceButton = new JButton("Rolar Dados");
         rollDiceButton.addActionListener(e -> rollDice());
+        
+        manualDiceButton = new JButton("Dado Manual");
+        manualDiceButton.addActionListener(e -> askForManualRoll());
+        
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(rollDiceButton);
+        buttonPanel.add(manualDiceButton);
         add(buttonPanel, BorderLayout.SOUTH);
         
         playerStatusPanel = new PlayerStatusPanel(gameState);
         add(playerStatusPanel, BorderLayout.EAST); // Adiciona o painel à direita
+
+        gameLogPanel = new GameLogPanel(gameState);
+        add(gameLogPanel, BorderLayout.WEST);
         
         // Ajustar tamanho da janela ao conteúdo
         pack();
@@ -87,6 +97,22 @@ public class BoardFrame extends JFrame implements Observer {
             }
         });
         
+        // Tecla 'O' para construir hotel
+        boardPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                  .put(KeyStroke.getKeyStroke('O'), "buildHotel");
+        boardPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                  .put(KeyStroke.getKeyStroke('o'), "buildHotel");
+        
+        boardPanel.getActionMap().put("buildHotel", new AbstractAction() {
+            private static final long serialVersionUID = 1L;
+            
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                buildHotel();
+            }
+        });
+
+
         // Tecla 'V' para vender propriedade
         boardPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
                   .put(KeyStroke.getKeyStroke('V'), "sellProperty");
@@ -127,6 +153,11 @@ public class BoardFrame extends JFrame implements Observer {
         controller.buildHouse();
         boardPanel.repaint();
     }
+
+    private void buildHotel() {
+        controller.buildHotel();
+        boardPanel.repaint();
+    }
     
     private void sellProperty() {
         controller.sellProperty();
@@ -140,16 +171,67 @@ public class BoardFrame extends JFrame implements Observer {
     
     private void rollDice() {
         controller.rollDice();
+        toggleButtonsAfterRoll();
+    }
+    
+    private void askForManualRoll() {
+        String input = JOptionPane.showInputDialog(this, 
+            "Quantas casas deseja andar?", 
+            "Rolagem Manual", 
+            JOptionPane.QUESTION_MESSAGE);
+            
+        if (input != null && !input.isEmpty()) {
+            try {
+                int steps = Integer.parseInt(input);
+                if (steps <= 0) {
+                    JOptionPane.showMessageDialog(this, "O valor deve ser maior que 0.");
+                    return;
+                }
+                
+                // Chama o controller
+                controller.rollDiceManual(steps);
+                
+                // Atualiza botões
+                toggleButtonsAfterRoll();
+                
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Digite um número válido.");
+            }
+        }
+    }
+
+    private void toggleButtonsAfterRoll() {
+        rollDiceButton.setEnabled(false);
+        manualDiceButton.setEnabled(false);
+        
         rollDiceButton.setText("Passar Vez");
-        rollDiceButton.removeActionListener(rollDiceButton.getActionListeners()[0]);
+        
+        // Remove TODOS os listeners antigos (limpeza total) -> ISSO É IMPORTANTE PARA ""DESLIGAR"" O BOTAO NO MOMENTO
+        for (java.awt.event.ActionListener al : rollDiceButton.getActionListeners()) {
+            rollDiceButton.removeActionListener(al);
+        }
+        
         rollDiceButton.addActionListener(e -> endTurn());
+        rollDiceButton.setEnabled(true);
     }
     
     private void endTurn() {
+        if (gameState.getCurrentPlayerBalance() < 0) {
+            JOptionPane.showMessageDialog(this, 
+                "AÇÃO BLOQUEADA:\n" +
+                "Você está com saldo negativo (Falência)!\n\n" +
+                "Você deve vender propriedades para pagar sua dívida\n" +
+                "ou declarar falência (Botão 'Declarar Falência').",
+                "Saldo Negativo",
+                JOptionPane.WARNING_MESSAGE);
+            return; // IMPEDE O FIM DO TURNO
+        }
         controller.endTurn();
         rollDiceButton.setText("Rolar Dados");
         rollDiceButton.removeActionListener(rollDiceButton.getActionListeners()[0]);
         rollDiceButton.addActionListener(e -> rollDice());
+        rollDiceButton.setEnabled(true);
+        manualDiceButton.setEnabled(true);
     }
     
     @Override

@@ -80,27 +80,39 @@ class Place extends Property {
         return getNumOfHouses() > 0 || getNumOfHotels() > 0;
     }
 
+    /**
+     * Calculates the total rent based on the formula:
+     * Total Rent = Base Rent + (Rent Per House * Num Houses) + Hotel Rent
+     * * Vb (Base Rent) = 10% of property cost
+     * Vc (Rent per House) = 15% of property cost
+     * Vh (Hotel Rent) = 30% of property cost
+     */
     @Override
     public int calculateRent() {
-        int housesCount = getNumOfHouses();
-        int hotelsCount = getNumOfHotels();
+        // 1. Get the property cost (Valor do território)
+        int propertyCost = super.getCost(); 
         
-        int currentHouseRent = (housesCount > 0) ? house_rent.getOrDefault(housesCount, 0) : 0;
-        int currentHotelRent = (hotelsCount > 0) ? hotel_rent : 0;
+        // Vb: Base rent value (10% of property cost)
+        int baseRent = (int) (propertyCost * 0.10);
         
-        return currentHouseRent + currentHotelRent;
+        // Vc: Rent value for a single house (15% of property cost)
+        int rentPerHouse = (int) (propertyCost * 0.15);
+        
+        // n: Number of houses currently on the property
+        int numberOfHouses = getNumOfHouses();
+        
+        int hotelRent = 0;
+        if (getNumOfHotels() > 0) {
+            hotelRent = this.hotel_rent;
+        }
+        
+        // Va: Final Calculation
+        return baseRent + (rentPerHouse * numberOfHouses) + hotelRent;
     }
 
     private void updateCurrentRent() {
-        // Updates the current rent based on the number of houses and hotels built
-        // Follows the same logic as calculateRent()
-        int housesCount = getNumOfHouses();
-        int hotelsCount = getNumOfHotels();
-
-        int currentHouseRent = (housesCount > 0) ? house_rent.get(housesCount) : 0;
-        int currentHotelRent = (hotelsCount > 0) ? hotel_rent : 0;
-
-        current_rent = currentHouseRent + currentHotelRent;
+        // Updates the cached rent value for display purposes
+        this.current_rent = calculateRent();
     }
 
     public int getNumOfHouses() {

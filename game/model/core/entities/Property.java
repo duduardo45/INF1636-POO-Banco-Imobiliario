@@ -47,11 +47,18 @@ abstract class Property extends Space {
      * Specific rent collection logic should be handled by GameController.
      */
     @Override
-    public String event(Player player) {
-        // Specific implementation will be done by GameController
-        // which will have access to the current player and can call handleRentPayment()
-    	handleRentPayment(player);
-    	return "";
+    public String event(Player player) { // Ou event(Player player, int diceRoll) se já atualizou
+        // Lógica original de checagem
+        if (isOwned() && getOwner() != player) {
+            // Lógica original de pagamento
+            int rent = calculateRent(); // (Se for company, usa o setDiceRoll anterior)
+            player.pay(getOwner(), rent);
+            
+            // --- A MUDANÇA: RETORNAR O TEXTO ---
+            return "Pagou aluguel de $" + rent + " para " + getOwner().getName();
+        }
+        
+        return "Parou em " + getName();
     }
     
     /**

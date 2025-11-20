@@ -10,28 +10,30 @@
 *Foco: Garantir que o jogador só possa fazer o que é permitido em cada momento.*
 
 - [ ] Proibir o jogador de agir antes de rolar os dados.
-- [ ] Bloquear teclas de comando em momentos indevidos (ex: `C`/`V` na casa de Parada Livre).
-- [ ] Fazer o turno passar automaticamente ao fazer uma escolha (quando aplicável).
+- [ ] Bloquear teclas de comando em momentos indevidos (ex: `C`/`V` na casa de Parada Livre).  As hotkeys funcionam, mas mostram mensagens de erro. Isso não é suficiente?
+- [ ] Fazer o turno passar automaticamente ao fazer uma escolha (quando aplicável). 
 - [X] **Feature de Teste (Pedido do Ivan):** Permitir rolagem de dados escolhida pelo usuário manualmente. - Barella
 - [X] Implementar Hotkey ou Botão principal para passar o turno.
-- [ ] Eliminar de fato o jogador do ciclo de turnos quando ele for removido.
+- [X] Eliminar de fato o jogador do ciclo de turnos quando ele for removido.
+- [ ] Dar chance extra para usuário ao conseguir duplas (exceto na 3ª dupla, pois nesse caso ele vai para a prisão).
 
 ### 🏠 Grupo 3: Economia e Propriedades
 *Foco: Compra, venda, aluguel e construção.*
 
-- [ ] Rever e ajustar preço de casas e hotéis.
-- [ ] Implementar a separação lógica entre Hotel e Casa.
+- [X] Rever e ajustar preço de casas e hotéis.
+- [X] Implementar a separação lógica entre Hotel e Casa.
 - [X] Testar o fluxo de compra de hotéis. - Barella
-- [ ] Impedir venda e compra da mesma propriedade no mesmo turno (e vice-versa).
-- [ ] **Companhias:** Multiplicar o preço do aluguel pelo valor dos dados.
-- [ ] **Companhias:** Remover a opção de "Comprar Casa" para este tipo de propriedade.
+- [X] Impedir venda e compra da mesma propriedade no mesmo turno (e vice-versa).
+- [X] **Companhias:** Multiplicar o preço do aluguel pelo valor dos dados.
+- [X] **Companhias:** Remover a opção de "Comprar Casa" para este tipo de propriedade. - As hotkeys funcionam, mas mostram mensagens de erro. Os botões não aparecem, como esperado.
+- [ ] Checar se valor HONORARIO de $200 está sendo distribuido ao jogador quando ele passa pela casa de inicio após o começo do jogo. (ver manual)
 
 ### 💸 Grupo 4: Falência e Eliminação
 *Foco: O que acontece quando o dinheiro acaba.*
 
 - [X] Permitir escolha de qual propriedade vender em caso de falência (atualmente só tenta vender a atual). - Barella
-- [ ] Bloquear o jogador de passar a vez se estiver em estado de falência.
-- [ ] Proibir o jogador de apertar `E` (render-se) se ainda tiver dinheiro.
+- [X] Bloquear o jogador de passar a vez se estiver em estado de falência.
+- [ ] Proibir o jogador de apertar `E` ou apertar o botão (render-se) se ainda tiver dinheiro.
 
 ### 🎲 Grupo 5: Regras Especiais do Tabuleiro
 *Foco: Prisão e Sorte/Revés.*
@@ -43,12 +45,12 @@
 ### 🖥️ Grupo 6: Interface (UI) e Feedback Visual
 *Foco: Melhorar a experiência do usuário e visualização.*
 
-- [X] Converter opções de escolha (hotkeys) em Botões clicáveis. - Barella(parcial: Compra de casas, hoteis e Compra e Venda de propriedades.)
+- [X] Converter opções de escolha (hotkeys) em Botões clicáveis. - Barella(parcial: Compra de casas, hoteis e Compra e Venda de propriedades, eliminar player)
 - [ ] Terminar criação de botões (verificar botões faltantes)
 - [ ] Mostrar visualmente quais propriedades são de qual jogador (ex: transparência colorida sobre a casa). 
 - [ ] Adicionar texto no tabuleiro mostrando quantidade de casas e hotéis em cada território.
-- [ ] Criar um `BoardPanel` para histórico de acontecimentos.
-- [ ] Implementar notificações de eventos (quem pagou aluguel, quanto, etc.) no histórico.
+- [X] Criar um `BoardPanel` para histórico de acontecimentos.
+- [X] Implementar notificações de eventos (quem pagou aluguel, quanto, etc.) no histórico.
 - [ ] Garantir que o popup de "Fim de Jogo" apareça apenas uma vez.
 
 ### 💾 Grupo 7: Persistência (Save/Load) e Finalização

@@ -17,6 +17,7 @@ public class GameState extends Observable {
     private boolean gameOver;
     private String winner;
     private List<PlayerStatusInfo> allPlayerStatusInfo;
+    private List<String> logMessages;
     
     // Singleton
     private GameState() {
@@ -24,6 +25,7 @@ public class GameState extends Observable {
         this.currentPlayerProperties = new ArrayList<>();
         this.allPlayerStatusInfo = new ArrayList<>();
         this.allPlayerPositions = new HashMap<>();
+        this.logMessages = new ArrayList<>();
         this.message = "";
     }
     
@@ -34,14 +36,23 @@ public class GameState extends Observable {
         return instance;
     }
     
-    // ===== SETTERS (chamados pelo Controller) =====
-    
-    public void setAllPlayerStatusInfo(List<PlayerStatusInfo> allStatus) {
-        this.allPlayerStatusInfo = allStatus;
-        notifyObserversAndUpdate();
+    public void addLogMessage(String message) {
+        if (message == null || message.trim().isEmpty()) return;
+        
+        this.logMessages.add(message);
+        // Notifica a View que algo mudou
+        setChanged();
+        notifyObservers();
     }
-    
-    public void updateCurrentPlayer(String name, int balance, String color, List<String> properties) {
+
+// ===== SETTERS (chamados pelo Controller) =====
+
+public void setAllPlayerStatusInfo(List<PlayerStatusInfo> allStatus) {
+    this.allPlayerStatusInfo = allStatus;
+    notifyObserversAndUpdate();
+}
+
+public void updateCurrentPlayer(String name, int balance, String color, List<String> properties) {
         this.currentPlayerName = name;
         this.currentPlayerBalance = balance;
         this.currentPlayerColor = color;
@@ -72,6 +83,9 @@ public class GameState extends Observable {
     
     // ===== GETTERS (para a View) =====
     
+    public List<String> getLogMessages() {
+        return new ArrayList<>(logMessages); // Retorna cópia para segurança
+    }
     public List<PlayerStatusInfo> getAllPlayerStatusInfo() {
         return allPlayerStatusInfo;
     }

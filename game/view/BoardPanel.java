@@ -19,6 +19,11 @@ public class BoardPanel extends JPanel {
     private GameController controller;
     private Map<String, BufferedImage> imageCache;
     private Map<Integer, Point> spaceCoordinates;
+    private JButton btnBuyProperty;
+    private JButton btnManageProperties;
+    private JButton btnBuildHouse;
+    private JButton btnBuildHotel;
+    private JButton btnEliminatePlayer;
     
     public BoardPanel(GameState gameState, GameController controller) {
         this.gameState = gameState;
@@ -26,9 +31,11 @@ public class BoardPanel extends JPanel {
         this.imageCache = new HashMap<>();
         this.spaceCoordinates = new HashMap<>();
         
+        setLayout(null); //serve para posicionar botoes manualmente se necessario
         loadImages();
         initializeSpaceCoordinates();
-        
+        initializeButtons();
+
         setPreferredSize(new Dimension(1000, 800));  // Máximo 1280x800 do enunciado
         setBackground(Color.WHITE);
     }
@@ -394,8 +401,24 @@ public class BoardPanel extends JPanel {
     private void drawCurrentPropertyCard(Graphics2D g2d) {
         if (controller == null) return;
         
+        
         PropertyInfo propertyInfo = controller.getCurrentPropertyInfo();
-        if (propertyInfo == null) return;
+        if (propertyInfo == null) {
+            // Se estiver falido, forçamos a exibição dos botões numa posição fixa
+            if (gameState.getCurrentPlayerBalance() < 0) {
+                hideAllButtons();
+                btnEliminatePlayer.setBounds(720, 50, 140, 25);
+                btnEliminatePlayer.setVisible(true);
+                
+                if (btnManageProperties != null && !gameState.getCurrentPlayerProperties().isEmpty()) {
+                    btnManageProperties.setBounds(720, 80, 140, 25);
+                    btnManageProperties.setVisible(true);
+                }
+            } else {
+                hideAllButtons();
+            }
+            return;
+        }
         
         // Tentar carregar imagem da propriedade
         BufferedImage cardImage = imageCache.get(propertyInfo.name);
@@ -445,27 +468,20 @@ public class BoardPanel extends JPanel {
                     infoY += 15; // Pula uma linha para cada item
                 }
             }
+
+            updateActionButtons(propertyInfo, cardX, infoY);
             
-            if (propertyInfo.ownerName != null) {
-                // Verificar se é do jogador atual
-                String currentPlayer = gameState.getCurrentPlayerName();
-                
-                if (propertyInfo.ownerName.equals(currentPlayer)) {
-                    g2d.setColor(new Color(0, 100, 200));
-                    g2d.drawString("Sua propriedade!", cardX, infoY);
-                    
-                    g2d.setFont(new Font("Arial", Font.BOLD, 10));
-                    g2d.drawString("H: Construir Casa", cardX, infoY + 15);
-                    g2d.drawString("V: Vender (90%)", cardX, infoY + 30);
-                } else {
-                    g2d.setColor(Color.RED);
-                    g2d.drawString("Dono: " + propertyInfo.ownerName, cardX, infoY);
-                }
-            } else {
+            if (propertyInfo.ownerName == null) {
                 g2d.setColor(new Color(0, 150, 0));
                 g2d.drawString("Disponível!", cardX, infoY);
-                g2d.setFont(new Font("Arial", Font.BOLD, 11));
-                g2d.drawString("C: Comprar", cardX, infoY + 15);
+            } else if (!propertyInfo.ownerName.equals(gameState.getCurrentPlayerName())) {
+                // Se for de outro jogador
+                g2d.setColor(Color.RED);
+                g2d.drawString("Dono: " + propertyInfo.ownerName, cardX, infoY);
+            } else {
+                // Se for minha
+                g2d.setColor(new Color(0, 100, 200));
+                g2d.drawString("Sua propriedade!", cardX, infoY);
             }
         } else { //TODO: refatorar aqui
             // Placeholder se não houver imagem (150x200)
@@ -492,25 +508,185 @@ public class BoardPanel extends JPanel {
                 g2d.drawString("Construção: " + propertyInfo.houses + " Casa(s)", cardX + 10, buildY);
             }
             
+            updateActionButtons(propertyInfo, cardX + 5, cardY + 160);
             
-            if (propertyInfo.ownerName != null) {
-                String currentPlayer = gameState.getCurrentPlayerName();
-                
-                if (propertyInfo.ownerName.equals(currentPlayer)) {
-                    g2d.setColor(new Color(0, 100, 200));
-                    g2d.drawString("Sua!", cardX + 10, cardY + 140); 
-                    g2d.setFont(new Font("Arial", Font.BOLD, 9));
-                    g2d.drawString("H: Casa V: Vender", cardX + 10, cardY + 155); 
-                } else {
-                    g2d.setColor(Color.RED);
-                    g2d.drawString("Dono: " + propertyInfo.ownerName, cardX + 10, cardY + 140); 
-                }
-            } else {
+            if (propertyInfo.ownerName == null) {
                 g2d.setColor(new Color(0, 150, 0));
-                g2d.drawString("Disponível!", cardX + 10, cardY + 140);
-                g2d.setFont(new Font("Arial", Font.BOLD, 10));
-                g2d.drawString("C: Comprar", cardX + 10, cardY + 155);
+                g2d.drawString("Disponível!", cardX + 10, cardY + 155);
+            } else if (!propertyInfo.ownerName.equals(gameState.getCurrentPlayerName())) {
+                g2d.setColor(Color.RED);
+                g2d.drawString("Dono: " + propertyInfo.ownerName, cardX + 10, cardY + 155);
+            } else {
+                g2d.setColor(new Color(0, 100, 200));
+                g2d.drawString("Sua!", cardX + 10, cardY + 155);
             }
         }
+    }
+
+    private void updateActionButtons(PropertyInfo info, int x, int y) {
+        // Primeiro, esconde todos para recalcular se devem ou nao aparecer
+        hideAllButtons();
+        
+        // Espaçamento entre botões
+        // !MELHORAR ISSO SE NECESSARIO
+        int buttonHeight = 25;
+        int currentY = y + 5; // Um pouco abaixo do texto anterior
+        int width = 140;      // Largura do botão (ajustada para caber no card)
+        
+        String currentPlayer = gameState.getCurrentPlayerName();
+
+        int currentBalance = gameState.getCurrentPlayerBalance();
+
+        // CENÁRIO 0: Jogador em falência
+        if (currentBalance < 0) {
+            btnEliminatePlayer.setBounds(x, currentY, width, buttonHeight);
+            btnEliminatePlayer.setVisible(true);
+            currentY += buttonHeight + 5;
+        }
+        // Botão Gerenciar Propriedades (venda)
+        if (!gameState.getCurrentPlayerProperties().isEmpty()) {
+             btnManageProperties.setBounds(x, currentY, width, buttonHeight);
+             btnManageProperties.setVisible(true);
+             currentY += buttonHeight + 5;
+        }
+        
+        // CENÁRIO 1: Propriedade sem dono (Pode comprar)
+        if (info.ownerName == null) {
+            btnBuyProperty.setBounds(x, currentY, width, buttonHeight);
+            btnBuyProperty.setVisible(true);
+            return; // Se não tem dono, não tem mais ações
+        }
+        
+        // CENÁRIO 2: Jogador atual e o dono
+        if (info.ownerName != null && info.ownerName.equals(currentPlayer)) {
+            
+            // Botões de Construção (Apenas para Places/Terrenos)
+            if (info.isPlace) {
+                
+                // Botão Comprar Casa
+                if (info.canBuildHouse) {
+                    btnBuildHouse.setBounds(x, currentY, width, buttonHeight);
+                    btnBuildHouse.setVisible(true);
+                    currentY += buttonHeight + 5;
+                }
+                
+                // Botão Comprar Hotel
+                if (info.canBuildHotel) {
+                    btnBuildHotel.setBounds(x, currentY, width, buttonHeight);
+                    btnBuildHotel.setVisible(true);
+                }
+            }
+        }
+    }
+
+    private void openSellDialog() {
+        // 1. Busca as propriedades do jogador
+        Map<String, Integer> sellable = controller.getSellableProperties();
+        
+        if (sellable.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Você não possui propriedades para vender.");
+            return;
+        }
+        
+        // 2. Cria um array de strings para o menu
+        String[] options = new String[sellable.size()];
+        int i = 0;
+        for (Map.Entry<String, Integer> entry : sellable.entrySet()) {
+            options[i++] = entry.getKey() + " (Vender por $" + entry.getValue() + ")";
+        }
+        
+        // 3. Mostra o diálogo de escolha
+        String choice = (String) JOptionPane.showInputDialog(
+            this,
+            "Escolha uma propriedade para vender ao banco (90% do valor total):",
+            "Gerenciar Imóveis",
+            JOptionPane.PLAIN_MESSAGE,
+            null,
+            options,
+            options[0]);
+            
+        // 4. Processa a escolha
+        if (choice != null) {
+            // Extrai apenas o nome da propriedade da string (remove o valor)
+            String propertyName = choice.substring(0, choice.lastIndexOf(" ("));
+            
+            int confirm = JOptionPane.showConfirmDialog(this, 
+                "Tem certeza que deseja vender " + propertyName + "?",
+                "Confirmar Venda",
+                JOptionPane.YES_NO_OPTION);
+                
+            if (confirm == JOptionPane.YES_OPTION) {
+                controller.sellSpecificProperty(propertyName);
+                this.repaint();
+            }
+        }
+    }
+
+    private void initializeButtons() {
+        Font btnFont = new Font("Arial", Font.BOLD, 11);
+        
+        // Botão Comprar Propriedade
+        btnBuyProperty = new JButton("Comprar");
+        btnBuyProperty.setFont(btnFont);
+        btnBuyProperty.setBackground(new Color(100, 255, 100)); // Verde claro
+        btnBuyProperty.addActionListener(e -> {
+            controller.buyCurrentProperty();
+            this.repaint(); // Força atualização para esconder o botão quando preciso.
+        });
+        add(btnBuyProperty); // Adiciona ao painel
+        
+        btnManageProperties = new JButton("Gerenciar Imóveis");
+        btnManageProperties.setFont(btnFont);
+        btnManageProperties.setBackground(new Color(255, 150, 150)); // Vermelho
+        btnManageProperties.addActionListener(e -> openSellDialog());
+        add(btnManageProperties);
+        
+        // Botão Construir Casa
+        btnBuildHouse = new JButton("Comprar Casa");
+        btnBuildHouse.setFont(btnFont);
+        btnBuildHouse.setBackground(new Color(100, 200, 255)); // Azul claro
+        btnBuildHouse.addActionListener(e -> {
+            controller.buildHouse();
+            this.repaint();
+        });
+        add(btnBuildHouse);
+        
+        // Botão Construir Hotel
+        btnBuildHotel = new JButton("Comprar Hotel");
+        btnBuildHotel.setFont(btnFont);
+        btnBuildHotel.setBackground(new Color(255, 215, 0)); // Dourado
+        btnBuildHotel.addActionListener(e -> {
+            controller.buildHotel();
+            this.repaint(); // Atualiza para talvez sumir o botão (limite por turno)
+        });
+        add(btnBuildHotel);
+        
+
+        btnEliminatePlayer = new JButton("Declarar Falência");
+        btnEliminatePlayer.setFont(btnFont);
+        btnEliminatePlayer.setBackground(Color.BLACK);
+        btnEliminatePlayer.setForeground(Color.WHITE); // Texto branco
+        btnEliminatePlayer.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(this, 
+                "TEM CERTEZA? Isso removerá você do jogo permanentemente.", 
+                "Confirmar Falência", 
+                JOptionPane.YES_NO_OPTION);
+                
+            if (confirm == JOptionPane.YES_OPTION) {
+                controller.eliminateCurrentPlayer();
+                this.repaint();
+            }
+        });
+        add(btnEliminatePlayer);
+        // Esconde todos inicialmente
+        hideAllButtons();
+    }
+    
+    private void hideAllButtons() {
+        btnBuyProperty.setVisible(false);
+        btnManageProperties.setVisible(false);
+        btnBuildHouse.setVisible(false);
+        btnEliminatePlayer.setVisible(false);
+        btnBuildHotel.setVisible(false);
     }
 }

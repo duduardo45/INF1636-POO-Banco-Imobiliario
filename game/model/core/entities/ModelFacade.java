@@ -13,6 +13,7 @@ public class ModelFacade {
     private String lastEventMessage;
     private boolean hasBuiltThisTurn = false;
     private Property propertyJustBought = null;
+    private boolean hasTradedThisTurn = false;
     
     public ModelFacade() {
         this.dice1 = new Dice();
@@ -91,6 +92,10 @@ public class ModelFacade {
             currentPlayer.credit(start.getPassBonus());
         }
         
+        if (finalPosition instanceof Company) {
+            // Se for, injetamos o valor dos dados (steps) nela
+            ((Company) finalPosition).setDiceRollForRent(steps);
+        }
         // Executa evento da casa e captura mensagem
         lastEventMessage = finalPosition.event(currentPlayer);
     }
@@ -163,26 +168,20 @@ public class ModelFacade {
     }
     
     /**
-     * Conta quantos jogadores ainda estão ativos (saldo >= 0)
+     * Conta quantos jogadores ainda estão no jogo.
+     * (Atualizado para usar o tamanho da lista, já que removemos os falidos)
      */
     public int countActivePlayers() {
-        int count = 0;
-        for (Player player : players) {
-            if (player.getBalance() >= 0) {
-                count++;
-            }
-        }
-        return count;
+        return players.size();
     }
     
     /**
-     * Retorna o nome do vencedor (último jogador ativo)
+     * Retorna o nome do vencedor (o único que sobrou na lista).
      */
     public String getWinnerName() {
-        for (Player player : players) {
-            if (player.getBalance() >= 0) {
-                return player.getName();
-            }
+        if (!players.isEmpty()) {
+            // Retorna o único jogador restante
+            return players.get(0).getName();
         }
         return null;
     }
@@ -202,7 +201,13 @@ public class ModelFacade {
         }
         
         // Marcar como eliminado (saldo muito negativo)
-        currentPlayer.debit(1000000);
+        // currentPlayer.debit(1000000);
+        players.remove(currentPlayerIndex);
+        currentPlayerIndex--;
+        if (currentPlayerIndex < 0) {
+            currentPlayerIndex = 0;
+        }
+
     }
     
     // ===== GETTERS PARA CONTROLLER (retornam tipos simples) =====
@@ -270,13 +275,27 @@ public class ModelFacade {
             
             int houses = 0;
             boolean hasHotel = false;
+            boolean isPlace = false;
+            boolean canBuildHouse = false;
+            boolean canBuildHotel = false;
             int currentPrice = prop.getCost();
+            
             // Verifica se esta propriedade é um "Place" (onde se pode construir)
             if (prop instanceof Place) {
                 Place place = (Place) prop;
                 houses = place.getNumOfHouses(); 
                 hasHotel = place.getNumOfHotels() > 0;
                 currentPrice = place.getTotalValue();
+                isPlace = true;
+                if (place.isOwned() && place.getOwner() == currentPlayer && !this.hasBuiltThisTurn) {//regra de limite por turno
+                     // Verifica também a regra do "propertyJustBought"
+                     boolean justBought = (this.propertyJustBought != null && this.propertyJustBought == place);
+                     
+                     if (!justBought) {
+                         canBuildHouse = place.canBuildHouse();
+                         canBuildHotel = place.canBuildHotel();
+                     }
+                }
             }
             return new PropertyInfo(
                     prop.getName(),
@@ -285,7 +304,10 @@ public class ModelFacade {
                     prop.getCurrentRent(),
                     houses,          
                     hasHotel,
-                    currentPrice
+                    currentPrice,
+                    isPlace,
+                    canBuildHouse,  
+                    canBuildHotel
                 );
         }
         return null;
@@ -388,6 +410,55 @@ public class ModelFacade {
         
         return true;
     }
+
+    /**
+     * Tenta construir HOTEL na propriedade atual - Função bem parecida com a de construir casa, mas com regras adicionais fornecidas pelo Model.
+     */
+    public boolean buildHotelOnCurrentProperty() {
+        // Regra de Limite por Turno
+        if (this.hasBuiltThisTurn) {
+            return false; // Já construiu algo nesta rodada
+        }
+        
+        Player currentPlayer = players.get(currentPlayerIndex);
+        Space currentSpace = currentPlayer.getCar().getPosition();
+        
+        // Regra de Compra Recente
+        if (this.propertyJustBought != null && this.propertyJustBought == currentSpace) {
+            return false; // Não pode construir na mesma rodada que comprou
+        }
+        
+        if (!(currentSpace instanceof Place)) {
+            return false;
+        }
+        
+        Place place = (Place) currentSpace;
+        
+        // Verificações de Dono
+        if (!place.isOwned() || place.getOwner() != currentPlayer) {
+            return false;
+        }
+        
+        // Verifica se a regra do Place permite hotel (ex: ter pelo menos 1 casa)
+        if (!place.canBuildHotel()) {
+            return false;
+        }
+        
+        // Verifica Saldo
+        int hotelPrice = place.getHotelPrice();
+        if (currentPlayer.getBalance() < hotelPrice) {
+            return false;
+        }
+        
+        // Executa a construção
+        place.buildHotel();
+        currentPlayer.debit(hotelPrice);
+        
+        // Marca que já construiu nesta rodada
+        this.hasBuiltThisTurn = true;
+        
+        return true;
+    }
     
     /**
      * Vende propriedade atual ao banco por 90% do valor
@@ -407,8 +478,19 @@ public class ModelFacade {
             return false;
         }
         
-        // Calcular valor de venda (90%)
-        int sellValue = (int) (property.getCost() * 0.9);
+        if (this.propertyJustBought != null && this.propertyJustBought == property) {
+            // Se acabou de comprar nesta rodada, não pode vender com 'V'
+            // (Você pode retornar false ou setar uma mensagem de erro no lastEventMessage se quiser)
+            lastEventMessage = "Não pode vender imóvel recém-comprado!";
+            return false;
+        }
+
+        int totalValue = property.getCost();
+        if (property instanceof Place) {
+            totalValue = ((Place) property).getTotalValue();
+        }
+        
+        int sellValue = (int) (totalValue * 0.9);
         
         // Vender ao banco
         currentPlayer.sellProperty(property);
@@ -417,6 +499,73 @@ public class ModelFacade {
         bank.returnPropertyToBank(property);
         
         return true;
+    }
+
+    /**
+     * Retorna uma lista de pares (Nome, Valor de Venda) das propriedades do jogador atual.
+     * Usado para preencher o menu de venda.
+     */
+    public Map<String, Integer> getCurrentPlayerSellableProperties() {
+        Player currentPlayer = players.get(currentPlayerIndex);
+        Map<String, Integer> sellableProps = new HashMap<>();
+        
+        for (Property prop : currentPlayer.getLiquidAssets()) {
+            // CALCULA O VALOR TOTAL (Terreno + Construções)
+            int totalValue = prop.getCost(); // Valor base
+            
+            if (prop instanceof Place) {
+                totalValue = ((Place) prop).getTotalValue();
+            }
+            
+            // Regra: 90% do valor total
+            int sellValue = (int) (totalValue * 0.9);
+            sellableProps.put(prop.getName(), sellValue);
+        }
+        return sellableProps;
+
+    }
+
+    /**
+     * Vende uma propriedade específica pelo nome.
+     * Retorna Strings de erro ou sucesso para exibir na tela.
+     */
+    public String sellPropertyByName(String propertyName) {
+        Player currentPlayer = players.get(currentPlayerIndex);
+        
+        // 1. Encontrar a propriedade na lista do jogador
+        Property targetProp = null;
+        for (Property prop : currentPlayer.getLiquidAssets()) {
+            if (prop.getName().equals(propertyName)) {
+                targetProp = prop;
+                break;
+            }
+        }
+        
+        if (targetProp == null) {
+            return "Erro: Propriedade não encontrada.";
+        }
+        
+        // 2. IMPEDIR LOOP: Verifica se a propriedade foi comprada NESTA rodada
+        if (this.propertyJustBought != null && this.propertyJustBought == targetProp) {
+            return "Não é permitido vender uma propriedade no mesmo turno em que foi comprada.";
+        }
+        
+        // 3. Calcular valor de venda (90% do TOTAL)
+        int totalValue = targetProp.getCost();
+        if (targetProp instanceof Place) {
+            totalValue = ((Place) targetProp).getTotalValue();
+        }
+        int sellValue = (int) (totalValue * 0.9);
+        
+        // 4. Realizar a venda
+        currentPlayer.sellProperty(targetProp);
+        currentPlayer.credit(sellValue);
+        bank.returnPropertyToBank(targetProp);
+        
+        // Resetar dono
+        targetProp.setOwner(null);
+        
+        return "Vendida " + propertyName + " por $" + sellValue;
     }
     
     // ===== CLASSES INTERNAS PARA TRANSFERIR DADOS =====
@@ -433,8 +582,11 @@ public class ModelFacade {
         public final int houses;
         public final boolean hasHotel;
         public final int totalValue;
+        public final boolean isPlace;       
+        public final boolean canBuildHouse; 
+        public final boolean canBuildHotel;
         
-        public PropertyInfo(String name, int cost, String ownerName, int rent, int houses, boolean hasHotel, int totalValue) {
+        public PropertyInfo(String name, int cost, String ownerName, int rent, int houses, boolean hasHotel, int totalValue, boolean isPlace, boolean canBuildHouse, boolean canBuildHotel) {
             this.name = name;
             this.cost = cost;
             this.ownerName = ownerName;
@@ -442,6 +594,9 @@ public class ModelFacade {
             this.houses = houses;
             this.hasHotel = hasHotel;
             this.totalValue = totalValue;
+            this.isPlace = isPlace;
+            this.canBuildHouse = canBuildHouse;
+            this.canBuildHotel = canBuildHotel;
         }
     }
     
@@ -503,6 +658,18 @@ public class ModelFacade {
        }
        
        return allStatus;
+   }
+   
+   public int[] rollDiceManual(int d1, int d2) {
+       // Pede para cada dado assumir um valor específico
+       int result1 = dice1.rollFixed(d1);
+       int result2 = dice2.rollFixed(d2);
+       
+       // Atualiza o histórico da jogada
+       this.lastDiceRoll[0] = result1;
+       this.lastDiceRoll[1] = result2;
+       
+       return lastDiceRoll;
    }
 }
 
