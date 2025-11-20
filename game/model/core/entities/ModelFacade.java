@@ -168,26 +168,20 @@ public class ModelFacade {
     }
     
     /**
-     * Conta quantos jogadores ainda estão ativos (saldo >= 0)
+     * Conta quantos jogadores ainda estão no jogo.
+     * (Atualizado para usar o tamanho da lista, já que removemos os falidos)
      */
     public int countActivePlayers() {
-        int count = 0;
-        for (Player player : players) {
-            if (player.getBalance() >= 0) {
-                count++;
-            }
-        }
-        return count;
+        return players.size();
     }
     
     /**
-     * Retorna o nome do vencedor (último jogador ativo)
+     * Retorna o nome do vencedor (o único que sobrou na lista).
      */
     public String getWinnerName() {
-        for (Player player : players) {
-            if (player.getBalance() >= 0) {
-                return player.getName();
-            }
+        if (!players.isEmpty()) {
+            // Retorna o único jogador restante
+            return players.get(0).getName();
         }
         return null;
     }
@@ -207,7 +201,13 @@ public class ModelFacade {
         }
         
         // Marcar como eliminado (saldo muito negativo)
-        currentPlayer.debit(1000000);
+        // currentPlayer.debit(1000000);
+        players.remove(currentPlayerIndex);
+        currentPlayerIndex--;
+        if (currentPlayerIndex < 0) {
+            currentPlayerIndex = 0;
+        }
+
     }
     
     // ===== GETTERS PARA CONTROLLER (retornam tipos simples) =====

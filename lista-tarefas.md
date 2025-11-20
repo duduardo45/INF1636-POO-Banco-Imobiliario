@@ -14,7 +14,7 @@
 - [ ] Fazer o turno passar automaticamente ao fazer uma escolha (quando aplicável). 
 - [X] **Feature de Teste (Pedido do Ivan):** Permitir rolagem de dados escolhida pelo usuário manualmente. - Barella
 - [X] Implementar Hotkey ou Botão principal para passar o turno.
-- [ ] Eliminar de fato o jogador do ciclo de turnos quando ele for removido.
+- [X] Eliminar de fato o jogador do ciclo de turnos quando ele for removido.
 - [ ] Dar chance extra para usuário ao conseguir duplas (exceto na 3ª dupla, pois nesse caso ele vai para a prisão).
 
 ### 🏠 Grupo 3: Economia e Propriedades
@@ -32,8 +32,8 @@
 *Foco: O que acontece quando o dinheiro acaba.*
 
 - [X] Permitir escolha de qual propriedade vender em caso de falência (atualmente só tenta vender a atual). - Barella
-- [ ] Bloquear o jogador de passar a vez se estiver em estado de falência.
-- [ ] Proibir o jogador de apertar `E` (render-se) se ainda tiver dinheiro.
+- [X] Bloquear o jogador de passar a vez se estiver em estado de falência.
+- [ ] Proibir o jogador de apertar `E` ou apertar o botão (render-se) se ainda tiver dinheiro.
 
 ### 🎲 Grupo 5: Regras Especiais do Tabuleiro
 *Foco: Prisão e Sorte/Revés.*
@@ -45,7 +45,7 @@
 ### 🖥️ Grupo 6: Interface (UI) e Feedback Visual
 *Foco: Melhorar a experiência do usuário e visualização.*
 
-- [X] Converter opções de escolha (hotkeys) em Botões clicáveis. - Barella(parcial: Compra de casas, hoteis e Compra e Venda de propriedades.)
+- [X] Converter opções de escolha (hotkeys) em Botões clicáveis. - Barella(parcial: Compra de casas, hoteis e Compra e Venda de propriedades, eliminar player)
 - [ ] Terminar criação de botões (verificar botões faltantes)
 - [ ] Mostrar visualmente quais propriedades são de qual jogador (ex: transparência colorida sobre a casa). 
 - [ ] Adicionar texto no tabuleiro mostrando quantidade de casas e hotéis em cada território.

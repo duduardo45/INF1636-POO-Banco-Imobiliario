@@ -216,6 +216,16 @@ public class BoardFrame extends JFrame implements Observer {
     }
     
     private void endTurn() {
+        if (gameState.getCurrentPlayerBalance() < 0) {
+            JOptionPane.showMessageDialog(this, 
+                "AÇÃO BLOQUEADA:\n" +
+                "Você está com saldo negativo (Falência)!\n\n" +
+                "Você deve vender propriedades para pagar sua dívida\n" +
+                "ou declarar falência (Botão 'Declarar Falência').",
+                "Saldo Negativo",
+                JOptionPane.WARNING_MESSAGE);
+            return; // IMPEDE O FIM DO TURNO
+        }
         controller.endTurn();
         rollDiceButton.setText("Rolar Dados");
         rollDiceButton.removeActionListener(rollDiceButton.getActionListeners()[0]);

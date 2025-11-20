@@ -23,6 +23,7 @@ public class BoardPanel extends JPanel {
     private JButton btnManageProperties;
     private JButton btnBuildHouse;
     private JButton btnBuildHotel;
+    private JButton btnEliminatePlayer;
     
     public BoardPanel(GameState gameState, GameController controller) {
         this.gameState = gameState;
@@ -403,7 +404,19 @@ public class BoardPanel extends JPanel {
         
         PropertyInfo propertyInfo = controller.getCurrentPropertyInfo();
         if (propertyInfo == null) {
-            hideAllButtons();
+            // Se estiver falido, forçamos a exibição dos botões numa posição fixa
+            if (gameState.getCurrentPlayerBalance() < 0) {
+                hideAllButtons();
+                btnEliminatePlayer.setBounds(720, 50, 140, 25);
+                btnEliminatePlayer.setVisible(true);
+                
+                if (btnManageProperties != null && !gameState.getCurrentPlayerProperties().isEmpty()) {
+                    btnManageProperties.setBounds(720, 80, 140, 25);
+                    btnManageProperties.setVisible(true);
+                }
+            } else {
+                hideAllButtons();
+            }
             return;
         }
         
@@ -522,6 +535,15 @@ public class BoardPanel extends JPanel {
         
         String currentPlayer = gameState.getCurrentPlayerName();
 
+        int currentBalance = gameState.getCurrentPlayerBalance();
+
+        // CENÁRIO 0: Jogador em falência
+        if (currentBalance < 0) {
+            btnEliminatePlayer.setBounds(x, currentY, width, buttonHeight);
+            btnEliminatePlayer.setVisible(true);
+            currentY += buttonHeight + 5;
+        }
+        // Botão Gerenciar Propriedades (venda)
         if (!gameState.getCurrentPlayerProperties().isEmpty()) {
              btnManageProperties.setBounds(x, currentY, width, buttonHeight);
              btnManageProperties.setVisible(true);
@@ -639,6 +661,23 @@ public class BoardPanel extends JPanel {
         });
         add(btnBuildHotel);
         
+
+        btnEliminatePlayer = new JButton("Declarar Falência");
+        btnEliminatePlayer.setFont(btnFont);
+        btnEliminatePlayer.setBackground(Color.BLACK);
+        btnEliminatePlayer.setForeground(Color.WHITE); // Texto branco
+        btnEliminatePlayer.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(this, 
+                "TEM CERTEZA? Isso removerá você do jogo permanentemente.", 
+                "Confirmar Falência", 
+                JOptionPane.YES_NO_OPTION);
+                
+            if (confirm == JOptionPane.YES_OPTION) {
+                controller.eliminateCurrentPlayer();
+                this.repaint();
+            }
+        });
+        add(btnEliminatePlayer);
         // Esconde todos inicialmente
         hideAllButtons();
     }
@@ -647,6 +686,7 @@ public class BoardPanel extends JPanel {
         btnBuyProperty.setVisible(false);
         btnManageProperties.setVisible(false);
         btnBuildHouse.setVisible(false);
+        btnEliminatePlayer.setVisible(false);
         btnBuildHotel.setVisible(false);
     }
 }

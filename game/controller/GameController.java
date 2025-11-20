@@ -218,8 +218,9 @@ public class GameController {
         if (modelFacade.countActivePlayers() <= 1) {
             String winner = modelFacade.getWinnerName();
             gameState.setMessage("FIM DE JOGO! Vencedor: " + winner);
-            gameState.setGameOver(true);
             gameState.setWinner(winner);
+            gameState.setGameOver(true);
+            updateGameState();
         } else {
             endTurn();
         }
