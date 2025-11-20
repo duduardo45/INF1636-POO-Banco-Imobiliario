@@ -12,7 +12,7 @@
 - [ ] Proibir o jogador de agir antes de rolar os dados.
 - [ ] Bloquear teclas de comando em momentos indevidos (ex: `C`/`V` na casa de Parada Livre).
 - [ ] Fazer o turno passar automaticamente ao fazer uma escolha (quando aplicável).
-- [ ] **Feature de Teste (Pedido do Ivan):** Permitir rolagem de dados escolhida pelo usuário manualmente.
+- [X] **Feature de Teste (Pedido do Ivan):** Permitir rolagem de dados escolhida pelo usuário manualmente. - Barella
 - [X] Implementar Hotkey ou Botão principal para passar o turno.
 - [ ] Eliminar de fato o jogador do ciclo de turnos quando ele for removido.
 
