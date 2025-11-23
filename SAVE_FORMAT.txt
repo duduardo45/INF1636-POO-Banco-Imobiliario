@@ -1,0 +1,522 @@
+================================================================================
+BANCO IMOBILIÁRIO - FORMATO DE ARQUIVO DE SALVAMENTO
+================================================================================
+
+Versão: 1.0
+Encoding: UTF-8
+Extensão: .txt
+
+Este documento descreve o formato usado para salvar e carregar partidas do
+Banco Imobiliário. O formato é texto puro (plain text) e pode ser editado
+manualmente com qualquer editor de texto que suporte UTF-8.
+
+================================================================================
+ESTRUTURA GERAL
+================================================================================
+
+O arquivo é dividido em seções, cada uma começando com um cabeçalho entre
+colchetes [NOME_SECAO]. Linhas que começam com # são comentários e são
+ignoradas pelo parser.
+
+Seções obrigatórias (devem aparecer nesta ordem):
+  1. [GAME_STATE]      - Estado geral do jogo
+  2. [PLAYERS]         - Informações de todos os jogadores
+  3. [PROPERTIES]      - Estado de todas as propriedades do tabuleiro
+
+Formato de cada linha de dados:
+  Chave=Valor
+
+IMPORTANTE:
+- Não use espaços antes ou depois do sinal de igual (=)
+- Valores vazios devem ser representados como "null" ou "" (string vazia)
+- Valores booleanos devem ser "true" ou "false" (lowercase)
+- Listas são separadas por vírgula, ex: "Leblon,Copacabana,Flamengo"
+
+================================================================================
+SEÇÃO [GAME_STATE]
+================================================================================
+
+Armazena o estado atual do jogo, incluindo de quem é o turno e flags de
+controle.
+
+Campos obrigatórios:
+
+CurrentPlayerIndex=<inteiro>
+  - Índice (0-based) do jogador atual na lista de jogadores
+  - Exemplo: CurrentPlayerIndex=0 (primeiro jogador)
+
+HasBuiltThisTurn=<booleano>
+  - Indica se o jogador atual já construiu algo neste turno
+  - Valores: true ou false
+
+DiceRolledThisTurn=<booleano>
+  - Indica se os dados já foram rolados no turno atual
+  - Valores: true ou false
+  - IMPORTANTE: Só é possível salvar quando este valor é false
+
+PropertyJustBought=<string ou null>
+  - Nome da propriedade que acabou de ser comprada (se houver)
+  - Use "null" se nenhuma propriedade foi comprada este turno
+  - Exemplo: PropertyJustBought=Copacabana
+  - Exemplo: PropertyJustBought=null
+
+LastDiceRoll=<int>,<int>
+  - Valores dos dois dados na última jogada
+  - Formato: dado1,dado2
+  - Exemplo: LastDiceRoll=3,5
+
+Exemplo completo da seção:
+[GAME_STATE]
+CurrentPlayerIndex=1
+HasBuiltThisTurn=false
+DiceRolledThisTurn=false
+PropertyJustBought=null
+LastDiceRoll=0,0
+
+================================================================================
+SEÇÃO [PLAYERS]
+================================================================================
+
+Armazena informações de todos os jogadores na partida. O primeiro campo
+indica quantos jogadores existem.
+
+Campos obrigatórios:
+
+PlayerCount=<inteiro>
+  - Número total de jogadores na partida (2 a 6)
+  - Exemplo: PlayerCount=4
+
+Para cada jogador (numerados de 0 a PlayerCount-1):
+
+Player<N>_Name=<string>
+  - Nome do jogador
+  - Pode conter espaços e acentos (UTF-8)
+  - Exemplo: Player0_Name=João Silva
+
+Player<N>_Color=<string>
+  - Cor do jogador (pino)
+  - Valores válidos: Vermelho, Azul, Verde, Amarelo, Roxo, Laranja
+  - Exemplo: Player0_Color=Vermelho
+
+Player<N>_Balance=<inteiro>
+  - Saldo atual do jogador em dinheiro
+  - Pode ser negativo (falência)
+  - Exemplo: Player0_Balance=3500
+
+Player<N>_Position=<inteiro>
+  - Índice (0-based) da casa atual do jogador no tabuleiro
+  - Valores: 0 a 39 (40 casas no total)
+  - Exemplo: Player0_Position=15
+
+Player<N>_InPrison=<booleano>
+  - Indica se o jogador está preso
+  - Valores: true ou false
+  - Exemplo: Player0_InPrison=false
+
+Player<N>_TurnsInPrison=<inteiro>
+  - Número de turnos que o jogador já passou na prisão
+  - Valores: 0 a 3
+  - Exemplo: Player0_TurnsInPrison=0
+
+Player<N>_GetOutPrisonCards=<inteiro>
+  - Quantidade de cartas "Saída Livre da Prisão" que o jogador possui
+  - Valores: 0 ou mais
+  - Exemplo: Player0_GetOutPrisonCards=1
+
+Player<N>_ConsecutiveDoubles=<inteiro>
+  - Número de duplas consecutivas que o jogador rolou
+  - Valores: 0 a 2 (3 duplas manda para prisão)
+  - Exemplo: Player0_ConsecutiveDoubles=0
+
+Player<N>_Properties=<lista de strings separadas por vírgula>
+  - Lista de nomes das propriedades que o jogador possui
+  - Use "" (vazio) se não tiver propriedades
+  - Exemplo: Player0_Properties=Leblon,Copacabana,Flamengo
+  - Exemplo: Player0_Properties=
+
+Exemplo completo da seção para 2 jogadores:
+[PLAYERS]
+PlayerCount=2
+Player0_Name=João
+Player0_Color=Vermelho
+Player0_Balance=3800
+Player0_Position=5
+Player0_InPrison=false
+Player0_TurnsInPrison=0
+Player0_GetOutPrisonCards=0
+Player0_ConsecutiveDoubles=0
+Player0_Properties=Leblon,Flamengo
+Player1_Name=Maria
+Player1_Color=Azul
+Player1_Balance=4200
+Player1_Position=12
+Player1_InPrison=false
+Player1_TurnsInPrison=0
+Player1_GetOutPrisonCards=1
+Player1_ConsecutiveDoubles=0
+Player1_Properties=Copacabana,Botafogo,Ipanema
+
+================================================================================
+SEÇÃO [PROPERTIES]
+================================================================================
+
+Armazena o estado de todas as propriedades do tabuleiro (territórios e
+companhias). Apenas propriedades que são instâncias de Property devem ser
+listadas (não inclui casas especiais como Prisão, Start, etc).
+
+Campos obrigatórios:
+
+PropertyCount=<inteiro>
+  - Número total de propriedades no tabuleiro
+  - Deve corresponder ao número de Property_<N> entradas
+  - Exemplo: PropertyCount=28
+
+Para cada propriedade (numeradas de 0 a PropertyCount-1):
+
+Property_<N>_Name=<string>
+  - Nome da propriedade (deve corresponder exatamente ao nome no tabuleiro)
+  - Exemplo: Property_0_Name=Leblon
+
+Property_<N>_BoardIndex=<inteiro>
+  - Índice (0-based) da posição da propriedade no tabuleiro
+  - Valores: 0 a 39
+  - Exemplo: Property_0_BoardIndex=1
+
+Property_<N>_Owner=<string ou null>
+  - Nome do jogador dono da propriedade
+  - Use "null" se a propriedade não tem dono
+  - Exemplo: Property_0_Owner=João
+  - Exemplo: Property_0_Owner=null
+
+Property_<N>_Houses=<inteiro>
+  - Número de casas construídas na propriedade
+  - Valores: 0 a 4
+  - Use 0 para companhias (não podem ter casas)
+  - Exemplo: Property_0_Houses=2
+
+Property_<N>_Hotels=<inteiro>
+  - Número de hotéis construídos na propriedade
+  - Valores: 0 ou 1
+  - Use 0 para companhias (não podem ter hotéis)
+  - Exemplo: Property_0_Hotels=0
+
+Exemplo completo da seção:
+[PROPERTIES]
+PropertyCount=28
+Property_0_Name=Leblon
+Property_0_BoardIndex=1
+Property_0_Owner=João
+Property_0_Houses=2
+Property_0_Hotels=0
+Property_1_Name=Av. Presidente Vargas
+Property_1_BoardIndex=3
+Property_1_Owner=null
+Property_1_Houses=0
+Property_1_Hotels=0
+Property_2_Name=Companhia Ferroviária
+Property_2_BoardIndex=5
+Property_2_Owner=Maria
+Property_2_Houses=0
+Property_2_Hotels=0
+...
+
+================================================================================
+ÍNDICES DO TABULEIRO
+================================================================================
+
+Para referência, aqui está a lista completa de posições no tabuleiro:
+
+Posição | Nome
+--------|--------------------------------------------------------
+   0    | Ponto de Partida
+   1    | Leblon
+   2    | Sorte ou Revés
+   3    | Av. Presidente Vargas
+   4    | Av. Nossa Sra. De Copacabana
+   5    | Companhia Ferroviária
+   6    | Av. Brigadeiro Faria Lima
+   7    | Companhia de Viação
+   8    | Av. Rebouças
+   9    | Av. 9 de Julho
+  10    | Prisão
+  11    | Av. Europa
+  12    | Sorte ou Revés
+  13    | Rua Augusta
+  14    | Av. Pacaembú
+  15    | Companhia de Táxi
+  16    | Sorte ou Revés
+  17    | Interlagos
+  18    | Lucros ou Dividendos
+  19    | Morumbi
+  20    | Parada Livre
+  21    | Flamengo
+  22    | Sorte ou Revés
+  23    | Botafogo
+  24    | Imposto de Renda
+  25    | Companhia de Navegação
+  26    | Av. Brasil
+  27    | Sorte ou Revés
+  28    | Av. Paulista
+  29    | Jardim Europa
+  30    | Vá para a Prisão
+  31    | Copacabana
+  32    | Companhia de Aviação
+  33    | Av. Vieira Souto
+  34    | Av. Atlântica
+  35    | Companhia de Táxi Aéreo
+  36    | Ipanema
+  37    | Sorte ou Revés
+  38    | Jardim Paulista
+  39    | Brooklin
+
+================================================================================
+EXEMPLO COMPLETO DE ARQUIVO DE SALVAMENTO
+================================================================================
+
+# Banco Imobiliário - Partida Salva
+# Data: 2025-11-23
+# Jogadores: João e Maria
+
+[GAME_STATE]
+CurrentPlayerIndex=0
+HasBuiltThisTurn=false
+DiceRolledThisTurn=false
+PropertyJustBought=null
+LastDiceRoll=4,3
+
+[PLAYERS]
+PlayerCount=2
+Player0_Name=João
+Player0_Color=Vermelho
+Player0_Balance=3200
+Player0_Position=11
+Player0_InPrison=false
+Player0_TurnsInPrison=0
+Player0_GetOutPrisonCards=0
+Player0_ConsecutiveDoubles=0
+Player0_Properties=Leblon,Av. Presidente Vargas,Flamengo
+Player1_Name=Maria
+Player1_Color=Azul
+Player1_Balance=3850
+Player1_Position=23
+Player1_InPrison=false
+Player1_TurnsInPrison=0
+Player1_GetOutPrisonCards=1
+Player1_ConsecutiveDoubles=0
+Player1_Properties=Copacabana,Botafogo,Av. Brasil
+
+[PROPERTIES]
+PropertyCount=28
+Property_0_Name=Leblon
+Property_0_BoardIndex=1
+Property_0_Owner=João
+Property_0_Houses=1
+Property_0_Hotels=0
+Property_1_Name=Av. Presidente Vargas
+Property_1_BoardIndex=3
+Property_1_Owner=João
+Property_1_Houses=0
+Property_1_Hotels=0
+Property_2_Name=Av. Nossa Sra. De Copacabana
+Property_2_BoardIndex=4
+Property_2_Owner=null
+Property_2_Houses=0
+Property_2_Hotels=0
+Property_3_Name=Companhia Ferroviária
+Property_3_BoardIndex=5
+Property_3_Owner=null
+Property_3_Houses=0
+Property_3_Hotels=0
+Property_4_Name=Av. Brigadeiro Faria Lima
+Property_4_BoardIndex=6
+Property_4_Owner=null
+Property_4_Houses=0
+Property_4_Hotels=0
+Property_5_Name=Companhia de Viação
+Property_5_BoardIndex=7
+Property_5_Owner=null
+Property_5_Houses=0
+Property_5_Hotels=0
+Property_6_Name=Av. Rebouças
+Property_6_BoardIndex=8
+Property_6_Owner=null
+Property_6_Houses=0
+Property_6_Hotels=0
+Property_7_Name=Av. 9 de Julho
+Property_7_BoardIndex=9
+Property_7_Owner=null
+Property_7_Houses=0
+Property_7_Hotels=0
+Property_8_Name=Av. Europa
+Property_8_BoardIndex=11
+Property_8_Owner=null
+Property_8_Houses=0
+Property_8_Hotels=0
+Property_9_Name=Rua Augusta
+Property_9_BoardIndex=13
+Property_9_Owner=null
+Property_9_Houses=0
+Property_9_Hotels=0
+Property_10_Name=Av. Pacaembú
+Property_10_BoardIndex=14
+Property_10_Owner=null
+Property_10_Houses=0
+Property_10_Hotels=0
+Property_11_Name=Companhia de Táxi
+Property_11_BoardIndex=15
+Property_11_Owner=null
+Property_11_Houses=0
+Property_11_Hotels=0
+Property_12_Name=Interlagos
+Property_12_BoardIndex=17
+Property_12_Owner=null
+Property_12_Houses=0
+Property_12_Hotels=0
+Property_13_Name=Morumbi
+Property_13_BoardIndex=19
+Property_13_Owner=null
+Property_13_Houses=0
+Property_13_Hotels=0
+Property_14_Name=Flamengo
+Property_14_BoardIndex=21
+Property_14_Owner=João
+Property_14_Houses=0
+Property_14_Hotels=0
+Property_15_Name=Botafogo
+Property_15_BoardIndex=23
+Property_15_Owner=Maria
+Property_15_Houses=0
+Property_15_Hotels=0
+Property_16_Name=Companhia de Navegação
+Property_16_BoardIndex=25
+Property_16_Owner=null
+Property_16_Houses=0
+Property_16_Hotels=0
+Property_17_Name=Av. Brasil
+Property_17_BoardIndex=26
+Property_17_Owner=Maria
+Property_17_Houses=0
+Property_17_Hotels=0
+Property_18_Name=Av. Paulista
+Property_18_BoardIndex=28
+Property_18_Owner=null
+Property_18_Houses=0
+Property_18_Hotels=0
+Property_19_Name=Jardim Europa
+Property_19_BoardIndex=29
+Property_19_Owner=null
+Property_19_Houses=0
+Property_19_Hotels=0
+Property_20_Name=Copacabana
+Property_20_BoardIndex=31
+Property_20_Owner=Maria
+Property_20_Houses=2
+Property_20_Hotels=0
+Property_21_Name=Companhia de Aviação
+Property_21_BoardIndex=32
+Property_21_Owner=null
+Property_21_Houses=0
+Property_21_Hotels=0
+Property_22_Name=Av. Vieira Souto
+Property_22_BoardIndex=33
+Property_22_Owner=null
+Property_22_Houses=0
+Property_22_Hotels=0
+Property_23_Name=Av. Atlântica
+Property_23_BoardIndex=34
+Property_23_Owner=null
+Property_23_Houses=0
+Property_23_Hotels=0
+Property_24_Name=Companhia de Táxi Aéreo
+Property_24_BoardIndex=35
+Property_24_Owner=null
+Property_24_Houses=0
+Property_24_Hotels=0
+Property_25_Name=Ipanema
+Property_25_BoardIndex=36
+Property_25_Owner=null
+Property_25_Houses=0
+Property_25_Hotels=0
+Property_26_Name=Jardim Paulista
+Property_26_BoardIndex=38
+Property_26_Owner=null
+Property_26_Houses=0
+Property_26_Hotels=0
+Property_27_Name=Brooklin
+Property_27_BoardIndex=39
+Property_27_Owner=null
+Property_27_Houses=0
+Property_27_Hotels=0
+
+================================================================================
+LIMITAÇÕES E NOTAS TÉCNICAS
+================================================================================
+
+1. BARALHO DE SORTE/REVÉS (LuckDeck):
+   - O baralho de cartas de Sorte/Revés NÃO é salvo com o estado atual
+   - Ao carregar um jogo, o baralho é recriado e embaralhado do zero
+   - As cartas "Saída Livre da Prisão" que os jogadores possuem SÃO salvas
+     e restauradas corretamente (campo GetOutPrisonCards)
+   - Esta limitação significa que a ordem das próximas cartas será diferente
+     ao carregar um jogo salvo
+
+2. HISTÓRICO DE JOGO:
+   - O histórico de eventos (log) não é salvo
+   - Ao carregar, o histórico estará vazio
+
+================================================================================
+REGRAS PARA EDIÇÃO MANUAL
+================================================================================
+
+1. ENCODING: Sempre salve o arquivo em UTF-8. Outros encodings podem causar
+   problemas com caracteres acentuados.
+
+2. ORDEM DAS SEÇÕES: As seções devem aparecer na ordem indicada:
+   [GAME_STATE], [PLAYERS], [PROPERTIES]
+
+3. NOMES DE PROPRIEDADES: Devem corresponder exatamente aos nomes usados no
+   jogo. Use a tabela de índices do tabuleiro como referência.
+
+4. CONSISTÊNCIA: 
+   - Se um jogador possui propriedades (Player_Properties), essas propriedades
+     devem ter o nome daquele jogador como Property_Owner
+   - PlayerCount deve corresponder ao número de jogadores definidos
+   - PropertyCount deve corresponder ao número de propriedades definidas
+
+5. VALIDAÇÕES:
+   - CurrentPlayerIndex deve ser menor que PlayerCount
+   - Player_Position deve estar entre 0 e 39
+   - Player_Balance pode ser negativo (falência)
+   - Property_Houses deve estar entre 0 e 4
+   - Property_Hotels deve ser 0 ou 1
+   - Não pode haver hotel e casas ao mesmo tempo (hotel substitui casas)
+
+6. LIMITAÇÕES:
+   - Não é possível salvar se os dados já foram rolados (DiceRolledThisTurn=true)
+   - O jogo só permite salvar no início do turno, antes de rolar os dados
+
+================================================================================
+ERROS COMUNS
+================================================================================
+
+Erro: "Parse error: Expected [GAME_STATE] section"
+  - Solução: Certifique-se que a primeira seção é [GAME_STATE]
+
+Erro: "Invalid player index"
+  - Solução: CurrentPlayerIndex deve ser entre 0 e (PlayerCount-1)
+
+Erro: "Property owner not found"
+  - Solução: O nome em Property_Owner deve corresponder exatamente a um
+    Player_Name existente
+
+Erro: "Invalid board position"
+  - Solução: Player_Position deve estar entre 0 e 39
+
+Erro: "Inconsistent property ownership"
+  - Solução: Se Player_Properties lista uma propriedade, ela deve ter aquele
+    jogador como Property_Owner (e vice-versa)
+
+================================================================================
+FIM DO DOCUMENTO
+================================================================================
+

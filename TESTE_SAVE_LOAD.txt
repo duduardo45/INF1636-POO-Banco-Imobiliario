@@ -1,0 +1,311 @@
+================================================================================
+BANCO IMOBILIÁRIO - PLANO DE TESTE SAVE/LOAD
+================================================================================
+
+Este documento descreve como testar a funcionalidade de salvar e carregar
+partidas implementada conforme especificado no Grupo 7 da lista-tarefas.md.
+
+================================================================================
+TESTE 1: SALVAR JOGO NO INÍCIO DO TURNO
+================================================================================
+
+Objetivo: Verificar que é possível salvar o jogo antes de rolar os dados
+
+Passos:
+1. Inicie um novo jogo com 2 jogadores
+2. NÃO role os dados
+3. Clique no botão "Salvar e Sair"
+4. Confirme a ação no diálogo
+5. Escolha um local para salvar (ex: teste_save1.txt)
+6. Verifique que o jogo foi salvo e o aplicativo encerrou
+
+Resultado esperado:
+- Arquivo .txt criado no local escolhido
+- Mensagem "Jogo salvo com sucesso!"
+- Aplicação encerrada
+
+================================================================================
+TESTE 2: BLOQUEAR SALVAMENTO APÓS ROLAR DADOS
+================================================================================
+
+Objetivo: Verificar que NÃO é possível salvar após rolar os dados
+
+Passos:
+1. Inicie um novo jogo
+2. Role os dados (clique em "Rolar Dados")
+3. Observe o botão "Salvar e Sair"
+4. Tente clicar no botão (deve estar desabilitado)
+5. Passe o mouse sobre o botão para ver o tooltip
+
+Resultado esperado:
+- Botão "Salvar e Sair" está desabilitado (cinza)
+- Tooltip mostra: "Só é possível salvar antes de rolar os dados"
+- Se tentar clicar: mensagem de erro
+
+================================================================================
+TESTE 3: CARREGAR JOGO SALVO
+================================================================================
+
+Objetivo: Verificar que é possível carregar um jogo salvo
+
+Pré-requisito: Execute TESTE 1 primeiro para ter um arquivo salvo
+
+Passos:
+1. Feche o jogo se estiver aberto
+2. Execute o jogo (InitialFrame)
+3. Clique no botão "Carregar Jogo"
+4. Selecione o arquivo salvo no TESTE 1
+5. Verifique se o tabuleiro abre com o estado correto
+
+Resultado esperado:
+- Tabuleiro abre com os jogadores nas posições corretas
+- Saldos dos jogadores estão corretos
+- Turno do jogador correto
+- Propriedades possuídas estão corretas
+
+================================================================================
+TESTE 4: JOGO COMPLETO COM SAVE/LOAD
+================================================================================
+
+Objetivo: Verificar ciclo completo de jogo com salvamento e carregamento
+
+Passos:
+1. Inicie um novo jogo com 3 jogadores
+2. Jogue alguns turnos:
+   - Role dados
+   - Compre propriedades
+   - Construa casas
+   - Passe o turno
+3. No início de um turno (antes de rolar), salve o jogo (teste_save2.txt)
+4. Encerre e reabra o jogo
+5. Carregue o arquivo teste_save2.txt
+6. Continue jogando:
+   - Role dados
+   - Verifique que tudo funciona corretamente
+7. Salve novamente em um novo arquivo (teste_save3.txt)
+
+Resultado esperado:
+- Estado do jogo é preservado perfeitamente
+- Todas as funcionalidades continuam funcionando após carregar
+- É possível salvar novamente após carregar
+
+================================================================================
+TESTE 5: ESTADO DE PRISÃO
+================================================================================
+
+Objetivo: Verificar que o estado de prisão é salvo/carregado corretamente
+
+Passos:
+1. Inicie um jogo
+2. Envie um jogador para a prisão (caia na casa "Vá para Prisão")
+3. No turno seguinte (antes de rolar), salve o jogo
+4. Recarregue o jogo
+5. Verifique que:
+   - Jogador ainda está na prisão
+   - Contador de turnos na prisão está correto
+   - Mecânica de prisão funciona (tentar rolar duplas)
+
+Resultado esperado:
+- Estado de prisão preservado
+- TurnsInPrison correto
+- Jogador pode sair da prisão normalmente
+
+================================================================================
+TESTE 6: CARTAS "SAÍDA LIVRE DA PRISÃO"
+================================================================================
+
+Objetivo: Verificar que cartas especiais são salvas/carregadas
+
+Passos:
+1. Jogue até obter uma carta "Saída Livre da Prisão"
+2. NÃO use a carta
+3. Salve o jogo
+4. Recarregue o jogo
+5. Envie o jogador para a prisão
+6. Verifique que a carta ainda está disponível
+7. Use a carta para sair da prisão
+
+Resultado esperado:
+- Carta preservada após carregar
+- Carta funciona normalmente
+- Contador de cartas correto
+
+================================================================================
+TESTE 7: PROPRIEDADES COM CONSTRUÇÕES
+================================================================================
+
+Objetivo: Verificar que casas e hotéis são salvos corretamente
+
+Passos:
+1. Jogue e compre várias propriedades
+2. Construa casas em algumas propriedades (1, 2, 3 casas)
+3. Construa um hotel em uma propriedade
+4. Salve o jogo
+5. Recarregue o jogo
+6. Verifique que:
+   - Número de casas está correto em cada propriedade
+   - Hotéis estão presentes
+   - Aluguel é calculado corretamente com as construções
+
+Resultado esperado:
+- Todas as construções preservadas
+- Aluguéis corretos
+- Visual do tabuleiro mostra as construções
+
+================================================================================
+TESTE 8: EDIÇÃO MANUAL DO ARQUIVO
+================================================================================
+
+Objetivo: Verificar que arquivos editados manualmente podem ser carregados
+
+Pré-requisito: Consultar SAVE_FORMAT.txt para o formato correto
+
+Passos:
+1. Salve um jogo qualquer
+2. Abra o arquivo .txt em um editor de texto
+3. Faça alterações manuais (seguindo SAVE_FORMAT.txt):
+   - Altere o saldo de um jogador
+   - Mude a posição de um jogador
+   - Adicione/remova propriedades
+4. Salve o arquivo editado
+5. Carregue o arquivo no jogo
+6. Verifique que as mudanças foram aplicadas
+
+Resultado esperado:
+- Alterações manuais são carregadas corretamente
+- Jogo funciona normalmente com estado editado
+
+================================================================================
+TESTE 9: ARQUIVO CORROMPIDO
+================================================================================
+
+Objetivo: Verificar tratamento de erros com arquivos inválidos
+
+Passos:
+1. Crie um arquivo .txt com conteúdo inválido (ex: apenas "teste")
+2. Tente carregar o arquivo
+3. Observe a mensagem de erro
+
+Resultado esperado:
+- Mensagem de erro clara
+- Aplicação não trava
+- Pode tentar carregar outro arquivo
+
+================================================================================
+TESTE 10: CANCELAMENTO DE DIÁLOGOS
+================================================================================
+
+Objetivo: Verificar que cancelar diálogos não causa problemas
+
+Passos:
+1. Ao salvar, clique em "Cancelar" no diálogo de confirmação
+2. Ao salvar, confirme mas clique em "Cancelar" no JFileChooser
+3. Ao carregar, clique em "Cancelar" no JFileChooser
+
+Resultado esperado:
+- Nenhuma operação é realizada
+- Jogo continua normalmente
+- Sem erros ou exceções
+
+================================================================================
+TESTE 11: MÚLTIPLOS JOGADORES COM PROPRIEDADES
+================================================================================
+
+Objetivo: Verificar estado complexo com múltiplos jogadores
+
+Passos:
+1. Jogue com 4-6 jogadores
+2. Cada jogador deve ter:
+   - Diferentes saldos
+   - Diferentes propriedades
+   - Diferentes quantidades de casas/hotéis
+   - Alguns em prisão, outros não
+3. Salve o jogo
+4. Recarregue
+5. Verifique que TODOS os jogadores têm seus estados corretos
+
+Resultado esperado:
+- Todos os jogadores preservados corretamente
+- Todas as propriedades corretas
+- Ordem dos turnos preservada
+
+================================================================================
+TESTE 12: NOME DO ARQUIVO COM ACENTOS
+================================================================================
+
+Objetivo: Verificar suporte a UTF-8 em nomes de arquivo
+
+Passos:
+1. Salve um jogo com nome "jogo_são_paulo.txt"
+2. Carregue o arquivo
+3. Use jogadores com nomes acentuados (João, José, etc.)
+4. Salve e carregue novamente
+
+Resultado esperado:
+- Nomes com acentos funcionam corretamente
+- UTF-8 preservado em todos os casos
+
+================================================================================
+CHECKLIST DE FUNCIONALIDADES IMPLEMENTADAS
+================================================================================
+
+Conforme Grupo 7 da lista-tarefas.md:
+
+[X] Implementar Salvamento de partida:
+    [X] Usar JFileChooser
+    [X] Formato .txt puro (UTF-8)
+    [X] Só permitir salvar antes de rolar os dados
+
+[X] Implementar Carregamento de partida (parser do .txt para o GameState)
+
+[X] Descrever (em um arquivo .txt) o formato usado no txt para o Ivan 
+    conseguir editar na mão
+    - Ver: SAVE_FORMAT.txt
+
+[X] Adicionar botão específico para sair do jogo (salvando o progresso)
+    - Botão "Salvar e Sair" no BoardFrame
+    - Mostra confirmação
+    - Mostra JFileChooser
+    - Encerra após salvar
+
+[X] Adicionar botão para carregar jogo
+    - Botão "Carregar Jogo" no InitialFrame
+
+================================================================================
+ARQUIVOS CRIADOS/MODIFICADOS
+================================================================================
+
+Arquivos Criados:
+1. SAVE_FORMAT.txt - Documentação completa do formato
+2. game/model/core/entities/GameStateSaver.java - Serialização
+3. game/model/core/entities/GameStateLoader.java - Deserialização
+4. TESTE_SAVE_LOAD.txt - Este arquivo (plano de testes)
+
+Arquivos Modificados:
+1. game/model/core/entities/ModelFacade.java - Getters/setters para save/load
+2. game/model/core/entities/Player.java - Métodos auxiliares para loading
+3. game/model/core/entities/Place.java - Métodos auxiliares para loading
+4. game/controller/GameController.java - Métodos saveGame(), loadGame(), canSaveGame()
+5. game/view/InitialFrame.java - Botão "Carregar Jogo"
+6. game/view/BoardFrame.java - Botão "Salvar e Sair" com restrições
+
+================================================================================
+NOTAS IMPORTANTES
+================================================================================
+
+1. O salvamento só é permitido no INÍCIO do turno, antes de rolar os dados.
+   Isso garante consistência do estado.
+
+2. O baralho de Sorte/Revés não é salvo - é recriado e embaralhado ao carregar.
+   As cartas "Saída Livre da Prisão" nas mãos dos jogadores SÃO salvas.
+
+3. O histórico de eventos (log) não é salvo.
+
+4. Arquivos podem ser editados manualmente seguindo SAVE_FORMAT.txt.
+
+5. Todos os arquivos são UTF-8, suportando caracteres acentuados.
+
+================================================================================
+FIM DO PLANO DE TESTES
+================================================================================
+

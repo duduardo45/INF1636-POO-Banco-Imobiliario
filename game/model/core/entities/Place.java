@@ -168,5 +168,31 @@ class Place extends Property {
         updateCurrentRent();
         }
     }
+    
+    // ===== METHODS FOR SAVE/LOAD FUNCTIONALITY =====
+    
+    /**
+     * Sets the number of houses directly (for loading saved games)
+     * 
+     * @param houses Number of houses (0-4)
+     */
+    void setHouses(int houses) {
+        if (houses >= 0 && houses <= 4) {
+            buildings.put(Building.HOUSE, houses);
+            updateCurrentRent();
+        }
+    }
+    
+    /**
+     * Sets the number of hotels directly (for loading saved games)
+     * 
+     * @param hotels Number of hotels (0 or 1)
+     */
+    void setHotels(int hotels) {
+        if (hotels == 0 || hotels == 1) {
+            buildings.put(Building.HOTEL, hotels);
+            updateCurrentRent();
+        }
+    }
 
 }

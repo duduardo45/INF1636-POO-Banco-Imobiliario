@@ -891,5 +891,137 @@ public class ModelFacade {
        
        return false;
    }
+   
+   // ===== GETTERS FOR SAVE/LOAD FUNCTIONALITY =====
+   
+   /**
+    * Returns the board instance for serialization
+    * 
+    * @return The board
+    */
+   public Board getBoard() {
+       return this.board;
+   }
+   
+   /**
+    * Returns the bank instance for serialization
+    * 
+    * @return The bank
+    */
+   public Bank getBank() {
+       return this.bank;
+   }
+   
+   /**
+    * Returns the list of all players for serialization
+    * 
+    * @return List of all players
+    */
+   public List<Player> getAllPlayers() {
+       return new ArrayList<>(this.players);
+   }
+   
+   /**
+    * Returns the current player index for serialization
+    * 
+    * @return The current player index
+    */
+   public int getCurrentPlayerIndex() {
+       return this.currentPlayerIndex;
+   }
+   
+   /**
+    * Returns whether player has built this turn
+    * 
+    * @return true if player has built this turn
+    */
+   public boolean getHasBuiltThisTurn() {
+       return this.hasBuiltThisTurn;
+   }
+   
+   /**
+    * Returns whether dice have been rolled this turn
+    * 
+    * @return true if dice rolled this turn
+    */
+   public boolean getDiceRolledThisTurn() {
+       return this.diceRolledThisTurn;
+   }
+   
+   /**
+    * Returns the property just bought this turn (if any)
+    * 
+    * @return The property or null
+    */
+   public Property getPropertyJustBought() {
+       return this.propertyJustBought;
+   }
+   
+   /**
+    * Returns the last dice roll values
+    * 
+    * @return Array with two dice values
+    */
+   public int[] getLastDiceRollArray() {
+       return this.lastDiceRoll.clone();
+   }
+   
+   // ===== SETTERS FOR SAVE/LOAD FUNCTIONALITY =====
+   
+   /**
+    * Restores complete game state from loaded data
+    * 
+    * @param board The board instance
+    * @param bank The bank instance
+    * @param players List of players
+    * @param currentIndex Current player index
+    * @param hasBuilt Whether player has built this turn
+    * @param diceRolled Whether dice were rolled this turn
+    * @param justBought Property just bought (or null)
+    * @param diceRoll Last dice roll values
+    */
+   public void loadGameState(Board board, Bank bank, List<Player> players, 
+                            int currentIndex, boolean hasBuilt, boolean diceRolled,
+                            Property justBought, int[] diceRoll) {
+       this.board = board;
+       this.bank = bank;
+       this.players = new ArrayList<>(players);
+       this.currentPlayerIndex = currentIndex;
+       this.hasBuiltThisTurn = hasBuilt;
+       this.diceRolledThisTurn = diceRolled;
+       this.propertyJustBought = justBought;
+       this.lastDiceRoll = diceRoll.clone();
+       this.lastEventMessage = "";
+       
+       // Configure the shared luck deck with loaded players list
+       LuckDeck sharedDeck = BoardInitializer.getSharedLuckDeck();
+       if (sharedDeck != null) {
+           sharedDeck.setAllPlayers(this.players);
+       }
+   }
+   
+   /**
+    * Sets the current player index (for loading)
+    * 
+    * @param index The player index
+    */
+   public void setCurrentPlayerIndex(int index) {
+       if (index >= 0 && index < players.size()) {
+           this.currentPlayerIndex = index;
+       }
+   }
+   
+   /**
+    * Sets game flags (for loading)
+    * 
+    * @param hasBuilt Whether player has built this turn
+    * @param justBought Property just bought (or null)
+    * @param diceRolled Whether dice were rolled this turn
+    */
+   public void setGameFlags(boolean hasBuilt, Property justBought, boolean diceRolled) {
+       this.hasBuiltThisTurn = hasBuilt;
+       this.propertyJustBought = justBought;
+       this.diceRolledThisTurn = diceRolled;
+   }
 }
 

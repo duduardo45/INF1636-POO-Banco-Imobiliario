@@ -15,6 +15,7 @@ public class BoardFrame extends JFrame implements Observer {
     private BoardPanel boardPanel;
     private JButton rollDiceButton;
     private JButton manualDiceButton;
+    private JButton saveAndExitButton;
     private PlayerStatusPanel playerStatusPanel;
     private GameLogPanel gameLogPanel;
     private boolean gameOverShown = false;
@@ -49,9 +50,14 @@ public class BoardFrame extends JFrame implements Observer {
         manualDiceButton = new JButton("Dado Manual");
         manualDiceButton.addActionListener(e -> askForManualRoll());
         
+        saveAndExitButton = new JButton("Salvar e Sair");
+        saveAndExitButton.addActionListener(e -> saveAndExit());
+        saveAndExitButton.setToolTipText("Salva o jogo e encerra a aplicação");
+        
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(rollDiceButton);
         buttonPanel.add(manualDiceButton);
+        buttonPanel.add(saveAndExitButton);
         add(buttonPanel, BorderLayout.SOUTH);
         
         playerStatusPanel = new PlayerStatusPanel(gameState, controller);
@@ -190,6 +196,75 @@ public class BoardFrame extends JFrame implements Observer {
         boardPanel.repaint();
     }
     
+    private void saveAndExit() {
+        // Check if can save
+        if (!controller.canSaveGame()) {
+            JOptionPane.showMessageDialog(this,
+                "Não é possível salvar após rolar os dados.\n" +
+                "Você só pode salvar no início do turno, antes de rolar os dados.",
+                "Não Pode Salvar",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        // Show confirmation dialog
+        int confirm = JOptionPane.showConfirmDialog(this,
+            "Deseja salvar o jogo e sair?",
+            "Salvar e Sair",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE);
+        
+        if (confirm != JOptionPane.YES_OPTION) {
+            return; // User cancelled
+        }
+        
+        // Show file chooser
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Salvar Jogo");
+        
+        // Set filter for .txt files
+        javax.swing.filechooser.FileNameExtensionFilter filter = 
+            new javax.swing.filechooser.FileNameExtensionFilter("Arquivos de Salvamento (*.txt)", "txt");
+        fileChooser.setFileFilter(filter);
+        
+        // Suggest default filename
+        fileChooser.setSelectedFile(new java.io.File("banco_imobiliario_save.txt"));
+        
+        // Show save dialog
+        int result = fileChooser.showSaveDialog(this);
+        
+        if (result == JFileChooser.APPROVE_OPTION) {
+            java.io.File selectedFile = fileChooser.getSelectedFile();
+            String filePath = selectedFile.getAbsolutePath();
+            
+            // Ensure .txt extension
+            if (!filePath.toLowerCase().endsWith(".txt")) {
+                filePath += ".txt";
+            }
+            
+            // Try to save
+            boolean saveSuccess = controller.saveGame(filePath);
+            
+            if (saveSuccess) {
+                JOptionPane.showMessageDialog(this,
+                    "Jogo salvo com sucesso!\n" +
+                    "Arquivo: " + filePath,
+                    "Salvo",
+                    JOptionPane.INFORMATION_MESSAGE);
+                
+                // Exit application
+                System.exit(0);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                    "Erro ao salvar o jogo.\n" +
+                    "Tente novamente ou escolha outro local.",
+                    "Erro ao Salvar",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        // If user cancels file chooser, do nothing
+    }
+    
     private void rollDice() {
         controller.rollDice();
         toggleButtonsAfterRoll();
@@ -275,6 +350,7 @@ public class BoardFrame extends JFrame implements Observer {
                 // Desabilitar controles
                 rollDiceButton.setEnabled(false);
                 if (manualDiceButton != null) manualDiceButton.setEnabled(false);
+                if (saveAndExitButton != null) saveAndExitButton.setEnabled(false);
                 
                 // Marca que já mostrou para não entrar aqui de novo
                 gameOverShown = true;
@@ -282,6 +358,16 @@ public class BoardFrame extends JFrame implements Observer {
             return;
         }
         
+        // Update Save & Exit button state based on dice roll
+        if (saveAndExitButton != null) {
+            boolean canSave = controller.canSaveGame();
+            saveAndExitButton.setEnabled(canSave);
+            if (canSave) {
+                saveAndExitButton.setToolTipText("Salva o jogo e encerra a aplicação");
+            } else {
+                saveAndExitButton.setToolTipText("Só é possível salvar antes de rolar os dados");
+            }
+        }
         
         //logica para garantir botoes corretos a cada turno
         String currentPlayer = gameState.getCurrentPlayerName();

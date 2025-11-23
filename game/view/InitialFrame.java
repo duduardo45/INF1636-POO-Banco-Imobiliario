@@ -3,6 +3,7 @@ package view;
 import controller.GameController;
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.util.*;
 import java.util.List;
 
@@ -66,6 +67,15 @@ public class InitialFrame extends JFrame {
         startButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         startButton.addActionListener(e -> startGame());
         mainPanel.add(startButton);
+        
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        
+        // Botão carregar
+        JButton loadButton = new JButton("Carregar Jogo Salvo");
+        loadButton.setFont(new Font("Arial", Font.BOLD, 16));
+        loadButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        loadButton.addActionListener(e -> loadGame());
+        mainPanel.add(loadButton);
         
         // Scroll pane para caso tenha muitos jogadores
         JScrollPane scrollPane = new JScrollPane(mainPanel);
@@ -161,6 +171,44 @@ public class InitialFrame extends JFrame {
             }
         }
         return true;
+    }
+    
+    private void loadGame() {
+        // Create file chooser
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Carregar Jogo Salvo");
+        
+        // Set filter for .txt files
+        javax.swing.filechooser.FileNameExtensionFilter filter = 
+            new javax.swing.filechooser.FileNameExtensionFilter("Arquivos de Salvamento (*.txt)", "txt");
+        fileChooser.setFileFilter(filter);
+        
+        // Show open dialog
+        int result = fileChooser.showOpenDialog(this);
+        
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            
+            // Try to load the game
+            boolean loadSuccess = controller.loadGame(selectedFile.getAbsolutePath());
+            
+            if (loadSuccess) {
+                // Open board frame with loaded game
+                BoardFrame boardFrame = new BoardFrame(controller);
+                boardFrame.setVisible(true);
+                
+                // Close this window
+                this.dispose();
+            } else {
+                // Show error message
+                JOptionPane.showMessageDialog(this,
+                    "Erro ao carregar o jogo.\nVerifique se o arquivo está no formato correto.\n" +
+                    "Consulte SAVE_FORMAT.txt para mais informações.",
+                    "Erro ao Carregar",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        // If user cancels, do nothing (dialog closes automatically)
     }
     
     public static void main(String[] args) {

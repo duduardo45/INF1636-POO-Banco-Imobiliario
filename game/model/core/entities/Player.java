@@ -305,4 +305,60 @@ class Player {
     public int hashCode() {
         return name.hashCode();
     }
+    
+    // ===== METHODS FOR SAVE/LOAD FUNCTIONALITY =====
+    
+    /**
+     * Sets the balance directly (for loading saved games)
+     * 
+     * @param balance The balance to set
+     */
+    void setBalance(int balance) {
+        this.balance = balance;
+    }
+    
+    /**
+     * Sets prison state directly (for loading saved games)
+     * 
+     * @param inPrison Whether player is in prison
+     * @param turnsInPrison Number of turns spent in prison
+     */
+    void setPrisonState(boolean inPrison, int turnsInPrison) {
+        this.inPrison = inPrison;
+        this.turnsInPrison = turnsInPrison;
+        this.car.setInPrison(inPrison);
+    }
+    
+    /**
+     * Sets consecutive doubles counter (for loading saved games)
+     * 
+     * @param consecutiveDoubles The consecutive doubles count
+     */
+    void setConsecutiveDoubles(int consecutiveDoubles) {
+        this.consecutiveDoubles = consecutiveDoubles;
+    }
+    
+    /**
+     * Adds a property to the player without debiting (for loading saved games)
+     * 
+     * @param property The property to add
+     */
+    void addPropertyWithoutPayment(Property property) {
+        if (!this.ownedProperties.contains(property)) {
+            this.ownedProperties.add(property);
+            property.setOwner(this);
+        }
+    }
+    
+    /**
+     * Adds multiple GetOutPrisonCards (for loading saved games)
+     * 
+     * @param count Number of cards to add
+     */
+    void addGetOutPrisonCards(int count) {
+        for (int i = 0; i < count; i++) {
+            GetOutPrisonCard card = new GetOutPrisonCard("loaded_card", "Saída livre da prisão.", this);
+            this.getOutPrisonCards.add(card);
+        }
+    }
 }

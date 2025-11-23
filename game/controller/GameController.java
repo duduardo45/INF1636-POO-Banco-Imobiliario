@@ -3,6 +3,8 @@ package controller;
 import model.core.entities.ModelFacade;
 import model.core.entities.ModelFacade.PropertyInfo;
 import model.core.entities.ModelFacade.PropertyDetails;
+import model.core.entities.GameStateSaver;
+import model.core.entities.GameStateLoader;
 import java.util.*;
 
 public class GameController {
@@ -450,6 +452,83 @@ public class GameController {
         } else {
             gameState.setMessage("Você não tem uma carta 'Saída Livre da Prisão'!");
             return false;
+        }
+    }
+    
+    // ===== SAVE/LOAD FUNCTIONALITY =====
+    
+    /**
+     * Checks if the game can be saved (dice not rolled this turn)
+     * 
+     * @return true if game can be saved, false otherwise
+     */
+    public boolean canSaveGame() {
+        return !modelFacade.getDiceRolledThisTurn();
+    }
+    
+    /**
+     * Saves the game to a file
+     * 
+     * @param filePath Path to save the file
+     * @return true if save successful, false otherwise
+     */
+    public boolean saveGame(String filePath) {
+        try {
+            // Validate that we can save
+            if (!canSaveGame()) {
+                gameState.setMessage("Não é possível salvar após rolar os dados. Salve no início do turno.");
+                return false;
+            }
+            
+            // Save using GameStateSaver
+            GameStateSaver.saveToFile(filePath, modelFacade);
+            gameState.setMessage("Jogo salvo com sucesso!");
+            log("Jogo salvo em: " + filePath);
+            return true;
+            
+        } catch (Exception e) {
+            gameState.setMessage("Erro ao salvar jogo: " + e.getMessage());
+            log("ERRO ao salvar: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    /**
+     * Loads a game from a file (replaces current ModelFacade)
+     * This should be called from InitialFrame, not during gameplay
+     * 
+     * @param filePath Path to the save file
+     * @return true if load successful, false otherwise
+     */
+    public boolean loadGame(String filePath) {
+        try {
+            // Load using GameStateLoader
+            this.modelFacade = GameStateLoader.loadFromFile(filePath);
+            
+            // Update GameState with loaded data
+            updateGameState();
+            gameState.setMessage("Jogo carregado com sucesso!");
+            log("Jogo carregado de: " + filePath);
+            return true;
+            
+        } catch (Exception e) {
+            gameState.setMessage("Erro ao carregar jogo: " + e.getMessage());
+            log("ERRO ao carregar: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    /**
+     * Saves the game and exits the application
+     * Shows confirmation dialog first
+     * 
+     * @param filePath Path to save the file
+     */
+    public void saveAndExit(String filePath) {
+        if (saveGame(filePath)) {
+            System.exit(0);
         }
     }
 }
