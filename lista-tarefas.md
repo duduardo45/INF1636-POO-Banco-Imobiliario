@@ -3,7 +3,7 @@
 
 - [ ] Mover lógica do `ModelFacade` para um `GameController` (Refatoração estrutural).
 - [ ] Resolver erro de `allPlayers` (Bug crítico).
-- [x] Criar a estrutura do objeto `GameState` (necessário para o salvamento futuro).
+- [X] Criar a estrutura do objeto `GameState` (necessário para o salvamento futuro).
 - [ ] Retornar/Exibir o motivo técnico pelo qual uma operação foi ou não possível (Feedback de erro).
 - [X] Bloquear ações de jogo ao final do jogo.
 
@@ -39,7 +39,7 @@
 ### 🎲 Grupo 5: Regras Especiais do Tabuleiro
 *Foco: Prisão e Sorte/Revés.*
 
-- [ ] Fazer a Prisão de fato prender o jogador (bloquear movimento/ações). #IMPORTANTE
+- [X] Fazer a Prisão de fato prender o jogador (bloquear movimento/ações). #IMPORTANTE
 - [X] Inicializar o `luckDeck` com as cartas reais. #IMPORTANTE
 - [X] Mostrar na tela a carta de Sorte ou Revés que foi sorteada. #IMPORTANTE
 - [X] Adicionar Botão para terminar a partida manualmente e calcular vencedor (baseado no dinheiro). #IMPORTANTE
@@ -48,7 +48,6 @@
 *Foco: Melhorar a experiência do usuário e visualização.*
 
 - [X] Converter opções de escolha (hotkeys) em Botões clicáveis. - Barella(parcial: Compra de casas, hoteis e Compra e Venda de propriedades, eliminar player)
-- [ ] Terminar criação de botões (verificar botões faltantes)
 - [X] Mostrar visualmente quais propriedades são de qual jogador (ex: transparência colorida sobre a casa). 
 - [ ] Adicionar texto no tabuleiro mostrando quantidade de casas e hotéis em cada território.
 - [X] Criar um `BoardPanel` para histórico de acontecimentos.
