@@ -18,6 +18,7 @@ public class GameState extends Observable {
     private String winner;
     private List<PlayerStatusInfo> allPlayerStatusInfo;
     private List<String> logMessages;
+    private boolean shouldRollAgain;
     
     // Singleton
     private GameState() {
@@ -27,6 +28,7 @@ public class GameState extends Observable {
         this.allPlayerPositions = new HashMap<>();
         this.logMessages = new ArrayList<>();
         this.message = "";
+        this.shouldRollAgain = false;
     }
     
     public static GameState getInstance() {
@@ -138,6 +140,15 @@ public void updateCurrentPlayer(String name, int balance, String color, List<Str
     
     public String getWinner() {
         return winner;
+    }
+    
+    public void setShouldRollAgain(boolean shouldRoll) {
+        this.shouldRollAgain = shouldRoll;
+        notifyObserversAndUpdate();
+    }
+    
+    public boolean shouldRollAgain() {
+        return shouldRollAgain;
     }
     
     private void notifyObserversAndUpdate() {
