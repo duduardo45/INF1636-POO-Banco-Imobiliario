@@ -2,6 +2,7 @@ package view;
 
 import controller.GameController;
 import controller.GameState;
+import controller.SaveFileManager;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Observable;
@@ -218,17 +219,21 @@ public class BoardFrame extends JFrame implements Observer {
             return; // User cancelled
         }
         
-        // Show file chooser
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Salvar Jogo");
+        // Check if game was loaded from a file
+        String loadedFilePath = controller.getLoadedFilePath();
         
-        // Set filter for .txt files
-        javax.swing.filechooser.FileNameExtensionFilter filter = 
-            new javax.swing.filechooser.FileNameExtensionFilter("Arquivos de Salvamento (*.txt)", "txt");
-        fileChooser.setFileFilter(filter);
-        
-        // Suggest default filename
-        fileChooser.setSelectedFile(new java.io.File("banco_imobiliario_save.txt"));
+        JFileChooser fileChooser;
+        if (loadedFilePath != null) {
+            // Game was loaded - suggest overwriting the same file
+            java.util.List<String> playerNames = controller.getPlayerNames();
+            String fallbackFileName = SaveFileManager.generateSaveFileName(playerNames);
+            fileChooser = SaveFileManager.createSaveChooserWithExistingFile(loadedFilePath, fallbackFileName);
+        } else {
+            // New game - generate new filename
+            java.util.List<String> playerNames = controller.getPlayerNames();
+            String suggestedFileName = SaveFileManager.generateSaveFileName(playerNames);
+            fileChooser = SaveFileManager.createSaveChooser(suggestedFileName);
+        }
         
         // Show save dialog
         int result = fileChooser.showSaveDialog(this);

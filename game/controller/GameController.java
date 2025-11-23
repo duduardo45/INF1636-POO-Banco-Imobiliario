@@ -10,10 +10,12 @@ import java.util.*;
 public class GameController {
     private ModelFacade modelFacade;  // Acesso ao Model via Facade
     private GameState gameState;       // Estado observável para View
+    private String loadedFilePath;     // Caminho do arquivo carregado (para sobrescrever ao salvar)
     
     public GameController() {
         this.modelFacade = new ModelFacade();
         this.gameState = GameState.getInstance();
+        this.loadedFilePath = null;
     }
     
     /**
@@ -553,6 +555,9 @@ public class GameController {
             // Load using GameStateLoader
             this.modelFacade = GameStateLoader.loadFromFile(filePath);
             
+            // Store the loaded file path so we can overwrite it when saving
+            this.loadedFilePath = filePath;
+            
             // Update GameState with loaded data
             updateGameState();
             gameState.setMessage("Jogo carregado com sucesso!");
@@ -577,5 +582,33 @@ public class GameController {
         if (saveGame(filePath)) {
             System.exit(0);
         }
+    }
+    
+    /**
+     * Returns the names of all players in the game
+     * Used for generating informative save file names
+     * 
+     * @return List of player names
+     */
+    public List<String> getPlayerNames() {
+        List<String> names = new ArrayList<>();
+        List<model.core.entities.ModelFacade.PlayerStatusInfo> allPlayers = 
+            modelFacade.getAllPlayerStatusInfo();
+        
+        for (model.core.entities.ModelFacade.PlayerStatusInfo player : allPlayers) {
+            names.add(player.name);
+        }
+        
+        return names;
+    }
+    
+    /**
+     * Returns the path of the loaded file (if game was loaded)
+     * Used to overwrite the same file when saving
+     * 
+     * @return File path or null if game wasn't loaded from file
+     */
+    public String getLoadedFilePath() {
+        return this.loadedFilePath;
     }
 }

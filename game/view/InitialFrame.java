@@ -1,6 +1,7 @@
 package view;
 
 import controller.GameController;
+import controller.SaveFileManager;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -174,14 +175,8 @@ public class InitialFrame extends JFrame {
     }
     
     private void loadGame() {
-        // Create file chooser
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Carregar Jogo Salvo");
-        
-        // Set filter for .txt files
-        javax.swing.filechooser.FileNameExtensionFilter filter = 
-            new javax.swing.filechooser.FileNameExtensionFilter("Arquivos de Salvamento (*.txt)", "txt");
-        fileChooser.setFileFilter(filter);
+        // Create file chooser configured for saves directory
+        JFileChooser fileChooser = SaveFileManager.createLoadChooser();
         
         // Show open dialog
         int result = fileChooser.showOpenDialog(this);
