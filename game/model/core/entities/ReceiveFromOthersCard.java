@@ -5,8 +5,8 @@ import java.util.List;
 class ReceiveFromOthersCard extends AutomaticCard {
     private final int value;
     
-    public ReceiveFromOthersCard(String story, int value) {
-    	super(LuckType.LUCKY, story);
+    public ReceiveFromOthersCard(String imageId, int value, String story) {
+    	super(imageId, LuckType.LUCKY, story);
     	this.value = value;
     }
     

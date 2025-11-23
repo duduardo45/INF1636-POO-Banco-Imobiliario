@@ -40,7 +40,7 @@
 *Foco: Prisão e Sorte/Revés.*
 
 - [ ] Fazer a Prisão de fato prender o jogador (bloquear movimento/ações). #IMPORTANTE
-- [ ] Inicializar o `luckDeck` com as cartas reais. #IMPORTANTE
+- [X] Inicializar o `luckDeck` com as cartas reais. #IMPORTANTE
 - [ ] Mostrar na tela a carta de Sorte ou Revés que foi sorteada. #IMPORTANTE
 - [X] Adicionar Botão para terminar a partida manualmente e calcular vencedor (baseado no dinheiro). #IMPORTANTE
 

@@ -3,8 +3,8 @@ package model.core.entities;
 class GoToPrisonCard extends AutomaticCard {
     private Prison prisonSpace;
     
-    public GoToPrisonCard(String story) {
-        super(LuckType.MISFORTUNE, story);
+    public GoToPrisonCard(String imageId, String story) {
+        super(imageId, LuckType.MISFORTUNE, story);
     }
     
     /**

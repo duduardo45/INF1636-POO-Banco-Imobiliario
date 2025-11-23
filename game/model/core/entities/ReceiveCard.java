@@ -3,8 +3,8 @@ package model.core.entities;
 class ReceiveCard extends AutomaticCard {
     private final int value;
     
-    public ReceiveCard(String story, int value) {
-    	super(LuckType.LUCKY, story);
+    public ReceiveCard(String imageId, int value, String story) {
+    	super(imageId, LuckType.LUCKY, story);
     	this.value = value;
     }
     

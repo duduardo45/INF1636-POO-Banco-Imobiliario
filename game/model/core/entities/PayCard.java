@@ -3,8 +3,8 @@ package model.core.entities;
 class PayCard extends AutomaticCard {
     private final int value;
     
-    public PayCard(int value, String story) {
-        super(LuckType.MISFORTUNE, story);
+    public PayCard(String imageId, int value, String story) {
+        super(imageId, LuckType.MISFORTUNE, story);
         this.value = value;
     }
     

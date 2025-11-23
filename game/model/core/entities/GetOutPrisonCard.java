@@ -3,8 +3,8 @@ package model.core.entities;
 class GetOutPrisonCard extends ManualCard {
     private Player owner;
     
-    public GetOutPrisonCard(String story, Player owner) {
-    	super(LuckType.LUCKY, story);
+    public GetOutPrisonCard(String imageId, String story, Player owner) {
+    	super(imageId, LuckType.LUCKY, story);
     	
     	this.owner = owner;
     }
