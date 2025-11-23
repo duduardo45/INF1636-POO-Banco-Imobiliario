@@ -99,6 +99,31 @@ public class ModelFacade {
         // Executa evento da casa e captura mensagem
         lastEventMessage = finalPosition.event(currentPlayer);
     }
+
+    /**
+     * Retorna uma lista com o(s) nome(s) do(s) jogador(es) com mais dinheiro.
+     * Usado para encerramento abrupto do jogo.
+     */
+    public List<String> getRichestPlayers() {
+        List<String> winners = new ArrayList<>();
+        int maxBalance = Integer.MIN_VALUE;//Usamos esse valor para o caso extremo de todos os jogadores terem saldo mega negativo.
+        
+        // 1. Encontra o maior saldo
+        for (Player p : players) {
+            if (p.getBalance() > maxBalance) {
+                maxBalance = p.getBalance();
+            }
+        }
+        
+        // 2. Coleta todos os jogadores que têm esse saldo (empate)
+        for (Player p : players) {
+            if (p.getBalance() == maxBalance) {
+                winners.add(p.getName());
+            }
+        }
+        
+        return winners;
+    }
     
     /**
      * Checks if the player passed over the start space during movement

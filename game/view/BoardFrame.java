@@ -17,6 +17,8 @@ public class BoardFrame extends JFrame implements Observer {
     private JButton manualDiceButton;
     private PlayerStatusPanel playerStatusPanel;
     private GameLogPanel gameLogPanel;
+    private boolean gameOverShown = false;
+    private String lastPlayerName = "";
     
     public BoardFrame(GameController controller) {
         this.controller = controller;
@@ -52,7 +54,7 @@ public class BoardFrame extends JFrame implements Observer {
         buttonPanel.add(manualDiceButton);
         add(buttonPanel, BorderLayout.SOUTH);
         
-        playerStatusPanel = new PlayerStatusPanel(gameState);
+        playerStatusPanel = new PlayerStatusPanel(gameState, controller);
         add(playerStatusPanel, BorderLayout.EAST); // Adiciona o painel à direita
 
         gameLogPanel = new GameLogPanel(gameState);
@@ -64,6 +66,25 @@ public class BoardFrame extends JFrame implements Observer {
         
         // Configurar teclas de atalho
         setupKeyBindings();
+    }
+
+    /**
+     * Reseta os botões para o estado inicial de um turno.
+     */
+    private void resetButtonsForNewTurn() {
+        rollDiceButton.setText("Rolar Dados");
+        
+        // Remove listeners antigos
+        for (java.awt.event.ActionListener al : rollDiceButton.getActionListeners()) {
+            rollDiceButton.removeActionListener(al);
+        }
+        
+        // Adiciona ação de rolar
+        rollDiceButton.addActionListener(e -> rollDice());
+        
+        // Habilita os botões
+        rollDiceButton.setEnabled(true);
+        if (manualDiceButton != null) manualDiceButton.setEnabled(true);
     }
     
     private void setupKeyBindings() {
@@ -227,11 +248,12 @@ public class BoardFrame extends JFrame implements Observer {
             return; // IMPEDE O FIM DO TURNO
         }
         controller.endTurn();
-        rollDiceButton.setText("Rolar Dados");
-        rollDiceButton.removeActionListener(rollDiceButton.getActionListeners()[0]);
-        rollDiceButton.addActionListener(e -> rollDice());
-        rollDiceButton.setEnabled(true);
-        manualDiceButton.setEnabled(true);
+        //?Isso ja é feito no update agora.
+        // rollDiceButton.setText("Rolar Dados");
+        // rollDiceButton.removeActionListener(rollDiceButton.getActionListeners()[0]);
+        // rollDiceButton.addActionListener(e -> rollDice());
+        // rollDiceButton.setEnabled(true);
+        // manualDiceButton.setEnabled(true);
     }
     
     @Override
@@ -239,17 +261,35 @@ public class BoardFrame extends JFrame implements Observer {
         // Quando GameState notifica, redesenhar
         boardPanel.repaint();
         
-        // Verificar fim de jogo
         if (controller.isGameOver()) {
-            String winner = controller.getWinner();
-            JOptionPane.showMessageDialog(
-                this,
-                "FIM DE JOGO!\n\nVencedor: " + winner + "!",
-                "Banco Imobiliário",
-                JOptionPane.INFORMATION_MESSAGE
-            );
-            // Desabilitar controles
-            rollDiceButton.setEnabled(false);
+           if (!gameOverShown) {
+                String winner = controller.getWinner();
+                
+                JOptionPane.showMessageDialog(
+                    this,
+                    "FIM DE JOGO!\n\nVencedor: " + winner + "!",
+                    "Banco Imobiliário",
+                    JOptionPane.INFORMATION_MESSAGE
+                );
+                
+                // Desabilitar controles
+                rollDiceButton.setEnabled(false);
+                if (manualDiceButton != null) manualDiceButton.setEnabled(false);
+                
+                // Marca que já mostrou para não entrar aqui de novo
+                gameOverShown = true;
+            }
+            return;
         }
+        
+        
+        //logica para garantir botoes corretos a cada turno
+        String currentPlayer = gameState.getCurrentPlayerName();
+        if (currentPlayer != null && !currentPlayer.equals(lastPlayerName)) {
+            resetButtonsForNewTurn();
+            lastPlayerName = currentPlayer;
+        }
+
+        // Verificar fim de jogo
     }
 }

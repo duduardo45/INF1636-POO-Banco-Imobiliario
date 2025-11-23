@@ -5,6 +5,7 @@
 - [ ] Resolver erro de `allPlayers` (Bug crítico).
 - [x] Criar a estrutura do objeto `GameState` (necessário para o salvamento futuro).
 - [ ] Retornar/Exibir o motivo técnico pelo qual uma operação foi ou não possível (Feedback de erro).
+- [X] Bloquear ações de jogo ao final do jogo.
 
 ### 🔄 Grupo 2: Fluxo de Turno e Controles
 *Foco: Garantir que o jogador só possa fazer o que é permitido em cada momento.*
@@ -41,8 +42,7 @@
 - [ ] Fazer a Prisão de fato prender o jogador (bloquear movimento/ações). #IMPORTANTE
 - [ ] Inicializar o `luckDeck` com as cartas reais. #IMPORTANTE
 - [ ] Mostrar na tela a carta de Sorte ou Revés que foi sorteada. #IMPORTANTE
-- [ ] Adicionar botão para acabar o jogo quando os jogadores decidirem. #IMPORTANTE
-- [ ] Adicionar Botão para terminar a partida manualmente e calcular vencedor (baseado no dinheiro). #IMPORTANTE
+- [X] Adicionar Botão para terminar a partida manualmente e calcular vencedor (baseado no dinheiro). #IMPORTANTE
 
 ### 🖥️ Grupo 6: Interface (UI) e Feedback Visual
 *Foco: Melhorar a experiência do usuário e visualização.*
@@ -53,7 +53,7 @@
 - [ ] Adicionar texto no tabuleiro mostrando quantidade de casas e hotéis em cada território.
 - [X] Criar um `BoardPanel` para histórico de acontecimentos.
 - [X] Implementar notificações de eventos (quem pagou aluguel, quanto, etc.) no histórico.
-- [ ] Garantir que o popup de "Fim de Jogo" apareça apenas uma vez.
+- [X] Garantir que o popup de "Fim de Jogo" apareça apenas uma vez.
 
 ### 💾 Grupo 7: Persistência (Save/Load) e Finalização
 *Foco: Salvar o jogo e calcular o vencedor.*
