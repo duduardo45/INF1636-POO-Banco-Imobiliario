@@ -32,6 +32,9 @@ public class GameController {
      * Rola os dados e move o jogador atual
      */
     public void rollDice() {
+        // Reset shouldRollAgain at the start of a new roll
+        gameState.setShouldRollAgain(false);
+        
         // Rola dados através do Facade
         int[] diceResults = modelFacade.rollDice();
         
@@ -67,6 +70,22 @@ public class GameController {
         // Verifica falência após o movimento
         if (modelFacade.isCurrentPlayerBankrupt()) {
             gameState.setMessage("FALÊNCIA! Saldo negativo. Venda propriedades ou será eliminado!");
+        }
+        
+        // Verifica se rolou dupla - se sim, permite rolar novamente (mas não na 3ª dupla)
+        if (modelFacade.wasLastRollDouble()) {
+            // Check if player was sent to prison for 3 consecutive doubles
+            if (modelFacade.wasPlayerSentToPrisonForDoubles()) {
+                // 3rd double - player was sent to prison, no roll again
+                gameState.setShouldRollAgain(false);
+            } else {
+                // 1st or 2nd double - allow roll again
+                gameState.setShouldRollAgain(true);
+                gameState.setMessage(gameState.getMessage() + " Dupla! Você pode rolar novamente!");
+                log(modelFacade.getCurrentPlayerName() + " rolou dupla e pode rolar novamente!");
+            }
+        } else {
+            gameState.setShouldRollAgain(false);
         }
     }
     
@@ -154,6 +173,9 @@ public class GameController {
     }
     
     public void rollDiceManual(int totalSteps) {
+        // Reset shouldRollAgain at the start of a new roll
+        gameState.setShouldRollAgain(false);
+        
         // Divide o valor total em dois dados para manter a consistência visual
         // Ex: Se o usuário quer andar 7, fazemos d1=3 e d2=4.
         int d1 = totalSteps / 2;
@@ -199,6 +221,22 @@ public class GameController {
         if (modelFacade.isCurrentPlayerBankrupt()) {
             gameState.setMessage("FALÊNCIA! Saldo negativo. Venda propriedades ou será eliminado!");
         }
+        
+        // 8. Verifica se rolou dupla - se sim, permite rolar novamente (mas não na 3ª dupla)
+        if (modelFacade.wasLastRollDouble()) {
+            // Check if player was sent to prison for 3 consecutive doubles
+            if (modelFacade.wasPlayerSentToPrisonForDoubles()) {
+                // 3rd double - player was sent to prison, no roll again
+                gameState.setShouldRollAgain(false);
+            } else {
+                // 1st or 2nd double - allow roll again
+                gameState.setShouldRollAgain(true);
+                gameState.setMessage(gameState.getMessage() + " Dupla! Você pode rolar novamente!");
+                log(modelFacade.getCurrentPlayerName() + " rolou dupla e pode rolar novamente!");
+            }
+        } else {
+            gameState.setShouldRollAgain(false);
+        }
     }
     
     /**
@@ -220,10 +258,19 @@ public class GameController {
     
     /**
      * Finaliza turno e passa para próximo jogador
+     * Se o jogador rolou dupla, não passa para o próximo jogador
      */
     public void endTurn() {
+        // Se o jogador pode rolar novamente (dupla), não passa o turno
+        if (gameState.shouldRollAgain()) {
+            gameState.setMessage("Você rolou dupla! Prepare-se para rolar novamente.");
+            return;
+        }
+        
+        // Caso contrário, passa para o próximo jogador
         modelFacade.nextTurn();
         gameState.setMessage("");
+        gameState.setShouldRollAgain(false);
         updateGameState();
     }
     

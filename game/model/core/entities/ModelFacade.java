@@ -281,6 +281,21 @@ public class ModelFacade {
         return lastDiceRoll;
     }
     
+    /**
+     * Checks if the last dice roll was a double
+     */
+    public boolean wasLastRollDouble() {
+        return lastDiceRoll[0] == lastDiceRoll[1];
+    }
+    
+    /**
+     * Checks if the current player was sent to prison due to 3 consecutive doubles
+     */
+    public boolean wasPlayerSentToPrisonForDoubles() {
+        Player currentPlayer = players.get(currentPlayerIndex);
+        return currentPlayer.isInPrison() && currentPlayer.getConsecutiveDoubles() == 0;
+    }
+    
     public int getNumPlayers() {
         return players.size();
     }

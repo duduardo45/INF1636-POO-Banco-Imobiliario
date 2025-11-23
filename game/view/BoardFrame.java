@@ -225,15 +225,29 @@ public class BoardFrame extends JFrame implements Observer {
         rollDiceButton.setEnabled(false);
         manualDiceButton.setEnabled(false);
         
-        rollDiceButton.setText("Passar Vez");
-        
-        // Remove TODOS os listeners antigos (limpeza total) -> ISSO É IMPORTANTE PARA ""DESLIGAR"" O BOTAO NO MOMENTO
-        for (java.awt.event.ActionListener al : rollDiceButton.getActionListeners()) {
-            rollDiceButton.removeActionListener(al);
+        // Check if player should roll again (rolled doubles)
+        if (gameState.shouldRollAgain()) {
+            rollDiceButton.setText("Rolar Novamente");
+            
+            // Remove TODOS os listeners antigos
+            for (java.awt.event.ActionListener al : rollDiceButton.getActionListeners()) {
+                rollDiceButton.removeActionListener(al);
+            }
+            
+            rollDiceButton.addActionListener(e -> rollDice());
+            rollDiceButton.setEnabled(true);
+            manualDiceButton.setEnabled(true);
+        } else {
+            rollDiceButton.setText("Passar Vez");
+            
+            // Remove TODOS os listeners antigos (limpeza total) -> ISSO É IMPORTANTE PARA ""DESLIGAR"" O BOTAO NO MOMENTO
+            for (java.awt.event.ActionListener al : rollDiceButton.getActionListeners()) {
+                rollDiceButton.removeActionListener(al);
+            }
+            
+            rollDiceButton.addActionListener(e -> endTurn());
+            rollDiceButton.setEnabled(true);
         }
-        
-        rollDiceButton.addActionListener(e -> endTurn());
-        rollDiceButton.setEnabled(true);
     }
     
     private void endTurn() {
