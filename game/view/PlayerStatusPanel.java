@@ -2,6 +2,8 @@
 
 package view;
 
+ 
+import controller.GameController;
 import controller.GameState;
 import model.core.entities.ModelFacade.PlayerStatusInfo;
 
@@ -13,12 +15,13 @@ import java.util.Observer;
 
 public class PlayerStatusPanel extends JPanel implements Observer {
     private static final long serialVersionUID = 1L;
-    
+    private GameController controller;
     private GameState gameState;
     private JPanel playersContainer; // Painel interno para empilhar os jogadores
 
-    public PlayerStatusPanel(GameState gameState) {
+    public PlayerStatusPanel(GameState gameState, GameController controller) {
         this.gameState = gameState;
+        this.controller = controller;
         // Registra este painel como um observador
         gameState.addObserver(this);
         
@@ -48,6 +51,32 @@ public class PlayerStatusPanel extends JPanel implements Observer {
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         
         add(scrollPane, BorderLayout.CENTER);
+
+        JButton btnFinishGame = new JButton("Encerrar Jogo (Contar Dinheiro)");
+        btnFinishGame.setFont(new Font("Arial", Font.BOLD, 10));
+        btnFinishGame.setBackground(new Color(200, 50, 50));
+        btnFinishGame.setForeground(Color.WHITE);
+
+        btnFinishGame.addActionListener(e -> {
+
+            if (gameState.isGameOver()) {
+                JOptionPane.showMessageDialog(this, 
+                    "O jogo já foi encerrado!", 
+                    "Aviso", 
+                    JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            int confirm = JOptionPane.showConfirmDialog(this, 
+                "Deseja encerrar o jogo agora e verificar quem tem mais dinheiro?", 
+                "Encerrar Jogo", 
+                JOptionPane.YES_NO_OPTION);
+                
+            if (confirm == JOptionPane.YES_OPTION) {
+                controller.finishGameByTimeLimit();
+            }
+        });
+        
+        add(btnFinishGame, BorderLayout.SOUTH);
     }
     
     /**

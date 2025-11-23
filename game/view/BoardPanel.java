@@ -612,7 +612,9 @@ public class BoardPanel extends JPanel {
     private void updateActionButtons(PropertyInfo info, int x, int y) {
         // Primeiro, esconde todos para recalcular se devem ou nao aparecer
         hideAllButtons();
-        
+        if (gameState.isGameOver()) {
+            return;
+        }
         // Espaçamento entre botões
         // !MELHORAR ISSO SE NECESSARIO
         int buttonHeight = 25;

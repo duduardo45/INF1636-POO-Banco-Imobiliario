@@ -206,6 +206,28 @@ public class GameController {
     public List<PropertyDetails> getPlayerPropertyDetails() {
         return modelFacade.getCurrentPlayerPropertyDetails();
     }
+
+    /**
+     * Encerra o jogo imediatamente e declara vencedor quem tiver mais dinheiro.
+     */
+    public void finishGameByTimeLimit() {
+        List<String> winners = modelFacade.getRichestPlayers();
+        String winnerText;
+        
+        if (winners.size() == 1) {
+            // Apenas um vencedor
+            winnerText = winners.get(0);
+        } else {
+            // Empate: "Os jogadores A, B venceram!"
+            winnerText = "Os jogadores " + String.join(", ", winners) + " venceram (Empate)!";
+        }
+        
+        // Atualiza o GameState para disparar o Fim de Jogo na View
+        gameState.setMessage("Jogo Encerrado Manualmente.");
+        gameState.setWinner(winnerText);
+        gameState.setGameOver(true);
+        updateGameState();
+    }
     
     /**
      * Elimina o jogador atual por falência
@@ -230,6 +252,10 @@ public class GameController {
      * Verifica se o jogo acabou
      */
     public boolean isGameOver() {
+
+        if (gameState.isGameOver()) {
+            return true;
+        }
         return modelFacade.countActivePlayers() <= 1;
     }
     
@@ -237,6 +263,10 @@ public class GameController {
      * Retorna o nome do vencedor
      */
     public String getWinner() {
+        String manualWinner = gameState.getWinner();
+        if (manualWinner != null && !manualWinner.isEmpty()) {
+            return manualWinner;
+        }
         return modelFacade.getWinnerName();
     }
     
