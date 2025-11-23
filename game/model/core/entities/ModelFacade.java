@@ -669,6 +669,21 @@ public class ModelFacade {
             this.spaceName = spaceName;
         }
     }
+   
+   /**
+    * Classe para transferir informações de carta de sorte para Controller/View
+    */
+   public static class LuckCardInfo {
+       public final String imageId;
+       public final String type;
+       public final String story;
+       
+       public LuckCardInfo(String imageId, String type, String story) {
+           this.imageId = imageId;
+           this.type = type;
+           this.story = story;
+       }
+   }
     
     /**
     * Retorna lista com status de TODOS os jogadores
@@ -733,6 +748,28 @@ public class ModelFacade {
        for (Player player : players) {
            if (player.getName().equals(playerName)) {
                return player.getCar().getColor();
+           }
+       }
+       return null;
+   }
+   
+   /**
+    * Retorna informações sobre a carta de sorte atual (se o jogador estiver em um LuckSpace)
+    */
+   public LuckCardInfo getCurrentLuckCardInfo() {
+       Player currentPlayer = players.get(currentPlayerIndex);
+       Space currentSpace = currentPlayer.getCar().getPosition();
+       
+       if (currentSpace instanceof LuckSpace) {
+           LuckSpace luckSpace = (LuckSpace) currentSpace;
+           LuckCard card = luckSpace.getCurrentCard();
+           
+           if (card != null) {
+               return new LuckCardInfo(
+                   card.getImageId(),
+                   card.getType().toString(),
+                   card.getStory()
+               );
            }
        }
        return null;

@@ -15,6 +15,7 @@ abstract class LuckCard {
 
     public LuckType getType() { return type; }
     public String getStory()  { return story; }
+    public String getImageId() { return imageId; }
     public abstract boolean use(Player player);
     public abstract boolean onDraw(Player player);
 }

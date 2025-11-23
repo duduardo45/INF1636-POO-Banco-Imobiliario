@@ -2,10 +2,12 @@ package model.core.entities;
 
 class LuckSpace extends Space {
     private LuckDeck deck;
+    private LuckCard lastDrawnCard;
     
     LuckSpace(String name, Space next, LuckDeck deck) {
         super(name, next);
         this.deck = deck;
+        this.lastDrawnCard = null;
     }
     
     @Override
@@ -24,10 +26,17 @@ class LuckSpace extends Space {
             return "Sem cartas disponíveis";
         }
         
+        // Store the drawn card
+        this.lastDrawnCard = card;
+        
         // Execute the card's onDraw effect
         card.onDraw(player);
         
         // Return the card's story as the message
         return card.getStory();
+    }
+    
+    public LuckCard getCurrentCard() {
+        return lastDrawnCard;
     }
 }

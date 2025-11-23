@@ -317,4 +317,11 @@ public class GameController {
     public String getPlayerColorByName(String playerName) {
         return modelFacade.getPlayerColorByName(playerName);
     }
+    
+    /**
+     * Retorna informações sobre a carta de sorte atual (se houver)
+     */
+    public ModelFacade.LuckCardInfo getCurrentLuckCardInfo() {
+        return modelFacade.getCurrentLuckCardInfo();
+    }
 }

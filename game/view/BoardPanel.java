@@ -111,6 +111,16 @@ public class BoardPanel extends JPanel {
                 }
             }
             
+            // Carregar imagens das cartas de sorte (chance1 a chance30)
+            for (int i = 1; i <= 30; i++) {
+                try {
+                    imageCache.put("chance" + i, ImageIO.read(
+                        new File("assets/images/sorteReves/chance" + i + ".png")));
+                } catch (IOException e) {
+                    System.err.println("Erro ao carregar carta de sorte chance" + i + ": " + e.getMessage());
+                }
+            }
+            
         } catch (IOException e) {
             System.err.println("Erro ao carregar imagens: " + e.getMessage());
             e.printStackTrace();
@@ -206,6 +216,9 @@ public class BoardPanel extends JPanel {
         
         // 6. Desenhar carta da propriedade atual
         drawCurrentPropertyCard(g2d);
+        
+        // 7. Desenhar carta de sorte (se houver)
+        drawCurrentLuckCard(g2d);
     }
     
     private void drawBoard(Graphics2D g2d) {
@@ -773,6 +786,80 @@ public class BoardPanel extends JPanel {
         add(btnEliminatePlayer);
         // Esconde todos inicialmente
         hideAllButtons();
+    }
+    
+    private void drawCurrentLuckCard(Graphics2D g2d) {
+        if (controller == null) return;
+        
+        model.core.entities.ModelFacade.LuckCardInfo luckCardInfo = controller.getCurrentLuckCardInfo();
+        if (luckCardInfo == null) {
+            return;
+        }
+        
+        // Tentar carregar imagem da carta de sorte
+        BufferedImage cardImage = imageCache.get(luckCardInfo.imageId);
+        
+        int cardX = 720;
+        int cardY = 20;
+        int maxWidth = 260;
+        
+        if (cardImage != null) {
+            // Desenhar imagem completa
+            g2d.drawImage(cardImage, cardX, cardY, null);
+            
+            int infoY = cardY + cardImage.getHeight() + 20;
+            
+            g2d.setColor(Color.BLACK);
+            g2d.setFont(new Font("Arial", Font.BOLD, 16));
+            g2d.drawString("Tipo: " + luckCardInfo.type, cardX, infoY);
+            infoY += 20;
+            
+            // Desenhar história com quebra de linha
+            g2d.setFont(new Font("Arial", Font.PLAIN, 12));
+            drawWrappedText(g2d, luckCardInfo.story, cardX, infoY, maxWidth, 13);
+        } else {
+            // Placeholder se não houver imagem
+            g2d.setColor(Color.LIGHT_GRAY);
+            g2d.fillRect(cardX, cardY, 150, 200);
+            g2d.setColor(Color.BLACK);
+            g2d.drawRect(cardX, cardY, 150, 200);
+            
+            g2d.setFont(new Font("Arial", Font.BOLD, 12));
+            g2d.drawString("Carta de Sorte", cardX + 10, cardY + 30);
+            
+            g2d.setFont(new Font("Arial", Font.PLAIN, 10));
+            g2d.drawString("Tipo: " + luckCardInfo.type, cardX + 10, cardY + 60);
+            
+            // Desenhar história com quebra de linha
+            drawWrappedText(g2d, luckCardInfo.story, cardX + 10, cardY + 80, 130, 12);
+        }
+    }
+    
+    private void drawWrappedText(Graphics2D g2d, String text, int x, int y, int maxWidth, int lineHeight) {
+        FontMetrics fm = g2d.getFontMetrics();
+        String[] words = text.split(" ");
+        StringBuilder line = new StringBuilder();
+        int currentY = y;
+        
+        for (String word : words) {
+            String testLine = line.length() == 0 ? word : line.toString() + " " + word;
+            int lineWidth = fm.stringWidth(testLine);
+            
+            if (lineWidth > maxWidth && line.length() > 0) {
+                // Desenha a linha atual e começa uma nova
+                g2d.drawString(line.toString(), x, currentY);
+                currentY += lineHeight;
+                line = new StringBuilder(word);
+            } else {
+                if (line.length() > 0) line.append(" ");
+                line.append(word);
+            }
+        }
+        
+        // Desenha a última linha
+        if (line.length() > 0) {
+            g2d.drawString(line.toString(), x, currentY);
+        }
     }
     
     private void hideAllButtons() {
