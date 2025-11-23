@@ -20,6 +20,9 @@ public class GameLogPanel extends JPanel implements Observer {
         gameState.addObserver(this); // Observa mudanças
         
         initComponents();
+        
+        // Carregar mensagens existentes (importante para jogos carregados)
+        loadExistingMessages();
     }
     
     private void initComponents() {
@@ -40,6 +43,25 @@ public class GameLogPanel extends JPanel implements Observer {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         
         add(scrollPane, BorderLayout.CENTER);
+    }
+
+    /**
+     * Carrega mensagens existentes no GameState
+     * Útil quando um jogo é carregado e já tem histórico
+     */
+    private void loadExistingMessages() {
+        List<String> messages = gameState.getLogMessages();
+        
+        if (!messages.isEmpty()) {
+            // Adiciona todas as mensagens existentes
+            for (String message : messages) {
+                logArea.append("> " + message + "\n\n");
+            }
+            lastLogSize = messages.size();
+            
+            // Rola automaticamente para o final
+            logArea.setCaretPosition(logArea.getDocument().getLength());
+        }
     }
 
     @Override
