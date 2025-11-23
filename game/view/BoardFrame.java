@@ -16,7 +16,8 @@ public class BoardFrame extends JFrame implements Observer {
     private BoardPanel boardPanel;
     private JButton rollDiceButton;
     private JButton manualDiceButton;
-    private JButton saveAndExitButton;
+    private JButton saveGameButton;
+    private JButton exitGameButton;
     private PlayerStatusPanel playerStatusPanel;
     private GameLogPanel gameLogPanel;
     private boolean gameOverShown = false;
@@ -51,14 +52,19 @@ public class BoardFrame extends JFrame implements Observer {
         manualDiceButton = new JButton("Dado Manual");
         manualDiceButton.addActionListener(e -> askForManualRoll());
         
-        saveAndExitButton = new JButton("Salvar e Sair");
-        saveAndExitButton.addActionListener(e -> saveAndExit());
-        saveAndExitButton.setToolTipText("Salva o jogo e encerra a aplicação");
+        saveGameButton = new JButton("Salvar Jogo");
+        saveGameButton.addActionListener(e -> saveGame());
+        saveGameButton.setToolTipText("Salva o jogo atual");
+        
+        exitGameButton = new JButton("Sair do Jogo");
+        exitGameButton.addActionListener(e -> exitGame());
+        exitGameButton.setToolTipText("Encerra a aplicação");
         
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(rollDiceButton);
         buttonPanel.add(manualDiceButton);
-        buttonPanel.add(saveAndExitButton);
+        buttonPanel.add(saveGameButton);
+        buttonPanel.add(exitGameButton);
         add(buttonPanel, BorderLayout.SOUTH);
         
         playerStatusPanel = new PlayerStatusPanel(gameState, controller);
@@ -197,7 +203,7 @@ public class BoardFrame extends JFrame implements Observer {
         boardPanel.repaint();
     }
     
-    private void saveAndExit() {
+    private void saveGame() {
         // Check if can save
         if (!controller.canSaveGame()) {
             JOptionPane.showMessageDialog(this,
@@ -206,17 +212,6 @@ public class BoardFrame extends JFrame implements Observer {
                 "Não Pode Salvar",
                 JOptionPane.WARNING_MESSAGE);
             return;
-        }
-        
-        // Show confirmation dialog
-        int confirm = JOptionPane.showConfirmDialog(this,
-            "Deseja salvar o jogo e sair?",
-            "Salvar e Sair",
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.QUESTION_MESSAGE);
-        
-        if (confirm != JOptionPane.YES_OPTION) {
-            return; // User cancelled
         }
         
         // Check if game was loaded from a file
@@ -256,9 +251,6 @@ public class BoardFrame extends JFrame implements Observer {
                     "Arquivo: " + filePath,
                     "Salvo",
                     JOptionPane.INFORMATION_MESSAGE);
-                
-                // Exit application
-                System.exit(0);
             } else {
                 JOptionPane.showMessageDialog(this,
                     "Erro ao salvar o jogo.\n" +
@@ -268,6 +260,19 @@ public class BoardFrame extends JFrame implements Observer {
             }
         }
         // If user cancels file chooser, do nothing
+    }
+    
+    private void exitGame() {
+        // Show confirmation dialog
+        int confirm = JOptionPane.showConfirmDialog(this,
+            "Deseja sair do jogo?\n(Certifique-se de salvar antes de sair)",
+            "Sair do Jogo",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE);
+        
+        if (confirm == JOptionPane.YES_OPTION) {
+            System.exit(0);
+        }
     }
     
     private void rollDice() {
@@ -369,7 +374,8 @@ public class BoardFrame extends JFrame implements Observer {
                 // Desabilitar controles
                 rollDiceButton.setEnabled(false);
                 if (manualDiceButton != null) manualDiceButton.setEnabled(false);
-                if (saveAndExitButton != null) saveAndExitButton.setEnabled(false);
+                if (saveGameButton != null) saveGameButton.setEnabled(false);
+                if (exitGameButton != null) exitGameButton.setEnabled(false);
                 
                 // Marca que já mostrou para não entrar aqui de novo
                 gameOverShown = true;
@@ -377,14 +383,14 @@ public class BoardFrame extends JFrame implements Observer {
             return;
         }
         
-        // Update Save & Exit button state based on dice roll
-        if (saveAndExitButton != null) {
+        // Update Save Game button state based on dice roll
+        if (saveGameButton != null) {
             boolean canSave = controller.canSaveGame();
-            saveAndExitButton.setEnabled(canSave);
+            saveGameButton.setEnabled(canSave);
             if (canSave) {
-                saveAndExitButton.setToolTipText("Salva o jogo e encerra a aplicação");
+                saveGameButton.setToolTipText("Salva o jogo atual");
             } else {
-                saveAndExitButton.setToolTipText("Só é possível salvar antes de rolar os dados");
+                saveGameButton.setToolTipText("Só é possível salvar antes de rolar os dados");
             }
         }
         
