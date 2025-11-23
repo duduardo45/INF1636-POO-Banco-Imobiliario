@@ -4,10 +4,12 @@ import java.util.List;
 
 class ReceiveFromOthersCard extends AutomaticCard {
     private final int value;
+    private List<Player> allPlayers;
     
     public ReceiveFromOthersCard(String imageId, int value, String story) {
     	super(imageId, LuckType.LUCKY, story);
     	this.value = value;
+    	this.allPlayers = null;
     }
     
     /**
@@ -20,15 +22,25 @@ class ReceiveFromOthersCard extends AutomaticCard {
     }
     
     /**
+     * Sets the list of all players in the game.
+     * 
+     * @param allPlayers List of all players.
+     */
+    public void setAllPlayers(List<Player> allPlayers) {
+        this.allPlayers = allPlayers;
+    }
+    
+    /**
      * Executes the card effect: all other players pay the card holder.
      * 
      * @param cardHolder The player who drew the card.
-     * @param allPlayers List of all players in the game.
      */
     @Override
     public boolean use(Player cardHolder) { 
-        // TODO: Should get the list of players from somewhere else
-        List<Player> allPlayers = Turn.getPlayers();
+        if (allPlayers == null || allPlayers.isEmpty()) {
+            return false;
+        }
+        
         for (Player player : allPlayers) {
             if (!player.equals(cardHolder)) {
                 player.pay(cardHolder, this.value);

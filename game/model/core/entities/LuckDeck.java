@@ -6,16 +6,54 @@ import java.util.Collections;
 
 class LuckDeck {
     private List<LuckCard> deck;
+    private Prison prisonSpace;
+    private List<Player> allPlayers;
+    private boolean initialized;
     
     public LuckDeck() {
         this.deck = new ArrayList<>();
-        initializeDeck();
+        this.prisonSpace = null;
+        this.allPlayers = null;
+        this.initialized = false;
+    }
+    
+    /**
+     * Sets the prison space reference for GoToPrisonCard.
+     * 
+     * @param prisonSpace The prison space.
+     */
+    public void setPrisonSpace(Prison prisonSpace) {
+        this.prisonSpace = prisonSpace;
+        initializeDeckIfReady();
+    }
+    
+    /**
+     * Sets the list of all players for ReceiveFromOthersCard.
+     * 
+     * @param allPlayers List of all players.
+     */
+    public void setAllPlayers(List<Player> allPlayers) {
+        this.allPlayers = allPlayers;
+        initializeDeckIfReady();
+    }
+    
+    /**
+     * Initializes the deck only if both prison space and players list are set.
+     */
+    private void initializeDeckIfReady() {
+        if (!initialized && prisonSpace != null && allPlayers != null) {
+            initializeDeck();
+            initialized = true;
+        }
     }
     
     /**
      * Initializes the deck with standard luck cards.
      */
     private void initializeDeck() {
+        // Clear existing deck
+        this.deck.clear();
+        
         // Add some example cards - in a real game these would be loaded from configuration
         this.deck.add(new ReceiveCard("chance1", 25, "A prefeitura mandou abrir uma nova avenida, para o que desapropriou vários prédios. Em consequência seu terreno valorizou. Receba 25"));
         this.deck.add(new ReceiveCard("chance2", 150, "Houve um assalto à sua loja, mas você estava segurado. Receba 150"));
@@ -25,8 +63,14 @@ class LuckDeck {
         this.deck.add(new ReceiveCard("chance6", 50, "Você acaba de receber uma parcela do seu 13° salário. Receba 50"));
         this.deck.add(new ReceiveCard("chance7", 100, "Você tirou o primeiro lugar no Torneio de Tênis do seu clube. Parabéns! Receba 100"));
         this.deck.add(new ReceiveCard("chance8", 100, "O seu cachorro policial tirou 1° prêmio na exposição do Kennel Club. Receba 100"));
-        this.deck.add(new GetOutPrisonCard("chance9", "Saída livre da prisão.", null));
-        this.deck.add(new ReceiveFromOthersCard("chance11", 50, "Você apostou com os parceiros deste jogo e ganhou. Cada um lhe paga 50."));
+        this.deck.add(new GetOutPrisonCard("chance9", "Saída livre da prisão.", null)); // Owner will be set when drawn
+        
+        // Create and configure ReceiveFromOthersCard
+        ReceiveFromOthersCard receiveCard = new ReceiveFromOthersCard("chance11", 50, "Você apostou com os parceiros deste jogo e ganhou. Cada um lhe paga 50.");
+        if (this.allPlayers != null) {
+            receiveCard.setAllPlayers(this.allPlayers);
+        }
+        this.deck.add(receiveCard);
         this.deck.add(new ReceiveCard("chance12", 45, "Você saiu de férias e se hospedou na casa de um amigo. Você economizou o hotel. Receba 45"));
         this.deck.add(new ReceiveCard("chance13", 100, "Inesperadamente você recebeu uma herança que já estava esquecida. Receba 100"));
         this.deck.add(new ReceiveCard("chance14", 100, "Você foi promovido a diretor da sua empresa. Receba 100"));
@@ -38,7 +82,7 @@ class LuckDeck {
         this.deck.add(new PayCard("chance20", 100, "Parabéns! Você convidou seus amigos para festejar o aniversário. Pague 100."));
         this.deck.add(new PayCard("chance21", 100, "Você é papai outra vez! Despezas de maternidade. Pague 100."));
         this.deck.add(new PayCard("chance22", 40, "Papai os livros do ano passado não servem mais, preciso de livros novos. Pague 40."));
-        this.deck.add(new GoToPrisonCard("chance23", "Vá para a prisão sem receber nada. (talvez eu lhe faça uma visita...)"));
+        this.deck.add(new GoToPrisonCard("chance23", "Vá para a prisão sem receber nada. (talvez eu lhe faça uma visita...)", prisonSpace));
         this.deck.add(new PayCard("chance24", 30, "Você estacionou seu carro em lugar proibido e entrou na contra mão. Pague 30."));
         this.deck.add(new PayCard("chance25", 50, "Você acaba de receber comunicação do Imposto de Renda. Pague 50."));
         this.deck.add(new PayCard("chance26", 25, "Seu clube está ampliando as piscinas. os sócios devem contribuir. Pague 25."));

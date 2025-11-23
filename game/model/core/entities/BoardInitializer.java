@@ -6,12 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 public class BoardInitializer {
+    private static LuckDeck sharedLuckDeck;
     
     public static Board createStandardBoard() {
         List<Space> spaces = new ArrayList<>(40);
         
-        // Create a shared luck deck for all luck spaces
-        LuckDeck luckDeck = new LuckDeck();
+        // Create a shared luck deck for all luck spaces (will be initialized after prison is created)
+        sharedLuckDeck = new LuckDeck();
         
         // Create all 40 spaces
         // Position 0: START
@@ -21,7 +22,7 @@ public class BoardInitializer {
         spaces.add(createPlace("Leblon", 100));
         
         // Position 2: Sorte ou Revés
-        spaces.add(new LuckSpace("Sorte ou Revés", null, luckDeck));
+        spaces.add(new LuckSpace("Sorte ou Revés", null, sharedLuckDeck));
         
         // Position 3: Av. Presidente Vargas
         spaces.add(createPlace("Av. Presidente Vargas", 60));
@@ -51,7 +52,7 @@ public class BoardInitializer {
         spaces.add(createPlace("Av. Europa", 200));
         
         // Position 12: Sorte ou Revés
-        spaces.add(new LuckSpace("Sorte ou Revés", null, luckDeck));
+        spaces.add(new LuckSpace("Sorte ou Revés", null, sharedLuckDeck));
         
         // Position 13: Rua Augusta
         spaces.add(createPlace("Rua Augusta", 180));
@@ -63,7 +64,7 @@ public class BoardInitializer {
         spaces.add(new Company("Companhia de Táxi", null, 150, 40));
         
         // Position 16: Sorte ou Revés
-        spaces.add(new LuckSpace("Sorte ou Revés", null, luckDeck));
+        spaces.add(new LuckSpace("Sorte ou Revés", null, sharedLuckDeck));
         
         // Position 17: Interlagos
         spaces.add(createPlace("Interlagos", 350));
@@ -81,7 +82,7 @@ public class BoardInitializer {
         spaces.add(createPlace("Flamengo", 120));
         
         // Position 22: Sorte ou Revés
-        spaces.add(new LuckSpace("Sorte ou Revés", null, luckDeck));
+        spaces.add(new LuckSpace("Sorte ou Revés", null, sharedLuckDeck));
         
         // Position 23: Botafogo
         spaces.add(createPlace("Botafogo", 100));
@@ -96,7 +97,7 @@ public class BoardInitializer {
         spaces.add(createPlace("Av. Brasil", 160));
         
         // Position 27: Sorte ou Revés
-        spaces.add(new LuckSpace("Sorte ou Revés", null, luckDeck));
+        spaces.add(new LuckSpace("Sorte ou Revés", null, sharedLuckDeck));
         
         // Position 28: Av. Paulista
         spaces.add(createPlace("Av. Paulista", 140));
@@ -126,7 +127,7 @@ public class BoardInitializer {
         spaces.add(createPlace("Ipanema", 300));
         
         // Position 37: Sorte ou Revés
-        spaces.add(new LuckSpace("Sorte ou Revés", null, luckDeck));
+        spaces.add(new LuckSpace("Sorte ou Revés", null, sharedLuckDeck));
         
         // Position 38: Jardim Paulista
         spaces.add(createPlace("Jardim Paulista", 280));
@@ -145,6 +146,9 @@ public class BoardInitializer {
         Prison prisonSpace = (Prison) spaces.get(10); // Position 10 is Prison
         GoToPrison goToPrison = (GoToPrison) spaces.get(30); // Position 30 is Go to Prison
         goToPrison.setPrisonSpace(prisonSpace);
+        
+        // Configure LuckDeck with prison reference for GoToPrisonCard
+        sharedLuckDeck.setPrisonSpace(prisonSpace);
         
         // Create board
         Board board = new Board(spaces);
@@ -169,6 +173,15 @@ public class BoardInitializer {
         houseRent.put(4, singleHouseRent * 4); // 4x base
         
         return new Place(name, cost, null, baseRent, housePrice, hotelPrice, hotelRent, houseRent);
+    }
+    
+    /**
+     * Returns the shared luck deck instance.
+     * 
+     * @return The shared LuckDeck.
+     */
+    public static LuckDeck getSharedLuckDeck() {
+        return sharedLuckDeck;
     }
 }
 

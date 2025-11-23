@@ -1,5 +1,7 @@
 package model.core.entities;
 
+import java.util.List;
+
 class LuckSpace extends Space {
     private LuckDeck deck;
     private LuckCard lastDrawnCard;
@@ -8,6 +10,17 @@ class LuckSpace extends Space {
         super(name, next);
         this.deck = deck;
         this.lastDrawnCard = null;
+    }
+    
+    /**
+     * Sets the list of all players for cards that need it.
+     * 
+     * @param allPlayers List of all players in the game.
+     */
+    public void setAllPlayers(List<Player> allPlayers) {
+        if (deck != null) {
+            deck.setAllPlayers(allPlayers);
+        }
     }
     
     @Override

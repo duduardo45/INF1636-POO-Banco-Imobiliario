@@ -45,6 +45,12 @@ public class ModelFacade {
             players.add(player);
         }
         
+        // Configure the shared luck deck with players list
+        LuckDeck sharedDeck = BoardInitializer.getSharedLuckDeck();
+        if (sharedDeck != null) {
+            sharedDeck.setAllPlayers(this.players);
+        }
+        
         this.currentPlayerIndex = 0;
     }
     
@@ -773,6 +779,117 @@ public class ModelFacade {
            }
        }
        return null;
+   }
+   
+   /**
+    * Checks if the current player is in prison
+    */
+   public boolean isCurrentPlayerInPrison() {
+       Player currentPlayer = players.get(currentPlayerIndex);
+       return currentPlayer.isInPrison();
+   }
+   
+   /**
+    * Releases the current player from prison
+    */
+   public void releasePlayerFromPrison() {
+       Player currentPlayer = players.get(currentPlayerIndex);
+       currentPlayer.releaseFromPrison();
+   }
+   
+   /**
+    * Increments the prison turn counter for the current player
+    */
+   public void incrementPlayerPrisonTurns() {
+       Player currentPlayer = players.get(currentPlayerIndex);
+       currentPlayer.incrementTurnsInPrison();
+   }
+   
+   /**
+    * Returns the number of turns the current player has spent in prison
+    */
+   public int getCurrentPlayerTurnsInPrison() {
+       Player currentPlayer = players.get(currentPlayerIndex);
+       return currentPlayer.getTurnsInPrison();
+   }
+   
+   /**
+    * Returns the current luck card object (if player is on a luck space)
+    */
+   public LuckCard getCurrentLuckCard() {
+       Player currentPlayer = players.get(currentPlayerIndex);
+       Space currentSpace = currentPlayer.getCar().getPosition();
+       
+       if (currentSpace instanceof LuckSpace) {
+           LuckSpace luckSpace = (LuckSpace) currentSpace;
+           return luckSpace.getCurrentCard();
+       }
+       return null;
+   }
+   
+   /**
+    * Returns the current player object
+    */
+   public Player getCurrentPlayer() {
+       return players.get(currentPlayerIndex);
+   }
+   
+   /**
+    * Handles manual luck cards that require special processing
+    * (e.g., GetOutPrisonCard needs to be given to the player)
+    * 
+    * @return A message describing what was done, or null if no action was taken
+    */
+   public String handleManualLuckCard() {
+       LuckCard card = getCurrentLuckCard();
+       
+       if (card == null) {
+           return null;
+       }
+       
+       Player currentPlayer = players.get(currentPlayerIndex);
+       
+       // Check if it's a GetOutPrisonCard by checking the class name
+       if (card.getClass().getSimpleName().equals("GetOutPrisonCard")) {
+           // Cast to GetOutPrisonCard and give it to the player
+           GetOutPrisonCard prisonCard = (GetOutPrisonCard) card;
+           prisonCard.setOwner(currentPlayer);
+           currentPlayer.receiveGetOutPrisonCard(prisonCard);
+           
+           return "Você recebeu uma carta 'Saída Livre da Prisão'!";
+       }
+       
+       return null;
+   }
+   
+   /**
+    * Checks if the current player has a GetOutPrisonCard
+    * 
+    * @return true if the player has the card, false otherwise
+    */
+   public boolean hasGetOutPrisonCard() {
+       Player currentPlayer = players.get(currentPlayerIndex);
+       return currentPlayer.hasGetOutPrisonCard();
+   }
+   
+   /**
+    * Uses the GetOutPrisonCard to release the player from prison
+    * 
+    * @return true if the card was used successfully, false otherwise
+    */
+   public boolean useGetOutPrisonCard() {
+       Player currentPlayer = players.get(currentPlayerIndex);
+       
+       if (!currentPlayer.hasGetOutPrisonCard()) {
+           return false;
+       }
+       
+       GetOutPrisonCard card = (GetOutPrisonCard) currentPlayer.useGetOutPrisonCard();
+       if (card != null) {
+           return card.use(currentPlayer);
+       }
+       
+       return false;
    }
 }
 
