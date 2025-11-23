@@ -41,9 +41,9 @@ public class InitialFrame extends JFrame {
         
         // Número de jogadores
         JPanel numPlayersPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JLabel numPlayersLabel = new JLabel("Número de jogadores (3-6):");
-        numPlayersCombo = new JComboBox<>(new Integer[]{3, 4, 5, 6});
-        numPlayersCombo.setSelectedItem(3);
+        JLabel numPlayersLabel = new JLabel("Número de jogadores (2-6):");
+        numPlayersCombo = new JComboBox<>(new Integer[]{2, 3, 4, 5, 6});
+        numPlayersCombo.setSelectedItem(2);
         numPlayersCombo.addActionListener(e -> updatePlayerFields());
         numPlayersPanel.add(numPlayersLabel);
         numPlayersPanel.add(numPlayersCombo);
@@ -55,7 +55,7 @@ public class InitialFrame extends JFrame {
         playerConfigPanel.setLayout(new BoxLayout(playerConfigPanel, BoxLayout.Y_AXIS));
         mainPanel.add(playerConfigPanel);
         
-        // Inicializar campos para 3 jogadores
+        // Inicializar campos para 2 jogadores
         updatePlayerFields();
         
         mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));

@@ -38,6 +38,12 @@ public class GameController {
         // Atualiza GameState com resultado dos dados
         gameState.setDiceRoll(diceResults[0], diceResults[1]);
         
+        // Verifica se o jogador está na prisão
+        if (modelFacade.isCurrentPlayerInPrison()) {
+            handlePrisonTurn(diceResults[0], diceResults[1]);
+            return;
+        }
+        
         // Move jogador
         int total = diceResults[0] + diceResults[1];
         modelFacade.moveCurrentPlayer(total);
@@ -51,6 +57,10 @@ public class GameController {
         else{
             log(modelFacade.getCurrentPlayerName() + " avançou para " + modelFacade.getCurrentSpaceName());
         }
+        
+        // Handle manual luck cards (e.g., GetOutPrisonCard)
+        handleManualLuckCard();
+        
         // Atualiza GameState completo
         updateGameState();
         
@@ -62,6 +72,85 @@ public class GameController {
     
     public boolean hasDiceRolled() {
         return modelFacade.hasDiceRolled();
+    }
+
+    /**
+     * Handles a player's turn while in prison
+     */
+    private void handlePrisonTurn(int dice1, int dice2) {
+        String playerName = modelFacade.getCurrentPlayerName();
+        
+        // Check if player has a GetOutPrisonCard and use it automatically
+        if (modelFacade.hasGetOutPrisonCard()) {
+            if (modelFacade.useGetOutPrisonCard()) {
+                log(playerName + " usou a carta 'Saída Livre da Prisão' e saiu da prisão!");
+                gameState.setMessage("Você usou a carta 'Saída Livre da Prisão' e saiu da prisão!");
+                
+                // Now move the player
+                int total = dice1 + dice2;
+                modelFacade.moveCurrentPlayer(total);
+                
+                String eventMessage = modelFacade.getLastEventMessage();
+                if (!eventMessage.isEmpty()) {
+                    log(playerName + ": " + eventMessage);
+                    gameState.setMessage(gameState.getMessage() + " " + eventMessage);
+                }
+                
+                // Handle manual luck cards after moving
+                handleManualLuckCard();
+                updateGameState();
+                return;
+            }
+        }
+        
+        // Check if rolled doubles
+        if (dice1 == dice2) {
+            modelFacade.releasePlayerFromPrison();
+            log(playerName + " rolou dupla e saiu da prisão!");
+            gameState.setMessage("Dupla! Você saiu da prisão e pode se mover!");
+            
+            // Now move the player
+            int total = dice1 + dice2;
+            modelFacade.moveCurrentPlayer(total);
+            
+            String eventMessage = modelFacade.getLastEventMessage();
+            if (!eventMessage.isEmpty()) {
+                log(playerName + ": " + eventMessage);
+                gameState.setMessage(gameState.getMessage() + " " + eventMessage);
+            }
+            
+            // Handle manual luck cards after moving
+            handleManualLuckCard();
+        } else {
+            // Did not roll doubles - stay in prison
+            modelFacade.incrementPlayerPrisonTurns();
+            int turnsInPrison = modelFacade.getCurrentPlayerTurnsInPrison();
+            
+            if (turnsInPrison >= 3) {
+                // After 3 turns, must be released
+                modelFacade.releasePlayerFromPrison();
+                log(playerName + " completou 3 turnos na prisão e foi liberado!");
+                gameState.setMessage("Você completou 3 turnos na prisão e foi liberado!");
+                
+                // Now move the player
+                int total = dice1 + dice2;
+                modelFacade.moveCurrentPlayer(total);
+                
+                String eventMessage = modelFacade.getLastEventMessage();
+                if (!eventMessage.isEmpty()) {
+                    log(playerName + ": " + eventMessage);
+                    gameState.setMessage(gameState.getMessage() + " " + eventMessage);
+                }
+                
+                // Handle manual luck cards after moving
+                handleManualLuckCard();
+            } else {
+                log(playerName + " não rolou dupla. Permanece na prisão (" + turnsInPrison + "/3 turnos)");
+                gameState.setMessage("Não rolou dupla. Permanece na prisão (" + turnsInPrison + "/3 turnos)");
+            }
+        }
+        
+        updateGameState();
     }
     
     public void rollDiceManual(int totalSteps) {
@@ -81,10 +170,16 @@ public class GameController {
         // 2. Atualiza o GameState para a View desenhar os dados
         gameState.setDiceRoll(visualD1, visualD2);
         
-        // 3. Move o jogador o total de passos solicitado
+        // 3. Verifica se o jogador está na prisão
+        if (modelFacade.isCurrentPlayerInPrison()) {
+            handlePrisonTurn(visualD1, visualD2);
+            return;
+        }
+        
+        // 4. Move o jogador o total de passos solicitado
         modelFacade.moveCurrentPlayer(totalSteps);
         
-        // 4. Captura mensagem do evento (cair em propriedade, sorte, etc)
+        // 5. Captura mensagem do evento (cair em propriedade, sorte, etc)
         String eventMessage = modelFacade.getLastEventMessage();
         if (!eventMessage.isEmpty()) {
             log(modelFacade.getCurrentPlayerName() + ": " + eventMessage);
@@ -93,10 +188,14 @@ public class GameController {
         else {
             log(modelFacade.getCurrentPlayerName() + " avançou para " + modelFacade.getCurrentSpaceName());
         }
-        // 5. Atualiza toda a tela
+        
+        // Handle manual luck cards (e.g., GetOutPrisonCard)
+        handleManualLuckCard();
+        
+        // 6. Atualiza toda a tela
         updateGameState();
         
-        // 6. Verifica falência
+        // 7. Verifica falência
         if (modelFacade.isCurrentPlayerBankrupt()) {
             gameState.setMessage("FALÊNCIA! Saldo negativo. Venda propriedades ou será eliminado!");
         }
@@ -316,5 +415,41 @@ public class GameController {
      */
     public String getPlayerColorByName(String playerName) {
         return modelFacade.getPlayerColorByName(playerName);
+    }
+    
+    /**
+     * Retorna informações sobre a carta de sorte atual (se houver)
+     */
+    public ModelFacade.LuckCardInfo getCurrentLuckCardInfo() {
+        return modelFacade.getCurrentLuckCardInfo();
+    }
+    
+    /**
+     * Handles manual luck cards that require controller action
+     * (e.g., GetOutPrisonCard needs to be given to the player)
+     */
+    public void handleManualLuckCard() {
+        String result = modelFacade.handleManualLuckCard();
+        
+        if (result != null && !result.isEmpty()) {
+            gameState.setMessage(result);
+            log(modelFacade.getCurrentPlayerName() + ": " + result);
+        }
+    }
+    
+    /**
+     * Uses the GetOutPrisonCard to escape prison
+     */
+    public boolean useGetOutPrisonCard() {
+        if (modelFacade.useGetOutPrisonCard()) {
+            String playerName = modelFacade.getCurrentPlayerName();
+            log(playerName + " usou a carta 'Saída Livre da Prisão' e saiu da prisão!");
+            gameState.setMessage("Você usou a carta e saiu da prisão!");
+            updateGameState();
+            return true;
+        } else {
+            gameState.setMessage("Você não tem uma carta 'Saída Livre da Prisão'!");
+            return false;
+        }
     }
 }
