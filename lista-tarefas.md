@@ -10,7 +10,7 @@
 ### 🔄 Grupo 2: Fluxo de Turno e Controles
 *Foco: Garantir que o jogador só possa fazer o que é permitido em cada momento.*
 
-- [ ] Proibir o jogador de agir antes de rolar os dados. #IMPORTANTE
+- [X] Proibir o jogador de agir antes de rolar os dados. #IMPORTANTE
 - [ ] Bloquear teclas de comando em momentos indevidos (ex: `C`/`V` na casa de Parada Livre).  As hotkeys funcionam, mas mostram mensagens de erro. Isso não é suficiente?
 - [ ] Fazer o turno passar automaticamente ao fazer uma escolha (quando aplicável). 
 - [X] **Feature de Teste (Pedido do Ivan):** Permitir rolagem de dados escolhida pelo usuário manualmente. - Barella

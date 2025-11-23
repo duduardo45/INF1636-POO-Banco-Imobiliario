@@ -615,6 +615,11 @@ public class BoardPanel extends JPanel {
         if (gameState.isGameOver()) {
             return;
         }
+
+        if (!controller.hasDiceRolled()) {
+            return; 
+        }
+        
         // Espaçamento entre botões
         // !MELHORAR ISSO SE NECESSARIO
         int buttonHeight = 25;
