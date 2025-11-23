@@ -60,6 +60,10 @@ public class GameController {
         }
     }
     
+    public boolean hasDiceRolled() {
+        return modelFacade.hasDiceRolled();
+    }
+    
     public void rollDiceManual(int totalSteps) {
         // Divide o valor total em dois dados para manter a consistência visual
         // Ex: Se o usuário quer andar 7, fazemos d1=3 e d2=4.

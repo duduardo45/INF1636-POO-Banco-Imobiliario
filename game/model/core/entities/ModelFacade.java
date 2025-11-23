@@ -14,6 +14,7 @@ public class ModelFacade {
     private boolean hasBuiltThisTurn = false;
     private Property propertyJustBought = null;
     private boolean hasTradedThisTurn = false;
+    private boolean diceRolledThisTurn = false;
     
     public ModelFacade() {
         this.dice1 = new Dice();
@@ -51,12 +52,19 @@ public class ModelFacade {
      * Rola os dados (aleatório)
      */
     public int[] rollDice() {
+        this.diceRolledThisTurn = true;
         int d1 = dice1.roll();
         int d2 = dice2.roll();
         this.lastDiceRoll[0] = d1;
         this.lastDiceRoll[1] = d2;
         return lastDiceRoll;
     }
+    
+
+    public boolean hasDiceRolled() {
+        return diceRolledThisTurn;
+    }
+
     
     /**
      * Move o jogador atual e executa evento da casa
@@ -182,6 +190,7 @@ public class ModelFacade {
     	this.hasBuiltThisTurn = false;
         this.propertyJustBought = null;
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+        this.diceRolledThisTurn = false;
     }
     
     /**
@@ -686,6 +695,7 @@ public class ModelFacade {
    }
    
    public int[] rollDiceManual(int d1, int d2) {
+       this.diceRolledThisTurn = true;     
        // Pede para cada dado assumir um valor específico
        int result1 = dice1.rollFixed(d1);
        int result2 = dice2.rollFixed(d2);
