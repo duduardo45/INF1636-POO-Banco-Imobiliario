@@ -88,6 +88,17 @@ public void updateCurrentPlayer(String name, int balance, String color, List<Str
     public List<String> getLogMessages() {
         return new ArrayList<>(logMessages); // Retorna cópia para segurança
     }
+    
+    /**
+     * Sets the log messages (for loading saved games)
+     * 
+     * @param messages List of log messages to restore
+     */
+    public void setLogMessages(List<String> messages) {
+        this.logMessages = new ArrayList<>(messages);
+        setChanged();
+        notifyObservers();
+    }
     public List<PlayerStatusInfo> getAllPlayerStatusInfo() {
         return allPlayerStatusInfo;
     }

@@ -25,6 +25,7 @@ public class GameStateLoader {
         Map<String, String> gameStateData = new HashMap<>();
         Map<Integer, Map<String, String>> playersData = new HashMap<>();
         Map<Integer, Map<String, String>> propertiesData = new HashMap<>();
+        Map<Integer, String> logData = new HashMap<>();
         
         // Read and parse file
         try (BufferedReader reader = new BufferedReader(
@@ -67,6 +68,9 @@ public class GameStateLoader {
                         case "PROPERTIES":
                             parsePropertyLine(key, value, propertiesData);
                             break;
+                        case "LOG":
+                            parseLogLine(key, value, logData);
+                            break;
                         default:
                             throw new IllegalArgumentException("Unknown section: " + currentSection);
                     }
@@ -84,9 +88,10 @@ public class GameStateLoader {
         if (propertiesData.isEmpty()) {
             throw new IllegalArgumentException("Missing [PROPERTIES] section");
         }
+        // LOG section is optional for backward compatibility
         
         // Reconstruct game state
-        return reconstructGameState(gameStateData, playersData, propertiesData);
+        return reconstructGameState(gameStateData, playersData, propertiesData, logData);
     }
     
     /**
@@ -130,12 +135,31 @@ public class GameStateLoader {
     }
     
     /**
+     * Parses a log message line and stores it
+     */
+    private static void parseLogLine(String key, String value, Map<Integer, String> logData) {
+        if (key.equals("MessageCount")) {
+            return; // We'll determine count from the data itself
+        }
+        
+        // Extract message index from key like "Message_0"
+        if (key.startsWith("Message_")) {
+            String indexStr = key.substring(8); // "Message_0" -> "0"
+            int messageIndex = Integer.parseInt(indexStr);
+            // Unescape special characters
+            String unescapedValue = value.replace("\\n", "\n").replace("\\=", "=");
+            logData.put(messageIndex, unescapedValue);
+        }
+    }
+    
+    /**
      * Reconstructs complete game state from parsed data
      */
     private static ModelFacade reconstructGameState(
             Map<String, String> gameStateData,
             Map<Integer, Map<String, String>> playersData,
-            Map<Integer, Map<String, String>> propertiesData) {
+            Map<Integer, Map<String, String>> propertiesData,
+            Map<Integer, String> logData) {
         
         // Create standard board
         Board board = BoardInitializer.createStandardBoard();
@@ -176,6 +200,21 @@ public class GameStateLoader {
         ModelFacade facade = new ModelFacade();
         facade.loadGameState(board, bank, players, currentPlayerIndex, hasBuiltThisTurn, 
                            diceRolledThisTurn, propertyJustBought, lastDiceRoll);
+        
+        // Restore log messages to GameState
+        if (!logData.isEmpty()) {
+            List<String> logMessages = new ArrayList<>();
+            // Sort by index to maintain order
+            List<Integer> indices = new ArrayList<>(logData.keySet());
+            Collections.sort(indices);
+            for (int index : indices) {
+                logMessages.add(logData.get(index));
+            }
+            
+            // Set messages in GameState
+            controller.GameState gameState = controller.GameState.getInstance();
+            gameState.setLogMessages(logMessages);
+        }
         
         return facade;
     }

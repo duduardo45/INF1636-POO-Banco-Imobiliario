@@ -45,6 +45,10 @@ public class GameStateSaver {
         
         // Properties Section
         content.append(formatPropertiesSection(facade));
+        content.append("\n");
+        
+        // Log Section (historical messages)
+        content.append(formatLogSection());
         
         // Write to file with UTF-8 encoding
         try (BufferedWriter writer = new BufferedWriter(
@@ -198,6 +202,30 @@ public class GameStateSaver {
             }
         }
         return -1; // Not found
+    }
+    
+    /**
+     * Formats the [LOG] section with game history messages
+     */
+    private static String formatLogSection() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[LOG]\n");
+        
+        // Get log messages from GameState
+        controller.GameState gameState = controller.GameState.getInstance();
+        List<String> logMessages = gameState.getLogMessages();
+        
+        sb.append("MessageCount=").append(logMessages.size()).append("\n");
+        
+        // Save each log message (escape newlines and special characters)
+        for (int i = 0; i < logMessages.size(); i++) {
+            String message = logMessages.get(i);
+            // Escape special characters: newline, equals sign
+            message = message.replace("\n", "\\n").replace("=", "\\=");
+            sb.append("Message_").append(i).append("=").append(message).append("\n");
+        }
+        
+        return sb.toString();
     }
 }
 

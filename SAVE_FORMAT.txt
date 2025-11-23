@@ -22,6 +22,7 @@ Seções obrigatórias (devem aparecer nesta ordem):
   1. [GAME_STATE]      - Estado geral do jogo
   2. [PLAYERS]         - Informações de todos os jogadores
   3. [PROPERTIES]      - Estado de todas as propriedades do tabuleiro
+  4. [LOG]             - Histórico de mensagens do jogo (opcional)
 
 Formato de cada linha de dados:
   Chave=Valor
@@ -449,6 +450,34 @@ Property_27_Houses=0
 Property_27_Hotels=0
 
 ================================================================================
+SEÇÃO [LOG]
+================================================================================
+
+Armazena o histórico de mensagens do jogo (opcional, para compatibilidade com
+versões antigas).
+
+Campos:
+
+MessageCount=<inteiro>
+  - Número total de mensagens no histórico
+  - Exemplo: MessageCount=15
+
+Para cada mensagem (numeradas de 0 a MessageCount-1):
+
+Message_<N>=<string>
+  - Conteúdo da mensagem
+  - Caracteres especiais são escapados: \n para newline, \= para igual
+  - Exemplo: Message_0=João avançou para Copacabana
+  - Exemplo: Message_1=Maria comprou a propriedade Leblon
+
+Exemplo completo da seção:
+[LOG]
+MessageCount=3
+Message_0=João avançou para Copacabana
+Message_1=Maria comprou a propriedade Leblon
+Message_2=João: Pagou aluguel de $50 para Maria
+
+================================================================================
 LIMITAÇÕES E NOTAS TÉCNICAS
 ================================================================================
 
@@ -461,8 +490,9 @@ LIMITAÇÕES E NOTAS TÉCNICAS
      ao carregar um jogo salvo
 
 2. HISTÓRICO DE JOGO:
-   - O histórico de eventos (log) não é salvo
-   - Ao carregar, o histórico estará vazio
+   - O histórico de eventos (log) AGORA É SALVO na seção [LOG]
+   - Ao carregar, todas as mensagens anteriores serão restauradas
+   - A seção [LOG] é opcional para compatibilidade com saves antigos
 
 ================================================================================
 REGRAS PARA EDIÇÃO MANUAL
