@@ -9,11 +9,11 @@
 ### 🔄 Grupo 2: Fluxo de Turno e Controles
 *Foco: Garantir que o jogador só possa fazer o que é permitido em cada momento.*
 
-- [ ] Proibir o jogador de agir antes de rolar os dados.
+- [ ] Proibir o jogador de agir antes de rolar os dados. #IMPORTANTE
 - [ ] Bloquear teclas de comando em momentos indevidos (ex: `C`/`V` na casa de Parada Livre).  As hotkeys funcionam, mas mostram mensagens de erro. Isso não é suficiente?
 - [ ] Fazer o turno passar automaticamente ao fazer uma escolha (quando aplicável). 
 - [X] **Feature de Teste (Pedido do Ivan):** Permitir rolagem de dados escolhida pelo usuário manualmente. - Barella
-- [X] Implementar Hotkey ou Botão principal para passar o turno.
+- [ ] Implementar Hotkey ou Botão principal para passar o turno.
 - [X] Eliminar de fato o jogador do ciclo de turnos quando ele for removido.
 - [ ] Dar chance extra para usuário ao conseguir duplas (exceto na 3ª dupla, pois nesse caso ele vai para a prisão).
 
@@ -26,7 +26,7 @@
 - [X] Impedir venda e compra da mesma propriedade no mesmo turno (e vice-versa).
 - [X] **Companhias:** Multiplicar o preço do aluguel pelo valor dos dados.
 - [X] **Companhias:** Remover a opção de "Comprar Casa" para este tipo de propriedade. - As hotkeys funcionam, mas mostram mensagens de erro. Os botões não aparecem, como esperado.
-- [ ] Checar se valor HONORARIO de $200 está sendo distribuido ao jogador quando ele passa pela casa de inicio após o começo do jogo. (ver manual)
+- [X] Checar se valor HONORARIO de $200 está sendo distribuido ao jogador quando ele passa pela casa de inicio após o começo do jogo. (ver manual)
 
 ### 💸 Grupo 4: Falência e Eliminação
 *Foco: O que acontece quando o dinheiro acaba.*
@@ -38,16 +38,18 @@
 ### 🎲 Grupo 5: Regras Especiais do Tabuleiro
 *Foco: Prisão e Sorte/Revés.*
 
-- [ ] Fazer a Prisão de fato prender o jogador (bloquear movimento/ações).
-- [ ] Inicializar o `luckDeck` com as cartas reais.
-- [ ] Mostrar na tela a carta de Sorte ou Revés que foi sorteada.
+- [ ] Fazer a Prisão de fato prender o jogador (bloquear movimento/ações). #IMPORTANTE
+- [ ] Inicializar o `luckDeck` com as cartas reais. #IMPORTANTE
+- [ ] Mostrar na tela a carta de Sorte ou Revés que foi sorteada. #IMPORTANTE
+- [ ] Adicionar botão para acabar o jogo quando os jogadores decidirem. #IMPORTANTE
+- [ ] Adicionar Botão para terminar a partida manualmente e calcular vencedor (baseado no dinheiro). #IMPORTANTE
 
 ### 🖥️ Grupo 6: Interface (UI) e Feedback Visual
 *Foco: Melhorar a experiência do usuário e visualização.*
 
 - [X] Converter opções de escolha (hotkeys) em Botões clicáveis. - Barella(parcial: Compra de casas, hoteis e Compra e Venda de propriedades, eliminar player)
 - [ ] Terminar criação de botões (verificar botões faltantes)
-- [ ] Mostrar visualmente quais propriedades são de qual jogador (ex: transparência colorida sobre a casa). 
+- [X] Mostrar visualmente quais propriedades são de qual jogador (ex: transparência colorida sobre a casa). 
 - [ ] Adicionar texto no tabuleiro mostrando quantidade de casas e hotéis em cada território.
 - [X] Criar um `BoardPanel` para histórico de acontecimentos.
 - [X] Implementar notificações de eventos (quem pagou aluguel, quanto, etc.) no histórico.
@@ -56,11 +58,11 @@
 ### 💾 Grupo 7: Persistência (Save/Load) e Finalização
 *Foco: Salvar o jogo e calcular o vencedor.*
 
-- [ ] Adicionar Botão para terminar a partida manualmente e calcular vencedor (baseado no dinheiro).
-- [ ] Implementar Salvamento de partida:
-    - [ ] Usar `JFileChooser`.
-    - [ ] Formato `.txt` puro (UTF-8).
-    - [ ] Só permitir salvar antes de rolar os dados.
-- [ ] Implementar Carregamento de partida (parser do `.txt` para o `GameState`).
-- [ ] Adicionar botão específico para encerrar o jogo/sair.
+- [ ] Implementar Salvamento de partida: #IMPORTANTE
+    - [ ] Usar `JFileChooser`. #IMPORTANTE
+    - [ ] Formato `.txt` puro (UTF-8). #IMPORTANTE
+    - [ ] Só permitir salvar antes de rolar os dados. #IMPORTANTE
+- [ ] Implementar Carregamento de partida (parser do `.txt` para o `GameState`). #IMPORTANTE
+- [ ] Descrever (em um arquivo .txt) o formato usado no txt para o Ivan conseguir editar na mão. #IMPORTANTE
+- [ ] Adicionar botão específico para sair do jogo (salvando o progresso). #IMPORTANTE
 

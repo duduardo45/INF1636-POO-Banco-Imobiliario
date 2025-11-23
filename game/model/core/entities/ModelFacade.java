@@ -671,5 +671,36 @@ public class ModelFacade {
        
        return lastDiceRoll;
    }
+   
+   /**
+    * Retorna um mapa de todas as propriedades com seus donos
+    * Formato: Map<índice da casa, nome do dono (ou null se sem dono)>
+    */
+   public Map<Integer, String> getAllPropertiesWithOwners() {
+       Map<Integer, String> propertiesMap = new HashMap<>();
+       
+       for (int i = 0; i < board.getBoardSize(); i++) {
+           Space space = board.getSpace(i);
+           if (space instanceof Property) {
+               Property prop = (Property) space;
+               String ownerName = prop.isOwned() ? prop.getOwner().getName() : null;
+               propertiesMap.put(i, ownerName);
+           }
+       }
+       
+       return propertiesMap;
+   }
+   
+   /**
+    * Retorna a cor do jogador pelo nome
+    */
+   public String getPlayerColorByName(String playerName) {
+       for (Player player : players) {
+           if (player.getName().equals(playerName)) {
+               return player.getCar().getColor();
+           }
+       }
+       return null;
+   }
 }
 

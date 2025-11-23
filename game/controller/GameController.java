@@ -268,4 +268,19 @@ public class GameController {
     public GameState getGameState() {
         return gameState;
     }
+    
+    /**
+     * Retorna um mapa de todas as propriedades com seus donos
+     * Formato: Map<índice da casa, nome do dono (ou null se sem dono)>
+     */
+    public Map<Integer, String> getAllPropertiesWithOwners() {
+        return modelFacade.getAllPropertiesWithOwners();
+    }
+    
+    /**
+     * Retorna a cor do jogador pelo nome
+     */
+    public String getPlayerColorByName(String playerName) {
+        return modelFacade.getPlayerColorByName(playerName);
+    }
 }

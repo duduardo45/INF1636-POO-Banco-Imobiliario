@@ -192,16 +192,19 @@ public class BoardPanel extends JPanel {
         // 1. Desenhar tabuleiro
         drawBoard(g2d);
         
-        // 2. Desenhar piões
+        // 2. Desenhar overlays de propriedades (ownership)
+        drawPropertyOwnershipOverlays(g2d);
+        
+        // 3. Desenhar piões
         drawPawns(g2d);
         
-        // 3. Desenhar dados
+        // 4. Desenhar dados
         drawDice(g2d);
         
-        // 4. Desenhar informações do jogador
+        // 5. Desenhar informações do jogador
         drawPlayerInfo(g2d);
         
-        // 5. Desenhar carta da propriedade atual
+        // 6. Desenhar carta da propriedade atual
         drawCurrentPropertyCard(g2d);
     }
     
@@ -216,6 +219,89 @@ public class BoardPanel extends JPanel {
             g2d.fillRect(0, 0, 700, 700);
             g2d.setColor(Color.BLACK);
             g2d.drawString("Tabuleiro não carregado", 300, 350);
+        }
+    }
+    
+    private void drawPropertyOwnershipOverlays(Graphics2D g2d) {
+        if (controller == null) return;
+        
+        // Mapa de cores para cada jogador (baseado na cor do pião)
+        Map<String, Color> colorMap = new HashMap<>();
+        colorMap.put("Vermelho", new Color(255, 0, 0, 100));      // Vermelho semi-transparente
+        colorMap.put("Azul", new Color(0, 0, 255, 100));          // Azul semi-transparente
+        colorMap.put("Laranja", new Color(200, 125, 0, 100));     // Laranja semi-transparente
+        colorMap.put("Amarelo", new Color(255, 200, 0, 100));     // Amarelo semi-transparente
+        colorMap.put("Roxo", new Color(128, 0, 128, 100));        // Roxo semi-transparente
+        colorMap.put("Verde", new Color(0, 128, 0, 100));         // Verde semi-transparente
+        
+        // Dimensões das casas
+        int horizontalWidth = 54;
+        int verticalHeight = 54;
+        int cornerSize = 94;
+        
+        // Obter mapa de propriedades com donos
+        Map<Integer, String> propertiesWithOwners = controller.getAllPropertiesWithOwners();
+        if (propertiesWithOwners == null || propertiesWithOwners.isEmpty()) {
+            return;
+        }
+        
+        // Desenhar overlays para cada espaço
+        for (int i = 0; i < 40; i++) {
+            Point coords = spaceCoordinates.get(i);
+            if (coords == null) continue;
+            
+            // Determinar tamanho e offset do overlay baseado na posição
+            int width = horizontalWidth;
+            int height = verticalHeight;
+            int offsetX = 0;
+            int offsetY = 0;
+            
+            // Cantos têm tamanho diferente
+            if (i == 0 || i == 10 || i == 20 || i == 30) {
+                width = cornerSize;
+                height = cornerSize;
+            }
+            // Linhas horizontais (1-9, 21-29)
+            else if (i >= 1 && i <= 9) {
+                width = horizontalWidth;
+                height = cornerSize;
+                // Offset para alinhar com a propriedade (não com o canto)
+                offsetY = (cornerSize - verticalHeight) / 2 - 3;
+                offsetX = 18-i*2;
+            }
+            else if (i >= 21 && i <= 29) {
+                width = horizontalWidth;
+                height = cornerSize;
+                // Offset para alinhar com a propriedade (não com o canto)
+                offsetY = 0;
+                offsetX = (int)((i-20)*1.5);
+            }
+            // Linhas verticais (11-19, 31-39)
+            else if (i >= 11 && i <= 19) {
+                width = cornerSize;
+                height = verticalHeight;
+                // Offset para alinhar com a propriedade (não com o canto)
+                offsetX = 0;
+                offsetY = (int)((19-i)*1.7);
+            }
+            else if (i >= 31 && i <= 39) {
+                width = cornerSize;
+                height = verticalHeight;
+                // Offset para alinhar com a propriedade (não com o canto)
+                offsetX = 10;
+                offsetY = (int)((i-30)*1.6);
+            }
+            
+            // Verificar se há dono para esta propriedade
+            String ownerName = propertiesWithOwners.get(i);
+            
+            if (ownerName != null) {
+                // Propriedade tem dono - desenhar overlay com cor do dono
+                String ownerColor = controller.getPlayerColorByName(ownerName);
+                Color overlayColor = colorMap.getOrDefault(ownerColor, new Color(200, 200, 200, 100));
+                g2d.setColor(overlayColor);
+                g2d.fillRect(coords.x + offsetX, coords.y + offsetY, width, height);
+            }
         }
     }
     
